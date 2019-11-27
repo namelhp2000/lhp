@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Designate";
+}
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div style="text-align:center; padding-top:50px;">
+        指派给：<input type="text" class="mymember" opener="window.parent.parent" style="width:140px;" station="0" dept="0" group="0" unit="0" user="1" id="user" name="user" validate="empty" errmsg="请选择要指派的人员" />
+        <input type="button" class="mybutton" value="确&nbsp;定" onclick="saveDesignate(this);" />
+        <span type="msg"></span>
+    </div>
+</form>
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    function saveDesignate(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            $.ajax({
+                url: "SaveDesignate"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    alert(text);
+                    $(but).prop("disabled", false);
+                    win.reloadOpener();
+                    win.close();
+                }
+            });
+        }
+    }
+</script>
+

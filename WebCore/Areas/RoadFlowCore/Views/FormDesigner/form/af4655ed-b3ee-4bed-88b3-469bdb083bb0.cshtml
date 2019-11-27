@@ -1,0 +1,32 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new RoadFlow.Business.FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new RoadFlow.Business.Form().GetFormData("dba78397-b5df-4145-87af-cb8b5d0655d7", "TryTest1", "ID", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new RoadFlow.Business.Form().GetDefaultValuesJSON("[]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "TryTest1", "@display", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="dba78397-b5df-4145-87af-cb8b5d0655d7"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="TryTest1"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="ID"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value=""/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<p><input data-isflow="1" data-type="serialnumber" id="TRYTEST1-S_NAME" style="" type="text" value="" placeholder="自动生成流水号" class="mytext" readonly="" name="TRYTEST1-S_NAME"><textarea style="width:0;height:0;display:none;" name="rf_serialnumber_config_TRYTEST1-S_NAME">{"maxfiled":"s_name1","length":"4","formatstring":"ROAD-{Date<yyyyMMdd>}-{SerialNumber}-ABC","sqlwhere":"where%20DATEPART%28n%2Cd_time%29%3DDATEPART%28n%2Cgetdate%28%29%29"}</textarea><input type="hidden" value="TRYTEST1-S_NAME" name="rf_serialnumber"></p>

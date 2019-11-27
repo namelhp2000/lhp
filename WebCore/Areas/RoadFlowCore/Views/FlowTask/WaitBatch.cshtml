@@ -1,0 +1,108 @@
+﻿
+    <form method="post">
+       @Html.AntiForgeryToken()
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        流程：<select class="myselect2" id="FlowID" name="FlowID" style="width:210px;"><option value="">全部</option>@Html.Raw(ViewBag.flowOptions)</select>
+                        标题：<input type="text" class="mytext" id="Title" name="Title" value="" style="width:200px;" />
+                        接收时间：<input type="text" class="mycalendar" style="width:90px;" value="" name="Date1" id="Date1" /> 至 <input type="text" value="" style="width:90px;" class="mycalendar" name="Date2" id="Date2" />
+                        <input type="button" name="Search" onclick="query(null, 1);" value="&nbsp;查&nbsp;&nbsp;询&nbsp;" class="mybutton" />
+                        <input type="button" name="Batch" onclick="batchExecute();" value="批量处理" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+    var currentPage, currentNumber;
+    $(function () {
+        $("#listtable").jqGrid({
+            url: "QueryWaitBatch?@Html.Raw(ViewBag .query)",
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['标题', '流程', '步骤', '发送人', '接收时间', '状态', '备注', ''],
+            colModel: [
+                { name: 'Title', index: 'Title' },
+                { name: 'FlowName', index: 'FlowID', align: "left", width: 80 },
+                { name: 'StepName', index: 'StepID', align: "left", width: 70 },
+                { name: 'SenderName', index: 'SenderName', align: "left", width: 50 },
+                { name: 'ReceiveTime', index: 'ReceiveTime', align: "left", width: 100 },
+                { name: 'StatusTitle', index: 'CompletedTime', align: "left", width: 50 },
+                { name: 'Note', index: 'Note', sortable: false, align: "left", width: 80 },
+                { name: 'Opation', index: '', sortable: false, title: false, align: "left", width: 110 }
+            ],
+            sortname: "ReceiveTime",
+            sortorder: "DESC",
+            multiselect: true,
+            height: '100%',
+            width: $(window).width(),
+            loadComplete: function () {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                currentPage = records.pagesize;
+                currentNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                  //鼠标移动背景颜色变化
+                $("#listtable tr").mouseenter(function () {
+                    $(this).css("background", "lightblue");
+                });
+                $("#listtable tr").mouseleave(function () {
+                    $(this).css("background", "white");
+                });
+                return true;
+            }
+        });
+
+    });
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number) {
+        var data = {
+            title: $("#Title").val(), flowid: $("#FlowID").val(),
+            sender: $("#SenderID").val(), date1: $("#Date1").val(), date2: $("#Date2").val(),
+            pagesize: size || currentPage, pagenumber: number || currentNumber
+        };
+        $("#listtable").setGridParam({postData: data}).trigger("reloadGrid");
+    }
+    function openTask(url, title, id, openModel, width, height) {
+        top.openApp(url, openModel, title, "tab_" + id, width, height, false);
+    }
+    function detail(flowid, groupid, taskid) {
+        new RoadUI.Window().open({
+            url: 'Detail?flowid=' + flowid + "&groupid=" + groupid + "&taskid=" + taskid + '@Html.Raw(ViewBag .query)',
+            width: 1024, height: 510, title: "查看流程处理过程", opener: window
+        });
+    }
+    function delTask(flowid, groupid, taskid) {
+        if (!confirm('您真的要作废吗?')) {
+            return false;
+        }
+        $.ajax({
+            url: "DeleteTask?deltaskid=" + taskid,
+            type: "post",
+            cache: false,
+            data: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+            success: function (txt) {
+                alert(txt);
+                if (txt.indexOf('成功') >= 0) {
+                    query(currentPage, currentNumber);
+                }
+            }
+        });
+    }
+    function batchExecute() {
+        var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0) {
+            alert("您没有要批量处理的事项!");
+            return false;
+        }
+        top.mainDialog.open({ url: "WaitBatchConfirm?@Html.Raw(ViewBag .query)&taskids=" + rowIds.join(','), width: 550, height: 300, title: "批量处理待办事项", opener: window })
+        return true;
+    }
+    </script>
+

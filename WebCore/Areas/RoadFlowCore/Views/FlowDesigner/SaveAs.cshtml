@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "SaveAs";
+}
+<form>
+    <div style="width:95%; margin:30px auto 0 auto;">
+        <div style="margin:10px 0;">新的流程名称：</div>
+        <div style="margin:10px 0;"><input type="text" validate="empty" style="width:80%;" class="mytext" id="newflowname" name="newflowname" /></div>
+        <div style="margin:10px 0;"><input type="checkbox" value="1" id="saveopen" name="saveopen" style="vertical-align:middle;" /><label for="saveopen" style="vertical-align:middle;">另存后立即打开</label></div>
+        <div style="text-align:center;"><input type="button" onclick="saveAs(this);" class="mybutton" value="确定另存" /></div>
+    </div>
+</form>
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    function saveAs(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SaveAsSave"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", dataType: "json", success: function (json) {
+                    if (json.success == 0) {
+                        alert(json.msg);
+                        $(but).prop("disabled", false);
+                    }
+                    else {
+                        alert(json.msg);
+                        if ($("#saveopen").prop("checked")) {
+                            top.openApp('/RoadFlowCore/FlowDesigner/Index1?flowid=' + json.newId + '&@ViewBag.query', 0, '编辑' + $("#newflowname").val());
+                        }
+                        win.close();
+                    }
+                }
+            });
+        }
+    }
+</script>
+

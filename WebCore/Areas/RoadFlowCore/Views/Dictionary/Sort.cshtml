@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Sort";
+ 
+}
+@model IEnumerable<RoadFlow.Model.Dictionary>
+<form action="" method="post">
+    @Html.AntiForgeryToken()
+    <br />
+    <div style="width:82%; margin:0 auto; height:auto;" id="sortdiv">
+        @{
+            foreach (var dict in Model)
+            {
+                <ul class="sortul">
+                    <input type="hidden" value="@dict.Id" name="sort" />
+                    @dict.Title
+                </ul>
+            }
+        }
+    </div>
+    <div class="buttondiv">
+        <input type="button" class="mybutton" onclick="saveSort(this)" value="保存排序" />
+        <input type="button" class="mybutton" value="返回" onclick="window.location='Body'+'@ViewBag.queryString';" />
+    </div>
+</form>
+
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    $(function () {
+           parent.frames[0].reLoad('@ViewBag.refreshId')
+        new RoadUI.DragSort($("#sortdiv"));
+    });
+    function saveSort(but) {
+        $(but).prop("disabled", true);
+        var f = document.forms[0];
+        var o = RoadUI.Core.serializeForm($(f));
+        $.ajax({
+            url: "SaveSort?@ViewBag.queryString", data: o, type: "post", success: function (text) {
+                if (RoadUI.Core.checkLogin(text, false)) {
+                    alert(text);
+                }
+                $(but).prop("disabled", false);
+                var refreshId = '@ViewBag.refreshId';
+                if (refreshId.length > 0) {
+                    parent.frames[0].reLoad(refreshId);
+                }
+            }
+        });
+
+    }
+</script>
+
+

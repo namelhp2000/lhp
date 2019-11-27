@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "DirEdit";
+    var lists = "List" + Html.Raw(ViewBag.queryString);
+}
+@model RoadFlow.Model.DocDir
+<form id="form1" method="post">
+     @Html.AntiForgeryToken()
+    <div class="toolbar" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto;">
+        <a href="javascript:void(0);" onclick="window.location='@lists';return false;"><i class="fa fa-reply"></i><label>返回列表</label></a>
+        <span class="toolbarsplit">&nbsp;</span>
+        <a href="javascript:void(0);" onclick="save(this);return false;"><i class="fa fa-save"></i><label>保存栏目</label></a>
+        <a href="javascript:void(0);" onclick="del(this);return false;"><i class="fa fa-times"></i><label>删除栏目</label></a>
+    </div>
+    <table cellpadding="0" cellspacing="1" border="0" width="90%;" class="formtable" style="margin-top:56px;">
+        <tr>
+            <th style="width: 100px;">上级栏目：</th>
+            <td>
+                <input type="hidden" name="Id" value="@Model.Id">
+                <input type="hidden" name="ParentId" value="@Model.ParentId" />
+                @ViewBag.parentName
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">栏目名称：</th>
+            <td><input type="text" id="Name" name="Name" validate="empty" class="mytext" value="@Model.Name" style="width: 300px" /></td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">文档阅读人员:</th>
+            <td><input type="text" id="ReadUsers" name="ReadUsers" value="@Html.Raw(Model.ReadUsers)" class="mymember" style="width: 300px" /></td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">文档发布人员:</th>
+            <td><input type="text" id="PublishUsers" name="PublishUsers"  class="mymember" value="@Html.Raw(Model.PublishUsers)" style="width: 300px" /></td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">管理人员:</th>
+            <td><input type="text" id="ManageUsers" name="ManageUsers" class="mymember" value="@Html.Raw(Model.ManageUsers)" style="width: 300px" /></td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">排序：</th>
+            <td><input type="text" id="Sort" name="Sort" class="mytext" value="@Model.Sort" /></td>
+        </tr>
+
+    </table>
+    <script type="text/javascript">
+        $(function () {
+
+        });
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveDirEdit" +"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                        }
+                        $(but).prop("disabled", false);
+                        parent.frames[0].reLoad('@ViewBag.refreshId');
+                        window.location = 'List' +'@Html.Raw(ViewBag.queryString)'
+                    }
+                });
+            }
+        }
+        function del(but) {
+            if (!confirm('真的删除栏目吗?')) {
+                return;
+            }
+            var f = document.forms[0];
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "DeleteDir" +"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    if (text.indexOf("成功") >= 0) {
+                        parent.frames[0].reLoad('@ViewBag.refreshId');
+                        window.location = 'List'+'@Html.Raw(ViewBag.queryString)';
+                    }
+                    else {
+                        //window.location = window.location;
+                    }
+                }
+            });
+        }
+    </script>
+</form>

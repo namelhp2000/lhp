@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Tree";
+
+}
+
+    <form>
+        <div id="menu"></div>
+    </form>
+    <script type="text/javascript">
+        var roadTree = null;
+        $(function () {
+            loadTree();
+        });
+        function loadTree() {
+            $("#menu").html('');
+            roadTree = new RoadUI.Tree({ id: "menu", path: "Tree1", refreshpath: "TreeRefresh", onclick: openUrl });
+        }
+        function reLoad(id) {
+            if (roadTree != null) {
+                roadTree.refresh(id);
+            }
+        }
+        function openUrl(json) {
+            parent.frames[1].location = "Body?menuid=" + json.id + "&@Html.Raw(ViewBag.query)";
+        }
+    </script>
+
+
+

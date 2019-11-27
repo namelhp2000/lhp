@@ -1,0 +1,82 @@
+﻿
+    <form method="post">
+        @Html.AntiForgeryToken()
+         <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        流程：<select class="myselect2" style="width:210px;" id="FlowID" name="FlowID"><option value="">全部</option>@Html.Raw(ViewBag.flowOptions)</select>
+                        标题：<input type="text" class="mytext" id="Title" name="Title" style="width:200px;" />
+                        发起时间：<input type="text" class="mycalendar" style="width:90px;" id="Date1" name="Date1" /> 至 <input type="text" style="width:90px;" class="mycalendar" id="Date2" name="Date2" />
+                        状态：<select id="status" name="status" class="myselect"><option value="">全部</option><option value="0">未完成</option><option value="1">已完成</option></select>
+                        <input type="button" name="Search" onclick="query(null, 1);" value="&nbsp;查&nbsp;&nbsp;询&nbsp;" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+    var currentPage, currentNumber;
+    $(function ()
+    {
+        $("#listtable").jqGrid({
+            url: "QueryMyStarts?@Html.Raw(ViewBag.query)",
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['标题', '流程', '发起时间','所在步骤', ''],
+            colModel: [
+                { name: 'Title', index: 'Title', width: 300 },
+                { name: 'FlowName', index: 'FlowID', align: "left", width: 100 },
+                { name: 'ReceiveTime', index: 'ReceiveTime', align: "left", width: 95 },
+                { name: 'CurrentStepName', index: 'FlowID', align: "left", width: 100, sortable: false },
+                { name: 'Opation', index: '', sortable: false, title: false, align: "left", width: 80 }
+            ],
+            sortname: "ReceiveTime",
+            sortorder: "desc",
+            height: '100%',
+            width: $(window).width(),
+            loadComplete: function ()
+            {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                currentPage = records.pagesize;
+                currentNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                  //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+            }
+        });
+    });
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number)
+    {
+        var data = {
+            title: $("#Title").val(), flowid: $("#FlowID").val(),
+            sender: $("#SenderID").val(), date1: $("#Date1").val(), date2: $("#Date2").val(),status: $("#status").val(),
+            pagesize: size || currentPage, pagenumber: number || currentNumber
+        };
+        $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+    function openTask(url, title, id, openModel, width, height)
+    {
+        top.openApp(url, openModel, title, id, width, height, false);
+    }
+    function detail(flowid, groupid)
+    {
+        new RoadUI.Window().open({
+            url: 'Detail?flowid=' + flowid + "&groupid=" + groupid + '&@Html.Raw(ViewBag.query)',
+            width: 1024, height: 510, title: "查看流程处理过程", opener: window
+        });
+    }
+    </script>
+
+

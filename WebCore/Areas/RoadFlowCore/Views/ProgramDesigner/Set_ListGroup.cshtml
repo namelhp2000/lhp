@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Set_ListGroup";
+}
+
+    <form id="form1" method="post">
+        <div>
+            <table id="listtable"></table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" onclick="edit('');" value="添加字段" />
+            <input type="button" value="删除所选" name="delete" onclick="return del();" class="mybutton" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var rows = @Html.Raw(ViewBag.list);
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['分组字段名称', '是否汇总', '是否显示分组列', '分组表头设置', '是否折叠','分组是否排序', '分组方式', '是否隐藏汇总','显示顺序', '操作'],
+                colModel: [
+                    { name: 'groupField', index: 'groupField' },
+                    { name: 'isGroupSummary', index: 'isGroupSummary' },
+                    { name: 'isGroupColumnShow', index: 'isGroupColumnShow' },
+                    { name: 'groupText', index: 'groupText' },
+                    { name: 'isGroupCollapse', index: 'isGroupCollapse' },
+                    { name: 'isGroupDataSorted', index: 'isGroupDataSorted' },
+                    { name: 'groupOrder', index: 'groupOrder' },
+                    { name: 'isShowSummaryOnHide', index: 'isShowSummaryOnHide' },
+                    { name: 'sort', index: 'sort' },
+                    { name: 'opation', index: '', sortable: false, align: "left" }
+                ],
+                multiselect: true,
+                height: "100%",
+                rowNum: rows.length,
+                width: $(window).width(),
+                data: rows,
+                loadComplete: function () {
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+        });
+
+        function edit(id) {
+            window.location = "Set_ListGroup_Edit?fieldid=" + (id || "") + "&@Html.Raw(ViewBag.query)";
+        }
+        function del() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的字段!");
+                return false;
+            }
+            if (!confirm('您真的要删除所选字段吗?')) {
+                return false;
+            }
+            $.ajax({
+                url: "DeleteSet_ListGroup?@Html.Raw(ViewBag.query)",
+                data: { "ids": rowIds.join(",") },
+                type: "post",
+                success: function (txt) {
+                    alert(txt);
+                    window.location = window.location;
+                }
+            });
+            return true;
+        }
+    </script>
+

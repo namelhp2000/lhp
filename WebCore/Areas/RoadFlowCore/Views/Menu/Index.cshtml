@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Body";
+    var Trees = "Tree"+Html.Raw(ViewBag.queryString);
+    var Emptys = "Empty"+ Html.Raw(ViewBag.queryString);
+
+}
+
+    <style type="text/css">
+        body {
+            padding: 2px 0;
+            overflow: hidden;
+        }
+    </style>
+    <table cellpadding="0" cellspacing="1" border="0" width="100%">
+        <tr>
+            <td style="width:270px; vertical-align:top; padding:5px 5px 0 5px;">
+                <iframe id="Iframe1" frameborder="0" scrolling="auto" src="@Trees" style="width:100%;margin:0;padding:0;"></iframe>
+            </td>
+            <td class="organizesplit">
+                <iframe id="roadflow_menu_Iframe2" frameborder="0" scrolling="auto" src="@Emptys" style="width:100%;margin:0;padding:0;"></iframe>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        $(function () {
+            var height = $(window).height();
+            $('#Iframe1').height(height - 10);
+            $('#roadflow_menu_Iframe2').height(height - 10);
+        });
+    </script>
+

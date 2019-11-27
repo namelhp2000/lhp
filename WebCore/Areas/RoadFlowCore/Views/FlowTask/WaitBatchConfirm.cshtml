@@ -1,0 +1,56 @@
+﻿
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div>
+            <input type="hidden" name="taskids" id="taskids" value="@ViewBag.taskIds" />
+            <table cellpadding="0" cellspacing="1" border="0" width="98%" align="center" class="formtable" style="margin-top:6px;">
+                <tr>
+                    <th style="width:80px;">常用意见：</th>
+                    <td>
+                        <select onchange="$('#comment').val(this.value);" class="myselect" id="commentselect" name="commentselect">
+                            <option value=""></option>
+                          @Html.Raw(ViewBag.commentOptions)
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width:80px;">处理意见：</th>
+                    <td>
+                        <textarea class="mytextarea" validate="empty" style="width:80%;height:90px;" id="comment" name="comment"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width:80px;">处理类型：</th>
+                    <td>
+                        <input type="radio" validate="radio" name="executetype" id="executetype0" value="submit" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="executetype0">提交</label>
+                        <input type="radio" validate="radio" name="executetype" id="executetype1" value="back" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="executetype1">退回</label>
+                    </td>
+                </tr>
+            </table>
+            <div class="buttondiv" style="margin-top:10px;">
+                <input type="button" class="mybutton" value="确定处理" onclick="submit1(this);" />&nbsp;
+                <input type="button" class="mybutton" value="关闭窗口" onclick="new RoadUI.Window().close();" />
+            </div>
+        </div>
+    </form>
+    <script type="text/javascript">
+    var win = new RoadUI.Window();
+    function submit1(but) {
+        var f = document.forms[0];
+        if(new RoadUI.Validate().validateForm(f)){
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url:"WaitBatchExecute"+"@Html.Raw(ViewBag.queryString)",data:o, type:"post",success:function (text) {
+                if(RoadUI.Core.checkLogin(text, false)) {
+                    alert(text);
+                }
+                $(but).prop("disabled",false);
+                win.reloadOpener(undefined, undefined, "query('','')");
+                win.close();
+            }});
+        }
+    }
+    </script>
+
+

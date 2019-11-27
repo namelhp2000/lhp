@@ -1,0 +1,14 @@
+body { margin: 0px; font-size: 12px; font-family:微软雅黑,Arial;}
+table, td, th, p, div, span, label { font-size: 12px; font-family:微软雅黑,Arial;}
+p { margin:8px 0;}
+table { border-collapse: collapse; border: 1px solid #ececec; font-family: 微软雅黑,Arial; }
+table tbody tr td { padding: 3px 0 3px 3px; height: 26px; border: 1px solid #ececec; font-family: 微软雅黑,Arial; }
+table tbody tr th { padding: 3px 0 3px 3px; height: 26px; border: 1px solid #ececec; font-weight: bold; font-family: 微软雅黑,Arial; }
+table thead tr td { padding: 3px 0 3px 3px; height: 26px; border: 1px solid #ececec; font-family: 微软雅黑,Arial; }
+table tbody tr td pre{font-size: 12px; font-family:微软雅黑,Arial;}
+table tfoot tr td label{font-size: 12px; font-weight: bold; font-family:微软雅黑,Arial;}
+.commenttable{width:98%;margin:0 auto 18px auto;}
+.commentsign{vertical-align: middle; margin-left: 16px;}
+
+.formlisttable { }
+.formlisttable thead tr th {  }

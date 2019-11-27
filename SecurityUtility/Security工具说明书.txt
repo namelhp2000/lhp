@@ -1,0 +1,4 @@
+﻿ 1、Nuget     文件夹→包
+ Claims → IdentityModel
+ Microsoft.AspNetCore.Identity
+ Microsoft.Extensions.Identity.Core

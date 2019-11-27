@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "ShareDirList";
+}
+
+
+    <style type="text/css">
+        .querybar div i {
+            margin: 0 5px;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+    <form id="form1">
+        @Html.AntiForgeryToken()
+        <div class="querybar" style="height:26px;padding:8px 0 8px 6px;">
+            <div style="float:left;">
+                @Html.Raw(ViewBag.path)
+            </div>
+            <div style="float:right; margin-right:30px;">
+                <input type="text" class="mytext" placeholder="输入关键字搜索" style="width:150px; border-right:none 0;" id="searchword" name="searchword" /><input style="" type="button" value="搜索" class="mybutton" onclick="query();" />
+            </div>
+        </div>
+        <table id="listtable"></table>
+    </form>
+    <script type="text/javascript">
+        var appid = "";
+        var isSelect = "1" === "";
+        var colNames = ['名称', '', '修改日期', '类型', '大小']
+        var colModel = [
+            { name: 'Name', index: 'Name', width: 330 },
+            { name: 'Name1', index: 'Name1' },
+            { name: 'Date', index: 'Date', width: 140 },
+            { name: 'Type', index: 'Type', width: 90 },
+            { name: 'Size', index: 'Size', width: 100 }
+        ];
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "QueryShareDirList"+"@Html.Raw(ViewBag.queryString)",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(), "appid": appid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: colNames,
+                colModel: colModel,
+                sortname: "Type",
+                sortorder: "ASC",
+                height: $(window).height() - 80,
+                multiselect: false,
+                width: $(window).width(),
+                rowNum: -1,
+                loadComplete: function () {
+                    var grid = $("#listtable");
+                    grid.setGridParam().hideCol("Name1");
+                    grid.setGridWidth($(window).width());
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+           
+        });
+
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                searchword: $("#searchword").val(), appid: appid
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+    </script>
+

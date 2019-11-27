@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Submit";
+  
+}
+@model List<RoadFlow.Model.VoteItem>
+@using RoadFlow.Utility
+<form method="post" id="form1">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="VoteId" value="@ViewBag.vote.Id" />
+    <div class="toolbar" id="toolbardiv" style="margin:0 auto; border-top:none 0; position:fixed; top:0; left:0; right:0; z-index:999; width:100%;">
+        <div style="padding-left:6px;">
+            <input type="button" class="mybutton" value="待提交列表" onclick="return1(this);" />
+            <input type="button" class="mybutton" value="确定提交" onclick="submit1(this);" style="margin-left:6px;" />
+        </div>
+    </div>
+    <div style="height:42px;"></div>
+    <div style="font-size:16px; font-weight:bold; width:98%; margin:5px auto; text-align:center;">
+        @Html.Raw(ViewBag.vote.Topic)
+        @if (ViewBag.vote.Anonymous == 1)
+        {
+            <label style="margin-left:8px;font-weight:bold; color:red;">(匿名提交)</label>
+        }
+    </div>
+    <div style="width:98%; margin:0 auto; text-align:center; color:#666;">
+        <label>发起人：@(new RoadFlow.Business.User().GetName(ViewBag.vote.CreateUserId)) </label>
+        <label style="margin-left:8px;">发起时间：@ViewBag.vote.CreateTime</label>
+        <label style="margin-left:8px;">结束时间：@ViewBag.EndTime</label>
+        @if(ViewBag.Note==1)
+        {
+            <label style="margin-left:8px;">说明：@Html.Raw(ViewBag.vote.Note)</label>
+        }
+    </div>
+    <div style="width:98%; margin:0 auto;">
+        @if (Model.Count > 0)
+        {
+            var i = 1;
+            @foreach (var model1 in Model.OrderBy(s => s.Sort).ToList<RoadFlow.Model.VoteItem>())
+            {
+                <input type="hidden" name="VoteItemId" value="@model1.Id" />
+                <div>@i . @model1.ItemTitle</div>
+                @foreach (var item in ((List<RoadFlow.Model.VoteItemOption>)ViewBag.voteItemOptions).Where(s => s.ItemId == model1.Id).OrderBy(x => x.Sort).ToList<RoadFlow.Model.VoteItemOption>())
+                {
+    <div style="margin:3px 0;">
+        @if (model1.SelectModel == 0)
+        {
+            <input type="hidden" value="@item.Id" name="item_@item.ItemId" />
+        }
+        else if (model1.SelectModel == 1)
+        {
+            <input type="radio" value="@item.Id" validate="radio" errmsg="@model1.ItemTitle 必须选择一项!" style="vertical-align:middle;" id="item_@item.Id" name="item_@item.ItemId" />
+        }
+        else if (model1.SelectModel == 2)
+        {
+            <input type="checkbox" value="@item.Id" validate="checkbox" errmsg="@model1.ItemTitle 至少选择一项!" style="vertical-align:middle;" id="item_@item.Id" name="item_@item.ItemId" />
+        }
+        <label style="vertical-align:middle;" for="item_@item.Id">@Html.Raw(item.OptionTitle)</label>
+
+        @if (model1.SelectModel == 0)
+        {
+            if (item.IsInput == 1)
+            {
+                <div><input type="text" maxlength="2000" class="mytext" validate=empty errmsg="@model1.ItemTitle 不能为空!" name="text_@item.Id" style="vertical-align:middle;margin-top:5px;margin-left:5px; @item.InputStyle" /></div>
+            }
+            else if (item.IsInput == 2)
+            {
+                <div><textarea maxlength="2000" class="mytextarea" validate=empty errmsg="@model1.ItemTitle 不能为空!" name="text_@item.Id" style="vertical-align:middle;margin-top:5px;margin-left:5px; @item.InputStyle"></textarea></div>
+            }
+        }
+        else
+        {
+            if (item.IsInput == 1)
+            {
+                <div><input type="text" maxlength="2000" class="mytext"  errmsg="@model1.ItemTitle 不能为空!" name="text_@item.Id" style="vertical-align:middle;margin-top:5px;margin-left:5px; @item.InputStyle" /></div>
+            }
+            else if (item.IsInput == 2)
+            {
+                <div><textarea maxlength="2000" class="mytextarea"  errmsg="@model1.ItemTitle 不能为空!" name="text_@item.Id" style="vertical-align:middle;margin-top:5px;margin-left:5px; @item.InputStyle"></textarea></div>
+            }
+        }
+       
+    </div>
+                }
+                i++;
+                <div style="border-top:1px dashed #e8e8e8; height:1px; margin:5px auto 10px auto;"></div>
+            }
+
+        }
+
+
+    </div>
+</form>
+<script type="text/javascript">
+    var isFromList = "1" === "@ViewBag.isfromlist";//是否是从待提交列表点过来的
+    function submit1(id, but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f, 0)) {
+            if (!confirm('您确定要提交吗?')) {
+                return;
+            }
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SubmitSave", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    if (isFromList) {
+                        return1();
+                    } else {
+                        top.mainTab.closeTab();
+                    }
+                }
+            });
+        }
+    }
+    function return1(but) {
+        window.location = 'WaitSubmit?@Html.Raw(ViewBag.query)';
+    }
+</script>
+
+

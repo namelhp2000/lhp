@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <table cellpadding="0" cellspacing="1" border="0" width="99%" align="center">
+            <tr>
+                <td align="left" height="35">
+                    名称：<input type="text" class="mytext" style="width:220px;" id="form_name" value="" name="form_name" />
+                    <input type="button" class="mybutton" onclick="query(null, 1);" value=" 查 询 " />
+                    <input type="button" class="mybutton" onclick="newform();" value="新建表单" />
+                    <input type="button" class="mybutton" onclick="delform(this);" value="删除所选" />
+                    <input type="button" class="mybutton" onclick="exportForm();" value="导出表单" />
+                    <input type="button" class="mybutton" onclick="importForm();" value="导入表单" />
+                </td>
+            </tr>
+        </table>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+    var appid = '@ViewBag.appId';
+    var iframeid = '@ViewBag.iframeId';
+    var typeid = '@ViewBag.typeid';
+    var currentSize, currnetNumber;
+    $(function ()
+    {
+        $("#listtable").jqGrid({
+            url: "QueryList?@Html.Raw(ViewBag.query)",
+            postData: {
+                appid: appid,
+                typeid: typeid
+            },
+            mtype: 'post',
+            datatype: "json",
+            colNames: ['表单名称', '创建人', '创建时间', '修改时间', '操作'],
+            colModel: [
+                { name: 'Name', index: 'Name', width: 310 },
+                { name: 'CreateUserName', index: 'CreateUserName', width: 90 },
+                { name: 'CreateTime', index: 'CreateDate', width: 90 },
+                { name: 'LastModifyTime', index: 'EditDate', width: 90 },
+                { name: 'Edit', index: '', sortable: false, title: false, width: 70 }
+            ],
+            multiselect: true,
+            sortname: "CreateDate",
+            sortorder: "ASC",
+            height: '100%',
+            width: $(window).width(),
+            loadComplete: function ()
+            {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                currentSize = records.pagesize;
+                currnetNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                //鼠标移动背景颜色变化
+                $("#listtable tr").mouseenter(function () {
+                    $(this).css("background", "lightblue");
+                });
+                $("#listtable tr").mouseleave(function () {
+                    $(this).css("background", "white");
+                });
+            }
+        });
+          
+    });
+    $(window).resize(function ()
+    {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number)
+    {
+        var data = {
+            form_name: $("#form_name").val(), appid: appid, typeid: typeid,
+            pagesize: size || currentSize, pagenumber: number || currnetNumber
+        };
+        $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+    function openform(id, formname)
+    {
+        top.openApp("/RoadFlowCore/FormDesigner/Index1?formid=" + id + "&@Html.Raw(ViewBag.query)", 0, "编辑" + formname + "表单", id);
+    }
+    function newform()
+    {
+        top.openApp("/RoadFlowCore/FormDesigner/Index1?isnewform=1&@Html.Raw(ViewBag.query)", 0, "新建表单", RoadUI.Core.newid(false));
+    }
+    function delform()
+    {
+        rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0) {
+            alert("您没有选择要删除的表单!");
+            return false;
+        }
+        if (!confirm("您真的要删除该表单吗?"))
+        {
+            return false;
+        }
+        $.ajax({
+            url: "Delete?@Html.Raw(ViewBag.query)",
+            type: "post",
+            data: { "formid": rowIds.join(','), "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()},
+            async: false,
+            cache: false,
+            success: function (txt)
+            {
+                alert(txt);
+                query(currentSize, currnetNumber);
+            }
+        });
+    }
+    function exportForm(flowID)
+    {
+        rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0) {
+            alert("您没有选择要导出的表单!");
+            return false;
+        }
+        var url = "Export?formid=" + rowIds.join(',') + "&@Html.Raw(ViewBag.query)";
+        window.location = url;
+    }
+    function importForm()
+    {
+        var url = "Import?@Html.Raw(ViewBag.query)";
+        new RoadUI.Window().open({ title: "导入表单", width: 400, height: 200, url: url, opener: window, openerid: iframeid, resize: false });
+    }
+    </script>
+

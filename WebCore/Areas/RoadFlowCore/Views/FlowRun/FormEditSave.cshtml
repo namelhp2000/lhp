@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "FormEdit";
+}
+
+
+
+    <script type="text/javascript">
+        var issuccess = "1" == "@ViewBag.issuccess";
+        var msg = "@Html.Raw(ViewBag.msg)!";
+        var url = '@Html.Raw(ViewBag.url)';
+        var isrefresparent = "1" == "@ViewBag.isrefresparent";
+        var openmodel = "@ViewBag.rf_appopenmodel";
+        var isrefreshflow = "1" == "@ViewBag.isrefreshflow";//是否刷新流程主表单
+        var win = new RoadUI.Window();
+        alert(msg);
+        if (issuccess) {
+            if (isrefreshflow) {
+                if ("1" == openmodel || "2" == openmodel) {//弹出层刷新
+                    try {
+                        win.reloadOpener();
+                    } catch (e) {
+
+                    }
+                } else if ("3" == openmodel || "4" == openmodel || "5" == openmodel) { //弹出窗口刷新
+                    if (parent.opener) {
+                        try {
+                            parent.opener.location = parent.opener.location;
+                        } catch (e) {
+
+                        }
+                    }
+                }
+            }
+            else {
+                parent.location = url;
+                if (isrefresparent) {
+                    if ("1" == openmodel || "2" == openmodel) {//弹出层刷新
+                        try {
+                            win.reloadOpener(null, null, "query()");
+                        } catch (e) {
+                            win.reloadOpener();
+                        }
+                    } else if ("3" == openmodel || "4" == openmodel || "5" == openmodel) { //弹出窗口刷新
+                        if (parent.opener) {
+                            try {
+                                parent.opener.query();
+                            } catch (e) {
+                                parent.opener.location = parent.opener.location;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+

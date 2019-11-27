@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = "消息中心";
+}
+<body ontouchstart>
+
+    <div class="weui-cell weui-cell_swiped" id="swipe1">
+        <div class="weui-cell__bd">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>左滑列表</p>
+                </div>
+                <div class="weui-cell__ft">向左滑动试试</div>
+            </div>
+        </div>
+        <div class="weui-cell__ft">
+            <a class="weui-swiped-btn weui-swiped-btn_warn delete-swipeout" href="javascript:">标记为已读</a>
+        </div>
+    </div>
+    <script>
+        $('.weui-cell_swiped').swipeout()
+    </script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+</body>
+

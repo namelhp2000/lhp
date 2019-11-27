@@ -1,0 +1,79 @@
+﻿@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = "登录界面";
+}
+
+<link href="/RoadFlowResources/scripts/mobile/jquery-weiui/lib/weui.css" rel="stylesheet" />
+<link href="/RoadFlowResources/scripts/mobile/jquery-weiui/css/jquery-weui.css" rel="stylesheet" />
+<link href="/RoadFlowResources/scripts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="/RoadFlowResources/scripts/mobile/roadflowapp.css?ver=1.0" rel="stylesheet" />
+<script src="/RoadFlowResources/scripts/mobile/jquery-weiui/lib/jquery-2.1.4.js"></script>
+<script src="/RoadFlowResources/scripts/mobile/jquery-weiui/lib/fastclick.js"></script>
+<script src="/RoadFlowResources/scripts/mobile/jquery-weiui/js/jquery-weui.min.js"></script>
+
+<body ontouchstart>
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <div class="index_top">
+            <div class="index_header">
+                <img src="/RoadFlowResources/images/mobile/logo.png" width="65" height="65" id="UserHeadImg" style="vertical-align:middle;border-radius:65px;border:2px solid #f0efef;" />
+            </div>
+            <div class="index_info">
+                <div class="index_info_name">用户登录</div>
+                <div class="index_info_dept">RoadFlow工作流平台</div>
+            </div>
+        </div>
+        <div style="height:10px;"></div>
+        <div>
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">帐号</label></div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" id="account" type="text" placeholder="请输入帐号">
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" id="pass" type="password" placeholder="请输入密码">
+                    </div>
+                </div>
+
+            </div>
+            <div class="button-sp-area" style="width:50%; margin:30px auto 0 auto;">
+                <a href="javascript:;" onclick="userLogin();" class="weui-btn weui-btn_primary" style="background:#328ff7; color:#fff;">登录</a>
+            </div>
+        </div>
+    </form>
+    <script>
+        function userLogin() {
+            var account = $("#account").val();
+            var pass = $("#pass").val();
+            var requestVerificationToken = $("input[name='__RequestVerificationToken']").val();
+            if ($.trim(account).length == 0) {
+                alert("帐号不能为空");
+                return;
+            }
+            if ($.trim(pass).length == 0) {
+                alert("密码不能为空");
+                return;
+            }
+            $.ajax({
+                url: "/RoadFlowCore/Mobile/CheckLogin", type: "post", data: { "account": account, "pass": pass, "__RequestVerificationToken": requestVerificationToken }, async: false, success: function (txt) {
+                    if ("1" !== txt) {
+                        alert(txt);
+                    } else {
+                        window.location = "/RoadFlowCore/Mobile";
+                    }
+                }
+            });
+        };
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+
+</body>

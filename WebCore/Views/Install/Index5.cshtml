@@ -1,0 +1,100 @@
+﻿
+<link href="~/RoadFlowResources/install/images/install.css" rel="stylesheet" />
+<script src="~/RoadFlowResources/install/js/common.js"></script>
+
+<body class="bg-bgradualChange p-relative pd_70">
+    <form name="form1" method="post" id="form1">
+        @Html.AntiForgeryToken()
+        <div class="header bg-white">
+            <div class="page-width clearfix">
+                <div class="fl logoBox c-yellow fz-26 fw-bold lh-60">
+                    @ViewBag.ProductName &nbsp;&nbsp;安装向导
+                </div>
+                <div class="fr introText c-666 lh-40 fz-13 mt_20">
+                    当前安装版本：@ViewBag.ProductVersion &nbsp;&nbsp;
+
+                </div>
+            </div>
+        </div>
+        <div class="floor pp_15">
+            <div class="page-width">
+                <div class="installInfo c-white md_25 fz-13">
+                    <p class="lh-25">欢迎使用 @ViewBag.ProductName 安装向导;</p>
+                    <p class="lh-25">本向导即将安装软件到您的系统中，安装前仔细阅读一下协议，点击<font class="fz-16 c-yellow">同意</font>进入下一步</p>
+                </div>
+                <div class="installCon bg-white pd_70">
+                    <div class="stepBox pp_20 pd_20">
+                        <ul class="clearfix t-c">
+
+                            <li class="on">
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">1</span>
+                                <div class="c-474747 fw-bold fz-13">阅读许可协议</div>
+                                <em class="p-absolute bg-yellow line on"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">2</span>
+                                <div class="c-474747 fw-bold fz-13">检查安装环境</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">3</span>
+                                <div class="c-474747 fw-bold fz-13">创建数据库</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">4</span>
+                                <div class="c-474747 fw-bold fz-13">网站基本配置</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">5</span>
+                                <div class="c-474747 fw-bold fz-13">安装完成</div>
+                                <em class="p-absolute bg-ygradualChange line hide"></em>
+                            </li>
+
+                        </ul>
+                    </div>
+
+
+                    <div id="Step6">
+
+                        <div class="stepTips c-747474 t-c pd_10 pp_10 bg-gray lh-25 gray-borderColor borderWidth borderTop borderBottom">恭喜您，已全部安装完毕</div>
+                        <div class="stepOneCon pp_40 ml_40 mr_40 pd_70 t-c">
+                            <img src="~/RoadFlowResources/install/images/success.png" class="md_25" />
+                            <p class="t-c fz-16 c-747474 lh-30">@ViewBag.ProductName 产品安装成功！</p>
+                            <p class="t-c fz-16 c-747474 lh-30">为了您的网站安全，建议及时删除“<font class="c-yellow2">install</font>”安装目录</p>
+                        </div>
+                        <div class="c-7a7a7a t-c mp_20">
+                            @*<a href="../manage/login.aspx" class="c-7a7a7a">进入后台</a>&nbsp;&nbsp;|&nbsp;&nbsp;*@<a href="../" class="c-7a7a7a">登录网站</a>@*&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://www.kesion.com" target="_blank" class="c-7a7a7a">官方网站</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://bbs.kesion.com" class="c-7a7a7a" target="_blank">技术交流</a>*@
+                        </div>
+
+                    </div>
+                    <!--  步骤6 end    -->
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer pd_20 p-absolute">
+            <div class="page-width lh-25 c-white t-c fz-14">
+                <p>Powered By KESION Inc. WebUrl:<a href="http://www.kesion.com/" target="_blank" style="color:white;text-decoration:underline">www.kesion.com</a> </p>
+                <p>福建·科技软件有限公司 版权所有 © 2006-2019</p>
+            </div>
+        </div>
+        <div class="bg-img"></div>
+
+        <script>
+
+        </script>
+
+    </form>
+</body>
+

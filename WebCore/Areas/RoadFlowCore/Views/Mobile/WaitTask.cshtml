@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = "待办事项";
+}
+<body ontouchstart="" >
+    <div class="app_search">
+        <input class="app_search_input" id="search_title" style="width:180px;margin-right:4px;" placeholder="输入标题关键字查询"><button class="app_search_button" type="button" onclick="query(this);">查询</button>
+    </div>
+
+    <div class="weui-panel__hd" style="margin-top:40px;"><i class="fa fa-reorder"></i><span style="font-size:14px;">待办事项</span><span style="margin-left:4px;">(共<span id="tasktotal">13</span>项)</span></div>
+    <div id="waitdiv">
+    </div>
+
+    <div class="weui-loadmore" style="display: none;">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在加载</span>
+    </div>
+    <div class="weui-loadmore weui-loadmore_line" id="nodata" style="display: none;">
+        <span class="weui-loadmore__tips">没有更多数据了</span>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            //if (is_weixin()) {
+            loadData();
+            $(document.body).infinite().on("infinite", function () {
+                loadData();
+            });
+            //}
+            //else {
+              
+            //    alert("请在微信客户端打开链接");
+            //};
+        });
+
+        function is_weixin() {
+            var ua = navigator.userAgent.toLowerCase();
+            if (ua.match(/MicroMessenger/i) == "micromessenger") {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+
+
+        var pageNumber = 1;
+        var loading = false;//状态标记
+        function loadData() {
+            if (loading) return;
+            $(".weui-loadmore").show();
+            $("#nodata").hide();
+            loading = true;
+            $.ajax({
+                url: "../Api/Mobile/QueryWaitTask", async: true, type: "post", data: { "title": $("#search_title").val(), "pagenumber": pageNumber++ }, dataType: "json", success: function (json) {
+                    $("#tasktotal").html(json.total);
+                    if (!json || json.data.length == 0) {
+                        $(".weui-loadmore").hide();
+                        $("#nodata").show();
+                        $(document.body).destroyInfinite();
+                        return;
+                    }
+                    var html = '';
+                    for (var i = 0; i < json.data.length; i++) {
+                        var j = json.data[i];
+                        var address = "/RoadFlowCore/FlowRun/Index?ismobile=1&flowid=" + j["FlowId"]
+                            + "&stepid=" + j["StepId"] + "&instanceid=" + j["InstanceId"] + "&taskid=" + j["Id"] + "&groupid=" + j["GroupId"];
+                        html += '<a class="weui-cell weui-cell_access" href="' + address + '">';
+                        html += '<div class="weui-cell__bd">';
+                        html += '<p>' + j["Title"] + '</p><p class="list_date"><span style="margin-right:12px;">接收时间：' + j["ReceiveTime"] + '</span><span>发送人：' + j["SenderName"] + '</span></p>';
+                        html += '</div>';
+                        html += '<div class="weui-cell__ft">';
+                        html += '</div>';
+                        html += '</a>';
+                    }
+                    $("#waitdiv").append(html);
+                    $(".weui-loadmore").hide();
+                    if (json.hasnext == 0) {
+                        $("#nodata").show();
+                        $(document.body).destroyInfinite();
+                        return;
+                    }
+                    loading = false;
+                }
+            });
+        }
+        //点查询按钮
+        function query(but) {
+            pageNumber = 1;
+            loading = false;
+            $(but).prop("disabled", true);
+            $("#waitdiv").html("");
+            loadData();
+            $(but).prop("disabled", false);
+            $(document.body).infinite().on("infinite", function () {
+                loadData();
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+
+
+</body>

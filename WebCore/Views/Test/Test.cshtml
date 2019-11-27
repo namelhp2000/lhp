@@ -1,0 +1,141 @@
+﻿@*<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <link href="/RoadFlowResources/themes/blue/Style/style.css" id="style_style" rel="stylesheet" type="text/css" media="screen" />
+        <link href="/RoadFlowResources/themes/blue/Style/ui.css" id="style_ui" rel="stylesheet" type="text/css" media="screen" />
+        <link href="/RoadFlowResources/themes/blue/jqgrid/ui.jqgrid.css" rel="stylesheet" />
+        <link href="/RoadFlowResources/themes/blue/jqgrid/jquery-ui.css" rel="stylesheet" />
+        <link href="/RoadFlowResources/themes/common.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="/RoadFlowResources/scripts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+        <link href="/RoadFlowResources/Scripts/select2/select2.css" rel="stylesheet" />
+        <script type="text/javascript" src="/RoadFlowResources/scripts/My97DatePicker/WdatePicker.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/jquery-1.12.4.min.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/json.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.core.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.button.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.calendar.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.file.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.member.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.dict.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.menu.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.select.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.combox.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.tab.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.text.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.textarea.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.editor.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.tree.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.validate.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.window.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.dragsort.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.selectico.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.selectdiv.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.accordion.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.grid.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.treetable.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/select2/select2.full.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/jqGrid/grid.locale-cn.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/jqGrid/jquery.jqGrid.min.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/jqGrid/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/jquery.nicescroll.min.js"></script>
+        <script type="text/javascript" src="/RoadFlowResources/scripts/roadui/roadui.init.js"></script>
+    </head>
+    <body>
+
+
+
+    </body>
+    </html>*@
+
+<style type="text/css">
+            * {
+                margin: 0;
+                padding: 0;
+                font-size: 13px;
+                list-style: none;
+            }
+
+            .menu {
+                width: 210px;
+                margin: 50px auto;
+                border: 1px solid #ccc;
+            }
+
+                .menu p {
+                    height: 25px;
+                    line-height: 25px;
+                    font-weight: bold;
+                    background: #eee;
+                    border-bottom: 1px solid #ccc;
+                    cursor: pointer;
+                    padding-left: 5px;
+                }
+
+                .menu div ul {
+                    display: none;
+                }
+
+                .menu li {
+                    height: 24px;
+                    line-height: 24px;
+                    padding-left: 5px;
+                }
+        </style>
+        <script type="text/javascript">
+            window.onload = function () {
+
+                // 将所有点击的标题和要显示隐藏的列表取出来
+                var ps = document.getElementsByTagName("p");
+                var uls = document.getElementsByTagName("ul");
+
+                // 遍历所有要点击的标题且给它们添加索引及绑定事件
+                for (var i = 0, n = ps.length; i < n; i += 1) {
+
+                    ps[i].id = i;
+                    ps[i].onclick = function () {
+                        for (var j = 0; j < n; j += 1) {
+                            uls[j].style.display = "none";
+                        }
+                        uls[this.id].style.display = "block";
+                    }
+                    // 获取点击的标题上的索引属性，根据该索引找到对应的列表
+                }
+                // 判断该列表，如果是显示的则将其隐藏，如果是隐藏的则将其显示出来
+            }
+        </script>
+    <
+
+        <div class="menu" id="menu">
+            <div>
+                <p>Web前端</p>
+                <ul style="display:block">
+                    <li>JavaScript</li>
+                    <li>DIV+CSS</li>
+                    <li>jQuery</li>
+                </ul>
+            </div>
+            <div>
+                <p>后台脚本</p>
+                <ul>
+                    <li>PHP</li>
+                    <li>ASP.net</li>
+                    <li>JSP</li>
+                </ul>
+            </div>
+            <div>
+                <p>前端框架</p>
+                <ul>
+                    <li>Extjs</li>
+                    <li>Esspress</li>
+                    <li>YUI</li>
+                </ul>
+            </div>
+        </div>
+
+
+

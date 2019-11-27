@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "MoveTo";
+   
+}
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+    <table class="formtable" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:10px;">
+        <tr>
+            <td style="padding-left:5px;">选择要移动到的目录：</td>
+        </tr>
+        <tr>
+            <td style="padding-left:5px; padding-top:10px;">
+                <input type="hidden" id="movetodir" name="movetodir" value="" />
+                <div id="tree" style=" padding:0 0 0 8px; height:270px; width:378px; border:1px solid #ccc;"></div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:center; padding-top:10px;">
+                <input type="button" class="mybutton" value="确定移动" onclick="moveto(this);" />
+                <input type="button" class="mybutton" value="关闭窗口" onclick="new RoadUI.Window().close();" />
+            </td>
+        </tr>
+    </table>
+</form>
+<script type="text/javascript">
+    var roadTree = null;
+    $(function () {
+        roadTree = new RoadUI.Tree({ id: "tree", path: "Tree1", refreshpath: "TreeRefresh", onclick: openUrl });
+    });
+    function openUrl(json) {
+        $("#movetodir").val(json.id);
+    }
+    function moveto(but) {
+        var movetodir = $("#movetodir").val();
+        if (movetodir.length == 0) {
+            alert("您没有选择要移动到的目录!");
+            return;
+        }
+        var f = document.forms[0];
+
+        var o = RoadUI.Core.serializeForm($(f));
+        $(but).prop("disabled", true);
+        $.ajax({
+            url: "MoveToSave"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                if (RoadUI.Core.checkLogin(text, false)) {
+                    alert('1' == text ? "移动成功!" : text);
+                }
+                $(but).prop("disabled", false);
+                if ('1' == text) {
+                    parent.location = parent.location;
+                    new RoadUI.Window().close();
+                }
+            }
+        });
+    }
+</script>
+
+

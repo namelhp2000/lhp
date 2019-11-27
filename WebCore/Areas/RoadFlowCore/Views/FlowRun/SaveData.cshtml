@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "SaveData";
+}
+
+
+    <script type="text/javascript">
+        var instanceId = "@ViewBag.instanceId";
+        var errMsg = "@ViewBag.errMsg";
+        var opation = "@ViewBag.opation";
+        RoadUI.Core.closeWait();
+        new RoadUI.Window().close();
+        if (errMsg) {
+            alert(errMsg);
+        }
+        else {
+            $('#form_instanceid', parent.document).val(instanceId);
+            if (opation == "flowSend") {
+                parent.flowSend(true);
+            }
+            else if (opation == "flowFreedomSend") {
+                parent.flowFreedomSend(true);
+            }
+           
+        }
+    </script>
+
+

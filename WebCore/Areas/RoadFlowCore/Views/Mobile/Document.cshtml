@@ -1,0 +1,134 @@
+﻿
+@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = "文档中心";
+}
+@model List<ValueTuple<string,System.Data.DataTable>>
+
+
+
+<body ontouchstart="">
+    <div class="app_search">
+        <input class="app_search_input" id="search_title" style="width:180px;margin-right:4px;" placeholder="输入标题关键字查询"><button class="app_search_button" type="button" onclick="query(this);">查询</button>
+    </div>
+    <div style="height:40px;"></div>
+    <div class="bd" id="doclist">
+        <div class="page__bd">
+            @if (Model.Count > 0)
+            {
+                foreach (ValueTuple<string, System.Data.DataTable> dt in Model)
+                {
+                    if (dt.Item1 == "未读文档")
+                    {
+            <div class="weui-cells__title">
+                <div style="float:left;"><i class="fa fa-reorder"></i>@dt.Item1</div>
+                <div style="float:right; cursor:pointer;"><i style="margin-right:3px; font-size:16px;" class="fa fa-angle-double-right"></i>查看更多</div>
+            </div>
+                    }
+                    else
+                    {
+            <div class="weui-cells__title">
+                <div style="float:left;"><i class="fa fa-reorder"></i>@dt.Item1</div>
+                <div style="float:right; cursor:pointer;" onclick="window.location='DocumentDir?dirid=@dt.Item2.Rows[0]["DirId"]';"><i style="margin-right:3px; font-size:16px;" class="fa fa-angle-double-right"></i>查看更多</div>
+            </div>
+                    }
+            <div style="clear:both;"></div>
+            <div class="weui-cells">
+                @foreach (System.Data.DataRow dr in dt.Item2.Rows)
+                        {
+                <a class="weui-cell weui-cell_access" href="DocumentShow?docid=@dr["Id"]">
+                    <div class="weui-cell__bd">
+                        <p>@dr["Title"]</p>
+                        <p class="list_date"><span style="margin-right:12px;">发布时间：@dr["WriteTime"]</span><span>发布人：@dr["WriteUserName"]</span></p>
+                    </div>
+                </a>
+                        }
+            </div>
+
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+    <div class="weui-panel__hd" id="searchresult" style="display:none;"><i class="fa fa-reorder"></i><span style="font-size:14px;" id="dirname"></span><span style="margin-left:4px;">(共<span id="doctotal"></span>篇)</span></div>
+    <div id="waitdiv"></div>
+    <script type="text/javascript">
+        var pageNumber = 1;
+        var loading = false;//状态标记
+        function loadData() {
+            if (loading) return;
+            $(".weui-loadmore").show();
+            $("#nodata").hide();
+            loading = true;
+            $.ajax({
+                url: "../Api/Mobile/QueryDocument", async: true, type: "post", data: { "title": $("#search_title").val(), "pagenumber": pageNumber++, "dirid": "" }, dataType: "json", success: function (json) {
+                    $("#dirname").html("搜索结果");
+                    $("#doctotal").html(json.total);
+                    if (!json || json.data.length == 0) {
+                        $(".weui-loadmore").hide();
+                        $("#nodata").show();
+                        $(document.body).destroyInfinite();
+                        return;
+                    }
+                    var html = '';
+                    for (var i = 0; i < json.data.length; i++) {
+                        var j = json.data[i];
+                        var address = "DocumentShow?docid=" + j["id"];
+                        html += '<a class="weui-cell weui-cell_access" href="' + address + '">';
+                        html += '<div class="weui-cell__bd">';
+                        html += '<p>' + j["title"] + '<p class="list_date"><span style="margin-right:12px;">发布时间：' + j["writeTime"] + '</span><span>发布人：' + j["userName"] + '</span></p>';
+                        html += '</div>';
+                        //html += '<div class="weui-cell__ft">';
+                        //html += '</div>';
+                        html += '</a>';
+                    }
+                    $("#waitdiv").append(html);
+                    $("#searchresult").show();
+                    $(".weui-loadmore").hide();
+                    if (json.hasnext == 0) {
+                        $("#nodata").show();
+                        $(document.body).destroyInfinite();
+                        return;
+                    }
+                    loading = false;
+                }
+            });
+        }
+        //点查询按钮
+        function query(but) {
+            if ($.trim($("#search_title").val()).length == 0) {
+                //alert('请输入查询关键字');
+                //return;
+            }
+            pageNumber = 1;
+            loading = false;
+            $(but).prop("disabled", true);
+            $("#doclist").html("");
+            $("#waitdiv").html("");
+            loadData();
+            $(but).prop("disabled", false);
+            $(document.body).infinite().on("infinite", function () {
+                loadData();
+            });
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+
+
+</body>

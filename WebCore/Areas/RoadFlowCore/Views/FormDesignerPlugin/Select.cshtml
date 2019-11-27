@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = "Select";
+}
+    <table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable">
+        <tr>
+            <th style="width:80px;">绑定字段：</th>
+            <td><select class="myselect2" id="bindfiled" style="width:290px"></select></td>
+        </tr>
+        <tr>
+            <th>默认值：</th>
+            <td>
+                <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+                <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:50px; margin-right:6px;"></textarea></div>
+            </td>
+        </tr>
+        <tr>
+            <th>宽度：</th>
+            <td>
+                <input type="text" class="mytext" id="width" value="" style="width:80px;" />
+                <label id="emptytitlelabel">背景文字：<input type="text" class="mytext" id="emptytitle" value="" style="width:100px;" /></label>
+                <input type="checkbox" name="hasselect2" id="hasselect2" value="1" style="vertical-align:middle; margin-left:6px;" />
+                <label style="vertical-align:middle;" for="hasselect2">可搜索(Select2)</label>
+                <input type="checkbox" name="hasmultiple" id="hasmultiple" value="1" style="vertical-align:middle; margin-left:6px;" />
+                <label style="vertical-align:middle;" for="hasmultiple">多选</label>
+
+               
+            </td>
+        </tr>
+        <tr>
+            <th>空选项标题：</th>
+            <td>
+                <input type="text" class="mytext" id="emptytitle" value="" style="width:80px;" />
+                <input type="checkbox" name="hasempty" id="hasempty" value="1" style="vertical-align:middle; margin-left:6px;" />
+                <label style="vertical-align:middle;" for="hasempty">添加空选项</label>
+            </td>
+        </tr>
+        <tr>
+            <th>数据源：</th>
+            <td><span id="datasourcespan"></span></td>
+        </tr>
+        <tr id="ds_dict">
+            <th>字典项：</th>
+            <td>
+                <input type="text" class="mydict" id="ds_dict_value_select" opener="parent" name="ds_dict_value_select" more="0" value="" />
+                <input type="checkbox" style="vertical-align:middle; margin-left:15px;" id="ds_dict_ischild" value="1" /><label style="vertical-align:middle;" for="ds_dict_ischild">加载下级</label>
+                <span style="margin-left:15px;">值字段：</span><select class="myselect" id="ds_dict_valuefield">
+                    <option value="id">ID</option>
+                    <option value="code">唯一代码</option>
+                    <option value="value">值</option>
+                    <option value="title">标题</option>
+                    <option value="note">备注</option>
+                    <option value="other">其他</option>
+                </select>
+            </td>
+        </tr>
+        <tr id="ds_custom" style="display:none;">
+            <th>字符串选项：</th>
+            <td>
+                <div style="margin:0 auto; padding:0 5px;">
+                    <div style="height:25px; padding:2px 0; color: #666;">格式：选项文本1,选项值1;选项文本2,选项值2</div>
+                    <textarea class="mytextarea" id="ds_custom_string" style="height:100px; width:99%;"></textarea>
+                </div>
+            </td>
+        </tr>
+        <tr id="ds_sql" style="display:none;">
+            <th>SQL语句：</th>
+            <td>
+                <table border="0" style="width:100%;">
+                    <tr>
+                        <td colspan="2" style="padding-top:4px;">
+                            <div>
+                                数据连接：<select class="myselect" id="ds_sql_dbconn"></select>
+                                <input type="button" value="测试SQL" onclick="testSql($('#ds_sql_value').val(), $('#ds_sql_dbconn').val());" class="mybutton" />
+                            </div>
+                            <div style="margin-top:5px;"><textarea cols="1" rows="1" id="ds_sql_value" style="width:99%; height:65px; font-family:Verdana;" class="mytextarea"></textarea></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:80%">
+                            <div style="color: #666">1、SQL应返回两个字段的数据源 2、第一个字段为值，第二个字段为标题 3、如果只返回一个字段则值和标题一样</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr id="ds_url" style="display:none;">
+            <th>URL地址：</th>
+            <td><textarea class="mytextarea" id="ds_url_address" style="height:50px; width:99%;"></textarea></td>
+        </tr>
+        <tr>
+            <th>联动：</th>
+            <td>
+                字段：<select id="linkage_field" class="myselect" style="width:180px;"></select>
+                <span style="margin-left:8px;">
+                    选项来源：<input style="vertical-align:middle;" type="radio" onclick="$('#linkage_source_sql_link').show();" value="sql" id="linkage_source_sql" name="linkage_source" /><label style="vertical-align:middle;" for="linkage_source_sql">SQL</label>
+                    <input style="vertical-align:middle;" type="radio" value="url" id="linkage_source_url" onclick="$('#linkage_source_sql_link').hide();" name="linkage_source" /><label style="vertical-align:middle;" for="linkage_source_url">URL</label>
+                    <input style="vertical-align:middle;" type="radio" value="dict" id="linkage_source_dict" onclick="$('#linkage_source_sql_link').hide();" name="linkage_source" /><label style="vertical-align:middle;" for="linkage_source_dict">数据字典下级</label>
+                </span>
+                <div style="margin-top:6px; display:none;" id="linkage_source_sql_link">
+                    数据连接：<select class="myselect" id="linkage_source_sql_conn"></select>
+                    <input type="button" value="测试SQL" onclick="testSql($('#linkage_source_text').val(), $('#linkage_source_sql_conn').val());" class="mybutton" />
+                </div>
+                <div style="margin-top:6px;">
+                    <textarea class="mytextarea" id="linkage_source_text" style="height:62px; width:99%;"></textarea>
+                </div>
+            </td>
+        </tr>
+        @if (RoadFlow.Utility.Config.IsRemarks == "1")
+        {
+            <tr>
+                <th>说明：</th>
+                <td>
+                    1、 选项来源（sql)：select id,title from RF_Dictionary where parentid='{Form< value> }'，
+                    {Form< value>}通配符就是获取第一个select选择的值<br />
+                    2、选项来源（URL）：从URL中加载选项 <br />
+                    3、选项来源（数据字典下级）：加载当前数据字典选项的下级选项
+                </td>
+            </tr>
+        }
+
+    </table>
+<script type="text/javascript">
+    $(function () {
+
+    });
+    function dsChange (value) {
+        if (value == 0) {
+            $("#ds_dict").show();
+            $("#ds_custom").hide();
+            $("#ds_sql").hide();
+            $("#ds_url").hide();
+        }
+        else if (value == 1) {
+            $("#ds_dict").hide();
+            $("#ds_sql").hide();
+            $("#ds_url").hide();
+            $("#ds_custom").show();
+        }
+        else if (value == 2) {
+            $("#ds_dict").hide();
+            $("#ds_custom").hide();
+            $("#ds_url").hide();
+            $("#ds_sql").show();
+        }
+        else if (value == 3) {
+            $("#ds_dict").hide();
+            $("#ds_custom").hide();
+            $("#ds_url").show();
+            $("#ds_sql").hide();
+        }
+    }
+
+    function setValue() {
+        new RoadUI.Dict().setValue($("#ds_dict_value_select"));
+    }
+
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+
+    function testSql(sql, connId) {
+        parent.testSql(sql, connId);
+    }
+</script>

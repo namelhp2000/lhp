@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Label";
+}
+
+<table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:270px"></select></td>
+    </tr>
+    <tr>
+        <th>默认值：</th>
+        <td>
+            <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+            <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:50px; margin-right:6px;"></textarea></div>
+        </td>
+    </tr>
+    @*<tr>
+        <th>宽度：</th>
+        <td>
+            <input type="text" id="width" class="mytext" style="width:150px" />
+            &nbsp;&nbsp;对齐方式：<select class="myselect" id="align" style="width:100px;"><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select>
+        </td>
+    </tr>*@
+    <tr>
+        <th style="width:80px;">显示样式：</th>
+        <td><textarea class="mytextarea" style="width: 99%;height: 150px;" id="style"></textarea></td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<form method="post">
+    <div class="querybar">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+                <td>
+                    标题：<input type="text" class="mytext" id="Title1" name="Title1" style="width:200px" />
+                    发布时间：<input type="text" class="mycalendar" id="Date1" name="Date1" runat="server" style="width:80px" />
+                    至 <input type="text" class="mycalendar" id="Date2" name="Date2" runat="server" style="width:80px" />
+                    <input type="button" class="mybutton" onclick="query(null, 1);" value="&nbsp;查询&nbsp;" />
+                    @if ( ViewBag.isPublish=="1")
+                    {
+                        <input type="button" class="mybutton" onclick="window.location ='DocEdit?@Html.Raw(ViewBag.query)'" value="发布文档">
+                    }
+                    @if (ViewBag.isManage == "1")
+                    {
+                        <input type="button" class="mybutton" value="编辑栏目" onclick="window.location='DirEdit?@Html.Raw(ViewBag.query)&currentdirid=@ViewBag.dirId'">
+                        <input type="button" class="mybutton" value="添加子栏目" onclick="window.location='DirEdit?@Html.Raw(ViewBag.query)'">
+                    }
+
+                    </td>
+            </tr>
+        </table>
+    </div>
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+<script type="text/javascript">
+    var curPageSize, curPageNumber;
+    var dirid ="@ViewBag.dirId";
+    var isNoRead = '@ViewBag.isNoRead';
+    $(function () {
+        $("#listtable").jqGrid({
+            url: "Query?@Html.Raw(ViewBag.query)",
+            postData: {},
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['标题', '栏目', '发布人', '发布时间', '等级', '阅读次数'],
+            colModel: [
+                { name: 'Title', index: 'Title', width: 350 },
+                { name: 'DirName', index: 'DirName', align: "left", width: 110 },
+                { name: 'WriteUserName', index: 'WriteUserName', align: "left", width: 90 },
+                { name: 'WriteTime', index: 'WriteTime', align: "left", width: 110 },
+                { name: 'Rank', index: 'Rank', align: "left", width: 60 },
+                { name: 'ReadCount', index: 'ReadCount', align: "left", width: 40 }
+            ],
+            //rownumbers: true,//显示序号列
+            sortname: "DocRank,WriteTime",
+            sortorder: "DESC",
+            height: '100%',
+            width: $(window).width(),
+            loadComplete: function () {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                //如果是未读文档并且没有未读则转向文档列表
+                if ("1" == isNoRead && "00000000000000000000000000000000"!= dirid && records.total == 0) {
+                    window.location = 'List?@ViewBag.query';
+                }
+                curPageSize = records.pagesize;
+                curPageNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                //鼠标移动背景颜色变化
+                $("#listtable tr").mouseenter(function () {
+                    $(this).css("background", "lightblue");
+                });
+                $("#listtable tr").mouseleave(function () {
+                    $(this).css("background", "white");
+                });
+            }
+        });
+       
+    });
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number) {
+        var data = {
+            Title1: $("#Title1").val(),
+            Date1: $("#Date1").val(), Date2: $("#Date2").val(),
+            pagesize: size, pagenumber: number
+        };
+        $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+    function showDoc(id) {
+        window.location = 'Show?@Html.Raw(ViewBag.query)&docid=' + id + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber;
+    }
+    function checkdel() {
+        if ($(":checked[name='docbox']").size() == 0) {
+            alert('您没有选择要删除的文档!');
+            return false;
+        }
+        if (!confirm('您真的删除所选的文档吗?')) {
+            return false;
+        }
+    }
+</script>
+

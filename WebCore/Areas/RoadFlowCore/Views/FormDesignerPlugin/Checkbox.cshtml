@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Checkbox";
+}
+<table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:270px"></select></td>
+    </tr>
+    <tr>
+        <th>默认值：</th>
+        <td>
+            <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+            <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:50px; margin-right:6px;"></textarea></div>
+        </td>
+    </tr>
+    <tr>
+        <th>数据源：</th>
+        <td><span id="datasourcespan"></span></td>
+    </tr>
+    <tr id="ds_dict">
+        <th>字典项：</th>
+        <td>
+            <input type="text" class="mydict" opener="parent" style="width: 200px;" id="ds_dict_value_checkbox" more="0" value="" />
+            &nbsp;&nbsp;值字段：<select class="myselect" id="ds_dict_valuefield_checkbox">
+                <option value="id">Id</option>
+                <option value="code">唯一代码</option>
+                <option value="value">值</option>
+                <option value="title">标题</option>
+                <option value="note">备注</option>
+                <option value="other">其他</option>
+            </select>
+        </td>
+    </tr>
+</table>
+<table cellpadding="0" cellspacing="1" border="0" width="100%" id="ds_custom" style="display:none; margin-top:5px; margin:0 auto;" align="center">
+    <tr>
+        <td colspan="2">
+            <fieldset style="padding:5px; border:1px solid #ccc;">
+                <legend style=""> 自定义选项 </legend>
+                <div style="margin:0 auto; padding:0 5px;">
+                    <div style="height:25px; padding:5px 0; color: #666;">格式：选项文本1,选项值1;选项文本2,选项值2</div>
+                    <textarea class="mytextarea" id="ds_custom_string" style="height:142px; width:100%;"></textarea>
+                </div>
+            </fieldset>
+        </td>
+    </tr>
+</table>
+<table cellpadding="0" cellspacing="1" border="0" width="100%" id="ds_sql" style="display:none; margin-top:5px;" align="center">
+    <tr>
+        <td colspan="2">
+            <fieldset style="padding:3px; border:1px solid #ccc;">
+                <legend style=""> SQL语句 </legend>
+                <table border="0" style="width:100%;">
+                    <tr>
+                        <td style="width:80%;color: #666;">
+                            <div>1.SQL应返回两个字段的数据源 2.第一个字段为值，第二个字段为标题 3.如果只返回一个字段则值和标题一样</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-top:4px;">
+                            <div>
+                                数据连接：<select class="myselect" id="ds_sql_dbconn"></select>
+                                <input type="button" value="测试SQL" onclick="testSql($('#ds_sql_value').val(), $('#ds_sql_dbconn').val());" class="mybutton" />
+                            </div>
+                            <div style="margin-top:5px;"><textarea cols="1" rows="1" id="ds_sql_value" style="width:99%; height:125px; font-family:Verdana;" class="mytextarea"></textarea></div>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </td>
+    </tr>
+    <table cellpadding="0" cellspacing="1" border="0" width="100%" id="ds_url" style="display:none; margin-top:5px;" align="center">
+        <tr>
+            <td>
+                <fieldset style="padding:3px; border:1px solid #ccc;">
+                    <legend style=""> URL地址 </legend>
+                    <textarea class="mytextarea" id="ds_url_address" style="height:80px; width:99%;"></textarea>
+                </fieldset>
+            </td>
+        </tr>
+    </table>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+    function dsChange(value) {
+        if (value == 0) {
+            $("#ds_dict").show();
+            $("#ds_custom").hide();
+            $("#ds_sql").hide();
+            $("#ds_url").hide();
+        }
+        else if (value == 1) {
+            $("#ds_dict").hide();
+            $("#ds_sql").hide();
+            $("#ds_url").hide();
+            $("#ds_custom").show();
+        }
+        else if (value == 2) {
+            $("#ds_dict").hide();
+            $("#ds_custom").hide();
+            $("#ds_url").hide();
+            $("#ds_sql").show();
+        }
+        else if (value == 3) {
+            $("#ds_dict").hide();
+            $("#ds_custom").hide();
+            $("#ds_sql").hide();
+            $("#ds_url").show();
+        }
+    }
+    function setValue() {
+        new RoadUI.Dict().setValue($("#ds_dict_value_checkbox"));
+    }
+    function testSql(sql, connId) {
+        parent.testSql(sql, connId);
+    }
+</script>

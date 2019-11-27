@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Tree";
+}
+
+    <form action="" method="post">
+        <div style="margin-bottom:4px;">
+            <input type="text" class="mytext" runat="server" id="searchtext" style="width:151px;" />
+            <input type="button" class="mybutton" value=" 查 询 " style="margin-left:5px;" onclick="search();" />
+        </div>
+        <div style="margin-bottom:4px;">
+            <select onchange="treecng(this.value);" id="showtype" class="myselect" style="width:155px;">
+                <option value="0">组织架构</option>
+                <option value="1">工作组</option>
+            </select>
+            <input type="button" style="margin-left:5px;" class="mybutton" id="addWg" onclick="parent.frames[1].location='WorkGroup?showtype=1&appid=&tabid='" value="添加角色组" style="display:none;" />
+        </div>
+        <div id="menu"></div>
+    </form>
+    <script type="text/javascript">
+        var orgTree = null;
+        var AppID = '@ViewBag.appId';
+        $(function () {
+            treecng($("#showtype").val());
+        });
+        function treecng(val) {
+            if (!val) {
+                val = $("#showtype").val();
+            }
+            if ("1" == val) {
+                $("#addWg").show();
+                $("#addRole").hide();
+            }
+            else {
+                $("#addWg").hide();
+                $("#addRole").hide();
+            }
+            orgTree = new RoadUI.Tree({ id: "menu", path: "Tree1?showtype=" + val, refreshpath: "TreeRefresh?showtype=" + val, onclick: openurl });
+        }
+
+        function openurl(json) {
+            var query = "&orgparentid=" + json.parentID + "&type=" + json.type + "&showtype=" + $("#showtype").val() + "@Html.Raw(ViewBag.query)";
+            switch (parseInt(json.type)) {
+                case 1:
+                case 2:
+                case 3:
+                    parent.frames[1].location = "Body?orgid=" + json.id + query;
+                    break;
+                case 4:
+                case 6:
+                    parent.frames[1].location = "Users?userid=" + json.userID + query;
+                    break;
+                case 5:
+                    parent.frames[1].location = "WorkGroup?workgroupid=" + json.id + query;
+                    break;
+            }
+        }
+
+        function reLoad(id) {
+            orgTree.refresh(id);
+        }
+        function search() {
+            var value = $.trim($("#searchtext").val());
+            var val = $("#showtype").val();
+            orgTree = new RoadUI.Tree({ id: "menu", path: "Tree1?showtype=" + val + "&searchword=" + encodeURIComponent(value), refreshpath: "TreeRefresh?showtype=" + val, onclick: openurl });
+        }
+    </script>
+

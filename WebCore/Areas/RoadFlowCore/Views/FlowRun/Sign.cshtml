@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Sign";
+}
+
+    <form method="post">
+        <div style="text-align:center; padding-top:30px;">
+            <input type="password" class="mytext" style="width:140px;" id="pass" name="pass" validate="empty" />
+            <input type="button" class="mybutton" value="确&nbsp;定" name="save" onclick="checkform(this)" />
+            <span type="msg"></span>
+        </div>
+    </form>
+    <script type="text/javascript">
+    var frame = null;
+    var openerId = '@ViewBag.openerId';
+    var buttonId = '@ViewBag.buttonid';
+    var iframes = top.frames;
+        $(function () {
+        for (var i = 0; i < iframes.length; i++)
+        {
+            var fname = "";
+            try
+            {
+                fname = iframes[i].name;
+            }
+            catch (e)
+            {
+                fname = "";
+            }
+            if (fname == openerId + "_iframe")
+            {
+                frame = iframes[i];
+                break;
+            }
+        }
+        if (frame == null && top.roadflowCurrentWindow)
+        {
+            frame = top.roadflowCurrentWindow;
+        }
+        if (frame == null)
+        {
+            frame = parent;
+        }
+
+        });
+
+    function checkform(but)
+    {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f))
+        {
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SignCheck"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text)
+                {
+                    $(but).prop("disabled", false);
+                    if ("1" == text)
+                    {
+                        if (frame != null)
+                        {
+                            if (buttonId.length == 0) {
+                                $("#issign", frame.document).val("1");
+                                $("#signbutton", frame.document).hide();
+                                $("#signimg", frame.document).show();
+                            } else {
+                               frame.signature(buttonId, true);
+                              
+                            }
+                            new RoadUI.Window().close();
+                        }
+                    } else
+                    {
+                        alert(text);
+                    }
+                }
+            });
+        }
+    }
+    </script>
+
+

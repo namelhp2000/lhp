@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = "工作流平台";
+}
+@model System.Data.DataTable
+
+
+<link href="/RoadFlowResources/scripts/mobile/jquery-weiui/lib/weui.css" rel="stylesheet" />
+<link href="/RoadFlowResources/scripts/mobile/jquery-weiui/css/jquery-weui.css" rel="stylesheet" />
+<link href="/RoadFlowResources/scripts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="/RoadFlowResources/scripts/mobile/roadflowapp.css?ver=1.0" rel="stylesheet" />
+<script src="/RoadFlowResources/scripts/mobile/jquery-weiui/lib/jquery-2.1.4.js"></script>
+<script src="/RoadFlowResources/scripts/mobile/jquery-weiui/lib/fastclick.js"></script>
+<script src="/RoadFlowResources/scripts/mobile/jquery-weiui/js/jquery-weui.min.js"></script>
+
+<body ontouchstart>
+    <div class="index_top">
+        <div class="index_header">
+            <img src="@Html.Raw(ViewBag.headImage)" width="65" height="65" id="UserHeadImg" style="vertical-align:middle;border-radius:65px;border:2px solid #f0efef;" />
+        </div>
+        <div class="index_info">
+            <div class="index_info_name">@Html.Raw(ViewBag.UserName)</div>
+            <div class="index_info_dept">@Html.Raw(ViewBag.UserDept)</div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div class="index_grid">
+        <a href="/RoadFlowCore/Mobile/StartFlow">
+            <div class="index_grid_div">
+                <div class="index_grid_ico">
+                    <i class="fa fa-pencil"></i>
+                </div>
+                <div class="index_grid_title">发起流程</div>
+            </div>
+        </a>
+        <a href="/RoadFlowCore/Mobile/WaitTask">
+            <div class="index_grid_div">
+                <div class="index_grid_ico">
+                    <i class="fa fa-pencil-square-o"></i>
+                </div>
+                <div class="index_grid_title">待办事项</div>
+            </div>
+        </a>
+        <a href="/RoadFlowCore/Mobile/CompletedTask">
+            <div class="index_grid_div">
+                <div class="index_grid_ico">
+                    <i class="fa fa-check-square-o"></i>
+                </div>
+                <div class="index_grid_title">已办事项</div>
+            </div>
+        </a>
+        <a href="/RoadFlowCore/Mobile/Document">
+            <div class="index_grid_div">
+                <div class="index_grid_ico">
+                    <i class="fa fa-file-word-o"></i>
+                </div>
+                <div class="index_grid_title">文档中心</div>
+            </div>
+        </a>
+    </div>
+    <div style="clear:both;"></div>
+    <div class="index_wait">
+        <div class="weui-panel__hd">
+            <a href="/RoadFlowCore/Mobile/WaitTask">
+                <span style="font-size:14px;color:#000;">待办事项</span>
+                <span style="margin-left:4px;">(共 @Html.Raw(ViewBag.waitTaskCount)项)</span>
+            </a>
+        </div>
+        <div id="waitdiv">
+            @foreach (System.Data.DataRow dr in ((System.Data.DataTable)ViewBag.waitTasks).Rows)
+            {
+            <a class="weui-cell weui-cell_access" href="/RoadFlowCore/FlowRun/Index?ismobile=1&flowid=@dr["FlowId"]&stepid=@dr["StepId"]&instanceid=@dr["InstanceId"]&taskid=@dr["Id"]&groupid=@dr["GroupId"]">
+                <div class="weui-cell__bd">
+                    <p style="font-size:14px;">@dr["Title"]</p>
+                </div>
+                <div class="weui-cell__ft"></div>
+            </a>
+            }
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+
+</body>
+

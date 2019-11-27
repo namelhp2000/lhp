@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = "发起流程";
+}
+<body ontouchstart="">
+
+    <div class="weui-loadmore" style="display: none;">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在加载</span>
+    </div>
+    <div id="flowsdiv">
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            loadFlow();
+        });
+        function loadFlow() {
+            $(".weui-loadmore").show();
+            $.ajax({
+                url: "../Api/Mobile/QueryStatrFlow", async: true, type: "post", data: { "UserId": "" }, dataType: "json", success: function (json) {
+                    html = '';
+                    for (i = 0; i < json.length; i++) {
+                        html += '<div class="startflow_type">' + json[i].type + '</div>';
+                        html += '<div class="weui-grids" style="margin-top:5px;">';
+                        for (j = 0; j < json[i].flows.length; j++) {
+                            flow = json[i].flows[j];
+                            html += '<a href="/RoadFlowCore/FlowRun/Index?flowid=' + flow.id + '&ismobile=1" class="weui-grid js_grid">';
+                            html += '<div class="grid_icon" style="background:' + (flow.bgcolor || '#117eef') + ';margin-bottom:4px;">';
+                            if (flow.ico.indexOf("fa") == 0) {
+                                html += '<i class="fa ' + flow.ico + '" style="color:#fff;"></i>';
+                            }
+                            else {
+                                html += '<img src="' + flow.ico + '" alt="">';
+                            }
+                            html += '</div>';
+                            html += '<p class="weui-grid__label">';
+                            html += flow.name;
+                            html += '</p>';
+                        }
+                        html += '</a></div>';
+                    }
+                    $("#flowsdiv").html(html);
+                    $(".weui-loadmore").hide();
+                }
+            });
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+
+
+</body>

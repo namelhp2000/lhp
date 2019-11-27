@@ -1,0 +1,3 @@
+﻿ 1、Nuget     文件夹→包
+ Extensions→Exceptionless
+ NLog

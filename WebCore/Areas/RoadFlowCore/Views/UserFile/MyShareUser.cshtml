@@ -1,0 +1,17 @@
+﻿<table id="listtable"></table>
+<script type="text/javascript">
+    var rows = @Html.Raw(ViewBag.json);
+    $(function () {
+        $("#listtable").jqGrid({
+            datatype: "local",
+            colNames: ['姓名'],
+            colModel: [
+                { name: 'Name', index: 'Name' }
+            ],
+            height: $(window).height() - 80,
+            rowNum: rows.length,
+            width: $(window).width(),
+            data: rows
+        });
+    });
+</script>

@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "Set_Query_Edit";
+    var Set_Querys = "Set_Query" + Html.Raw(ViewBag.queryString);
+}
+@model RoadFlow.Model.ProgramQuery
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
+    <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable" style="margin-top:10px;">
+        <tr>
+            <th style="width: 80px;">字段：</th>
+            <td>
+                <select class="myselect2" name="Field" style="width: 350px;" validate="empty" dropdownheight="600px" id="Field">
+                    <option value=""></option>
+                    @Html.Raw(ViewBag.fieldOptions)
+                </select>
+                <input type="text" class="mytext" id="QueryField"  style="width:315px;"  name="QueryField" value="@Model.Field" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">显示标题：</th>
+            <td><textarea class="mytextarea" style="width:80%;height:60px;" name="ShowTitle" id="ShowTitle">@Html.Raw(Model.ShowTitle)</textarea></td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">控件名称：</th>
+            <td>
+                <input type="text" class="mytext" value="@Model.ControlName"  style="width:500px;" id="ControlName" name="ControlName" />
+                *不填则随机生成
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">匹配类型：</th>
+            <td>
+                <select class="myselect" id="Operators" name="Operators">
+                    @Html.Raw(ViewBag.operatorOptions)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">输入类型：</th>
+            <td>
+                <select class="myselect" id="InputType" name="InputType" onchange="inptyTypeChange(this.value);">
+                   @Html.Raw(ViewBag.controlTypeOptions)
+                </select>
+            </td>
+        </tr>
+        <tr id="ds_select" style="display:none;">
+            <th>数据来源：</th>
+            <td>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td style="text-align:left; height:40px;">
+                            <select id="DataSource" name="DataSource" class="myselect" onchange="dataSourceChange(this.value);">
+                                <option value=""></option>
+                               @Html.Raw(ViewBag.dataSourceOptions)
+                            </select>
+                            <span id="DataSource_String_SQL_Link" style="display:none; margin-left: 10px; vertical-align:middle;">
+                                数据连接：<select class="myselect" name="ConnId"><option value=""></option>@Html.Raw(ViewBag.dbconnOptions)</select>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left;">
+                            <span id="DataSource_String_Span" style="display:none;">
+                                <textarea class="mytextarea" id="DataSourceString" name="DataSourceString" style="width:99%;height:80px;">@Html.Raw(Model.DataSourceString)</textarea> <br />
+                                @if (RoadFlow.Utility.Config.IsRemarks == "1")
+                                {
+                                    <p>1、字符串格式：选项文本1,选项值1; 选项文本2,选项值2</p>
+                                    <p>2、SQL应返回两个字段的数据源 2.第一个字段为值，第二个字段为标题 3.如果只返回一个字段则值和标题一样</p>
+                                }
+                            </span>
+                            <span id="DataSource_Dict_Span" style="display:none;">
+                                <input type="text" class="mydict" id="DataSourceString_dict" name="DataSourceString_dict" value="@Model.DictValue" style="width:280px;" />
+                                <span style="margin-left:6px;vertical-align:middle;">值字段：</span>
+                                <input type="radio" checked="checked" style="vertical-align:middle;" value="0" id="DictValueField_0" name="DictValueField" /><label style="vertical-align:middle;" for="DictValueField_0">ID</label>
+                                <input type="radio" style="vertical-align:middle;" value="1" id="DictValueField_1" name="DictValueField" /><label style="vertical-align:middle;" for="DictValueField_1">标题</label>
+                                <input type="radio" style="vertical-align:middle;" value="2" id="DictValueField_2" name="DictValueField" /><label style="vertical-align:middle;" for="DictValueField_2">唯一代码</label>
+                                <input type="radio" style="vertical-align:middle;" value="3" id="DictValueField_3" name="DictValueField" /><label style="vertical-align:middle;" for="DictValueField_3">值</label>
+                                <input type="radio" style="vertical-align:middle;" value="4" id="DictValueField_4" name="DictValueField" /><label style="vertical-align:middle;" for="DictValueField_4">备注</label>
+                                <input type="radio" style="vertical-align:middle;" value="5" id="DictValueField_5" name="DictValueField" /><label style="vertical-align:middle;" for="DictValueField_5">其它</label>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr id="ds_organize" style="display:none;">
+            <th>数据来源：</th>
+            <td>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td style="text-align:left;">
+                            选择范围：<input type="text" class="mymember" id="DataSource_Organize_Range" name="DataSource_Organize_Range" style="width:180px;" />  <p></p>
+                            选择类型：
+                            <input type="checkbox" value="1" name="DataSource_Organize_Type_Unit" id="DataSource_Organize_Type_Unit" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="DataSource_Organize_Type_Unit">单位</label>
+                            <input type="checkbox" value="1" name="DataSource_Organize_Type_Dept" id="DataSource_Organize_Type_Dept" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="DataSource_Organize_Type_Dept">部门</label>
+                            <input type="checkbox" value="1" name="DataSource_Organize_Type_Station" id="DataSource_Organize_Type_Station" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="DataSource_Organize_Type_Station">岗位</label>
+                            <input type="checkbox" value="1" name="DataSource_Organize_Type_Role" id="DataSource_Organize_Type_Role" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="DataSource_Organize_Type_Role">工作组</label>
+                            <input type="checkbox" value="1" name="DataSource_Organize_Type_User" id="DataSource_Organize_Type_User" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="DataSource_Organize_Type_User">人员</label>
+                            <input type="checkbox" value="1" name="DataSource_Organize_Type_More" id="DataSource_Organize_Type_More" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="DataSource_Organize_Type_More">多选</label>
+                            <input type="checkbox" value="1" name="IsQueryUsers" id="IsQueryUsers" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="IsQueryUsers">查询时转换为人员ID</label>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr id="ds_dict" style="display:none;">
+            <th>数据来源：</th>
+            <td>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td style="text-align:left;"><input type="text" class="mydict" value="@Model.DictValue" id="DictValue" name="DictValue" style="width:280px;" /></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">显示样式：</th>
+            <td><input type="text" class="mytext" id="ShowStyle" value="@Model.ShowStyle" name="ShowStyle" style="width:80%;" /></td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">显示顺序：</th>
+            <td><input type="text" class="mytext" id="Sort" name="Sort" value="@Model.Sort" /></td>
+        </tr>
+    </table>
+    <div class="buttondiv">
+        <input type="button" value=" 保 存 " class="mybutton" onclick="save(this);" />
+        <input type="button" class="mybutton" onclick="window.location = '@Set_Querys';" value=" 返 回 " />
+    </div>
+</form>
+<script type="text/javascript">
+    $(function () {
+        inptyTypeChange($("#InputType").val());
+        dataSourceChange($("#DataSource").val());
+        if ("6" === "@Model.InputType") {
+            try {
+                var orgJSON = JSON.parse('@Html.Raw(Model.OrgAttribute)');
+                $("#DataSource_Organize_Range").val(orgJSON.range);
+                new RoadUI.Member().setValue($("#DataSource_Organize_Range"));
+                $("#DataSource_Organize_Type_Unit").prop("checked", "1" == orgJSON.unit);
+                $("#DataSource_Organize_Type_Dept").prop("checked", "1" == orgJSON.dept);
+                $("#DataSource_Organize_Type_Station").prop("checked", "1" == orgJSON.station);
+                $("#DataSource_Organize_Type_Role").prop("checked", "1" == orgJSON.role);
+                $("#DataSource_Organize_Type_User").prop("checked", "1" == orgJSON.user);
+                $("#DataSource_Organize_Type_More").prop("checked", "1" == orgJSON.more);
+                $("#IsQueryUsers").prop("checked", "1" == "@Model.IsQueryUsers");
+            } catch (e) { }
+         } else if ("5" === "@Model.InputType") {
+            $("input[name='DictValueField'][value='" + ('' || '@Model.OrgAttribute') + "']").prop("checked", true);
+        }
+    });
+
+    function inptyTypeChange(v) {
+        $("#ds_select").hide();
+        $("#ds_organize").hide();
+        $("#ds_dict").hide();
+        switch (v) {
+            case "5":
+                $("#ds_select").show();
+                dataSourceChange($(":checked[name='DataSource']").val());
+                break;
+            case "6":
+                $("#ds_organize").show();
+                break;
+            case "7":
+                $("#ds_dict").show();
+                break;
+        }
+    }
+    function dataSourceChange(v) {
+        $("#DataSource_String_SQL_Link").hide();
+        if ("0" === v) {
+            $("#DataSource_String_Span").show();
+            $("#DataSource_Dict_Span").hide();
+        }
+        else if ("2" === v) {
+            $("#DataSource_String_Span").show();
+            $("#DataSource_Dict_Span").hide();
+            $("#DataSource_String_SQL_Link").show();
+        }
+        else if ("1" === v) {
+            $("#DataSource_String_Span").hide();
+            $("#DataSource_Dict_Span").show();
+        }
+    }
+    function save(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            o.QueryField = $("#QueryField").val();
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SaveSet_Query"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    alert(text);
+                    $(but).prop("disabled", false);
+                    if (text.indexOf('成功') >= 0) {
+                        window.location = "Set_Query"+"@Html.Raw(ViewBag.queryString)";
+                    }
+                }
+            });
+        }
+    }
+</script>

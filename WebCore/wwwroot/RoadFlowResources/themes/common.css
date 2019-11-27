@@ -1,0 +1,45 @@
+.loginbgdiv { width:100%; height:680px; background:url(../images/login/bg2.png) no-repeat center;}
+.indexwelcome { margin-right:0px; background:url(../images/ico/member.gif) no-repeat left; padding-left:18px;}
+.loadmenu {background:url(../images/loading/load4.gif) no-repeat left; padding-left:18px;}
+fieldset { border-radius: 4px; border: 1px solid #cccccc; }
+
+/*首页样式*/
+.indexdiv { width: 100%; height: 100%; margin: 0; }
+
+/*首页上方统计信息样式*/
+.homemessage{-webkit-box-shadow:0 0 11px #fff;-moz-box-shadow:0 0 11px #fff;box-shadow:0 0 11px #fff;width:98%;margin:0 auto; overflow:hidden;}
+.homemessagediv { width: 150px; height: 80px; border-radius: 8px; float: left; margin:8px 25px 8px 0; -webkit-box-shadow: 0 0 6px #999; -moz-box-shadow: 0 0 6px #999; box-shadow: 0 0 6px #999; }
+.homemessagenumber { font-size:32px;  color:#fff; font-family:Arial; font-weight:lighter; padding-right:20px;height:55px;}
+.homemessagetext { text-align:center; width:150px; height:30px; line-height:25px; position:relative; }
+.homemessagetextbg { position:absolute;  left: 0; top: 0;z-index: 10; width:150px;height: 25px;  background-color:#000000;filter:Alpha(opacity=10);*background-color: rgba(0,0,0,0.1);opacity:0.1;border-radius:0 0 8px 8px;}
+.homemessagetextword { position: relative; z-index:11; font-size:14px;}
+/*首页上方统计信息样式*/
+
+.homelistdiv {-webkit-box-shadow:0 0 8px #e8e8e8;-moz-box-shadow:0 0 8px #e8e8e8;box-shadow:0 0 8px #e8e8e8; padding:8px 12px 8px 12px; border:1px solid #f2f2f2; border-radius:8px; margin-bottom:25px; }
+.hometable { width:100%;}
+.hometable thead tr th { text-align:left; height:28px; vertical-align:middle;}
+.hometable tbody tr td { text-align:left; height:32px; vertical-align:middle; border-bottom:1px dotted #e8e8e8;}
+
+a.homemsglink:link,a.homemsglink:visited,a.homemsglink:active {color:#ffffff; text-decoration:none;}
+a.homemsglink:hover {color:#ffffff; text-decoration:none; cursor:pointer;}
+
+.reporttable { margin: 0 auto; width: 100%; border-collapse: collapse; border: 1px solid #000000; }
+.reporttable thead tr th {height:28px; padding-left:3px;}
+.reporttable tbody tr td {height:28px; padding-left:3px;}
+
+/*去除input默认样式*/
+input[type="submit"], input[type="reset"], input[type="button"], button { -webkit-appearance: none; }
+input:focus, textarea:focus { outline: none; }
+input:focus { -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-user-modify: read-write-plaintext-only; }
+
+/*移动端处理流程按钮*/
+a.mobiletoolbarbuta:link, a.mobiletoolbarbuta:visited, a.mobiletoolbarbuta:active { color: #000; text-decoration: none; }
+a.mobiletoolbarbuta:hover { color: #000; text-decoration: none; cursor: pointer; }
+.mobiletoolbar { background: #f2f2f2; margin: 0 auto; border-top: none 0; position: fixed; top: 0; left: 0; right: 0; z-index: 999; width: 100%; }
+.mobiletoolbarbut { float: left; padding: 3px 10px 3px 10px; border-right: 1px solid #e2e1e1; border-bottom: 1px solid #e2e1e1; width: 50px; height: 38px; }
+.mobiletoolbarbuta p { padding: 1px 0; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mobiletoolbarbuta p i { font-size: 18px; color: #117eef; }
+
+/*已读未读标记*/
+.noread { background:#cf0202; color:#ffffff; padding:0 8px; display:inline-block; padding: 0px 6px; border-radius:10px; }
+.read { background: #e2e1e1; color: #666; padding: 0 8px; display: inline-block; padding: 0px 6px; border-radius: 10px; }

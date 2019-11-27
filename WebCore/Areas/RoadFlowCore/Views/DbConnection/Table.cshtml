@@ -1,0 +1,126 @@
+﻿
+@{
+    ViewBag.Title = "Table";
+}
+<form method="post" onsubmit="return new RoadUI.Validate().validateForm(this);">
+    @Html.AntiForgeryToken()
+    <div class="toolbar" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto; height:30px;">
+        名称：<input type="text" class="mytext" id="Name1" name="Name1" value="" style="width:300px" />
+        <a href="javascript:void(0);" onclick="loadData();"><span style="background:url(/RoadFlowResources/images/ico/zoom.png) no-repeat left center;">搜索表</span></a>
+        <span class="toolbarsplit">&nbsp;</span>
+        <a href="javascript:void(0);" onclick="queryTable('@ViewBag.dbconnID','');">
+            <span style="background:url(/RoadFlowResources/Images/ico/search.png) no-repeat left center;">新建查询</span>
+        </a>
+        <a href="javascript:void(0);" onclick="edit('@ViewBag.dbconnID','');">
+            <span style="background:url(/RoadFlowResources/images/ico/add.gif) no-repeat left center;">新建表</span>
+        </a>
+        <a href="javascript:void(0);" onclick="codegeneration('@ViewBag.dbconnID');">
+            <span style="background:url(/RoadFlowResources/images/ico/key.png) no-repeat left center;">生成代码</span>
+        </a>
+    </div>
+    <div style="margin-top:36px;">
+        <table id="listtable"></table>
+    </div>
+</form>
+<script type="text/javascript">
+        var query = "@Html.Raw(ViewBag.Query)";
+    var dbtype = "@ViewBag.DBType";
+
+    var dialog = top.mainDialog || new RoadUI.Window();
+     var appid = '@ViewBag.appId';
+    var iframeid = '@ViewBag.tabId';
+
+    var rows = @Html.Raw(ViewBag.list)
+        $(function ()
+        {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['名称', '类型', '操作'],
+                colModel: [
+                    { name: 'Name', index: 'Name', optionloadonce: true, sortable: true },
+                    { name: 'Type', index: 'Type', optionloadonce: true, sortable: true },
+                    { name: 'Opation', index: 'Opation', sortable: false, width: 50 },
+                ],
+                //multiselect: true,
+                rownumbers: true,
+                loadonce: true,
+                multiselect: true,
+                rowNum : rows.length,
+                height: $(window).height() - 80,
+                width: $(window).width()
+            });
+            loadData();
+            //鼠标移动背景颜色变化
+            $("#listtable tr").mouseenter(function () {
+                $(this).css("background", "lightblue");
+            });
+            $("#listtable tr").mouseleave(function () {
+                $(this).css("background", "white");
+            });
+        });
+        $(window).resize(function ()
+        {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function loadData()
+        {
+            var name = $.trim($("#Name1").val()).toLowerCase();
+            $("#listtable").jqGrid('clearGridData');
+            for (var i = 0; i < rows.length; i++)
+            {
+                if (name.length == 0 || rows[i].Name.toLowerCase().indexOf(name) >= 0)
+                {
+                    $("#listtable").jqGrid('addRowData', rows[i].Name, rows[i]);
+                }
+            }
+        }
+        function edit(connid, table)
+        {
+            var url = "";
+            switch(dbtype.toLowerCase())
+            {
+                case "sqlserver":
+                    url = 'TableEdit_SqlServer?dbconnid=' + connid + "&tablename=" + table + query;
+                    break;
+                case "oracle":
+                    url = 'TableEdit_Oracle?dbconnid=' + connid + "&tablename=" + table + query;
+                    break;
+                case "mysql":
+                    url = 'TableEdit_MySql?dbconnid=' + connid + "&tablename=" + table + query;
+                    break;
+            }
+            window.location = url;
+        }
+        function del(connid, table)
+        {
+            if (confirm('您真的要删除该表吗?'))
+            {
+                window.location = 'TableDelete?dbconnid=' + connid + "&tablename=" + table + query;
+            }
+        }
+        function queryTable(connid, table)
+        {
+           // top.open('TableQuery?dbconnid=' + connid + "&tablename=" + table + query,"")
+           window.location = 'TableQuery?dbconnid=' + connid + "&tablename=" + table + query;
+    }
+
+    function codegeneration(connid) {
+       var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length === 0) {
+            alert("您没有选择要生成的表!");
+            return false;
+        }
+       
+        dialog.open({
+            id: "window_" + appid.replaceAll('-', ''),
+            title: "代码生成",
+            width: 700,
+            height: 350,
+            url: 'FormGeneration?dbconnid=' + connid + '&tablename=' + rowIds + query,
+            opener: window,
+            openerid: iframeid
+        });
+    
+    }
+
+</script>

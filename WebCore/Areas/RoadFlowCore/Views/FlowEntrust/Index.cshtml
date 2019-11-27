@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Instance";
+}
+
+    <form method="post">
+       @Html.AntiForgeryToken()
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        @if (ViewBag.isOneSelf != "1")
+                        {
+                            <span>委托人：<input type="text" class="mymember" style="width:150px;" id="S_UserID" name="S_UserID" value="" /></span>
+                        }
+                        开始时间：<input type="text" class="mycalendar" style="width:100px;" id="S_StartTime" name="S_StartTime" />
+                        至 <input type="text" class="mycalendar" style="width:100px;" id="S_EndTime" name="S_EndTime" />
+                        <input type="button" onclick="query(null, 1);" name="Search" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                        <input type="button" onclick="add(); return false;" value="添加委托" class="mybutton" />
+                        <input type="button" onclick="return del();" value="删除所选" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var dialog = top.mainDialog || new RoadUI.Window();
+        var isOneSelf = "@ViewBag.isOneSelf" == "1";
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Query?@Html.Raw(ViewBag.query)",
+                postData: { appid: appid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['委托人', '被委托人', '委托流程', '委托时间', '开始时间', '结束时间', '备注说明', '状态', '编辑'],
+                colModel: [
+                    { name: 'UserID', index: 'UserID' },
+                    { name: 'ToUserID', index: 'ToUserID' },
+                    { name: 'FlowID', index: 'FlowID' },
+                    { name: 'WriteTime', index: 'WriteTime', width: 110 },
+                    { name: 'StartTime', index: 'StartTime', width: 110 },
+                    { name: 'EndTime', index: 'EndTime', width: 110 },
+                    { name: 'Note', index: 'Note', width: 110 },
+                    { name: 'Status', index: 'Status', sortable: false, width: 110 },
+                    { name: 'Opation', index: '', sortable: false, width: 100 }
+                ],
+                sortname: "WriteTime",
+                sortorder: "desc",
+                height: '100%',
+                width: $(window).width(),
+                multiselect: true,
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+           
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                UserID: $("#S_UserID").val(), Date1: $("#S_StartTime").val(),
+                Date2: $("#S_EndTime").val(), pagesize: size, pagenumber: number
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function add(id) {
+            dialog.open({
+                id: "window_" + appid.replaceAll('-', ''),
+                title: "添加委托",
+                width: 700,
+                height: 420,
+                url: 'Edit?entrustid=' + (id || "") + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber + '&@Html.Raw(ViewBag.query)',
+                opener: window,
+                openerid: iframeid
+            });
+        }
+
+        function checkAll(checked) {
+            $("input[name='checkbox_app']").prop("checked", checked);
+        }
+        function del() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的项!");
+                return false;
+            }
+            if (confirm('您真的要删除所选委托吗?')) {
+                $.ajax({
+                    url: "Delete?@Html.Raw(ViewBag.query)",
+                    type: "post",
+                    data: {
+                        "ids": rowIds.join(','),
+                        "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                    },
+                    success: function (txt) {
+                        alert(txt);
+                        query(curPageSize, curPageNumber);
+                    }
+                });
+            }
+        }
+    </script>
+

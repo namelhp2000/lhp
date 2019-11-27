@@ -1,0 +1,158 @@
+@{
+    ViewBag.Title = "TaskOptionsEdit";
+    var s = ViewBag.isAdd == "0" ? "readonly='readonly'" : "";
+}
+@model RoadFlow.Model.TaskOptions
+<form method="post">
+    @Html.AntiForgeryToken()
+    <br />
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="Status" value="@Model.Status" />
+    <table cellpadding="0" cellspacing="1" border="0" width="97%" class="formtable">
+
+        <tr>
+            <th style="width: 100px;"><span style="color:red">*</span>作业名称：</th>
+            <td>
+                <input type="text" name="TaskName" id="TaskName" class="mytext" @s validate="empty" errmsg="作业名称不能为空!" style="width:75%" value="@Model.TaskName" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;"><span style="color:red">*</span>分组：</th>
+            <td>
+                <input type="text" name="GroupName" id="GroupName" class="mytext" @s style="width:75%" validate="empty" errmsg="分组不能为空!" value="@Model.GroupName" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;"><span style="color:red">*</span>间隔：</th>
+            <td>
+                <input type="text" name="Interval" id="Interval" class="mytext" style="width:75%" validate="empty" errmsg="间隔不能为空!" value="@Model.Interval" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;"><span style="color:red">*</span>调用接口：</th>
+            <td>
+                <input type="text" name="ApiUrl" id="ApiUrl" class="mytext" style="width:75%" validate="empty" errmsg="调用接口不能为空!" value="@Model.ApiUrl" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">验证key：</th>
+            <td>
+                <input type="text" name="AuthKey" id="AuthKey" class="mytext" style="width:75%" value="@Model.AuthKey" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">验证值：</th>
+            <td>
+                <input type="text" name="AuthValue" id="AuthValue" class="mytext" style="width:75%" value="@Model.AuthValue" />
+            </td>
+        </tr>
+
+        <tr>
+            <th style="width: 100px;"><span style="color:red">*</span>请求类型：</th>
+            <td>
+                <select class="myselect" style="width:75%;" id="RequestType" name="RequestType" onchange="postdata_change(this.value);" validate="empty" errmsg="请求类型不能为空!">
+                    <option name="RequestType" value=""></option>
+                    <option name="RequestType" value="post">post</option>
+                    <option name="RequestType" value="get">get</option>
+                </select>
+
+            </td>
+        </tr>
+        <tr id="postdatas">
+            <th style="width: 100px;">Post数据：</th>
+            <td>
+                <textarea class="mytextarea" name="PostData" id="PostData" style="width:90%; height:50px;">@Model.PostData</textarea>
+              
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 100px;">描述说明：</th>
+            <td>
+                <textarea class="mytextarea" name="Describe" id="Describe" style="width:90%; height:90px;">@Model.Describe</textarea>
+            </td>
+        </tr>
+        @if (RoadFlow.Utility.Config.IsRemarks == "1")
+        {
+            <tr>
+                <th style="width: 80px;">说明：</th>
+                <td>
+                    1、设置间隔：  <br />
+                    每分钟一次：0 * * * * ?
+                    每小时一次：0 0 * * * ?
+                    每天一次：0 0 0 * * ?      <br />
+                    每月一次：0 0 0 1 * ?
+                    每周一次：0 0 0 0 0 1   <br />
+                    2、设置PostData数据的格式，例如：{systemcode: 'localhost',flowid: '3152F601-7CB2-46C9-A74B-9CF04EB5DDEC'}<br />
+
+
+                </td>
+            </tr>
+            }
+        </table>
+    <div class="buttondiv">
+        <a href="http://cron.qqe2.com/" target="_blank">cron在线生成</a>
+        <input type="button" value="确定保存" class="mybutton" onclick="saveform(this);" />
+        <input type="button" class="mybutton" value="取消关闭" style="margin-left: 5px;" onclick="new RoadUI.Window().close();" />
+    </div>
+</form>
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+
+    $(window).load(function () {
+        $("[name='RequestType'][value='@Model.RequestType']").prop("selected", "selected");
+        postdata_change($("#RequestType").val());
+
+
+
+    });
+
+
+
+    //设置postdata
+
+    function postdata_change(value) {
+
+      if ("post" === value ) {
+
+                $("#postdatas").show();
+            }
+            else {
+
+                $("#postdatas").hide();
+            }
+        }
+
+
+
+    function saveform(but)
+    {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f))
+        {
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                    url: "Save" + "@Html.Raw(ViewBag.queryString)",
+                    data: o,
+                    async:true,
+                    type: "post",
+                success: function (text) {
+
+                    if (text.status == true) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text.msg);
+                        }
+                        $(but).prop("disabled", false);
+                        win.reloadOpener(undefined, undefined, "query('@ViewBag.pageSize','@ViewBag.pageNumber')");
+                        win.close();
+                    }
+                    else {
+                        alert(text.msg);
+                          $(but).prop("disabled", false);
+                    }
+
+                }
+            });
+    }
+}
+</script>

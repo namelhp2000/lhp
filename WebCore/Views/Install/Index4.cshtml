@@ -1,0 +1,179 @@
+﻿<link href="~/RoadFlowResources/install/images/install.css" rel="stylesheet" />
+<script src="~/RoadFlowResources/install/js/common.js"></script>
+<body class="bg-bgradualChange p-relative pd_70">
+    <form name="form1" method="post" id="form1">
+        @Html.AntiForgeryToken()
+
+        <div class="header bg-white">
+            <div class="page-width clearfix">
+                <div class="fl logoBox c-yellow fz-26 fw-bold lh-60">
+                    @ViewBag.ProductName &nbsp;&nbsp;安装向导
+                </div>
+                <div class="fr introText c-666 lh-40 fz-13 mt_20">
+                    当前安装版本：@ViewBag.ProductVersion &nbsp;&nbsp;
+
+                </div>
+            </div>
+        </div>
+        <div class="floor pp_15">
+            <div class="page-width">
+                <div class="installInfo c-white md_25 fz-13">
+                    <p class="lh-25">欢迎使用 @ViewBag.ProductName 安装向导;</p>
+                    <p class="lh-25">本向导即将安装软件到您的系统中，安装前仔细阅读一下协议，点击<font class="fz-16 c-yellow">同意</font>进入下一步</p>
+                </div>
+                <div class="installCon bg-white pd_70">
+                    <div class="stepBox pp_20 pd_20">
+                        <ul class="clearfix t-c">
+
+                            <li class="on">
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">1</span>
+                                <div class="c-474747 fw-bold fz-13">阅读许可协议</div>
+                                <em class="p-absolute bg-yellow line on"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">2</span>
+                                <div class="c-474747 fw-bold fz-13">检查安装环境</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">3</span>
+                                <div class="c-474747 fw-bold fz-13">创建数据库</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">4</span>
+                                <div class="c-474747 fw-bold fz-13">网站基本配置</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">5</span>
+                                <div class="c-474747 fw-bold fz-13">选择网站风格</div>
+                                <em class="p-absolute bg-ygradualChange line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">6</span>
+                                <div class="c-474747 fw-bold fz-13">安装完成</div>
+                                <em class="p-absolute bg-eee line hide"></em>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <!--  步骤1  begin  -->
+                    <!--  步骤1 end    -->
+                    <!--  步骤2  begin  -->
+                    <!--  步骤2 end    -->
+                    <!--  步骤3  begin  -->
+                    <!--  步骤3 end    -->
+                    <!--  步骤4  begin  -->
+                    <!--  步骤4 end    -->
+                    <!--  步骤5  begin  -->
+                    <div id="Step5">
+
+                        <div id="Step5_1">
+
+                            <div class="stepTips c-747474 t-c pd_10 pp_10 bg-gray lh-25 gray-borderColor borderWidth borderTop borderBottom">选择您所需要安装的风格，点击“<font class="c-yellow2">下一步</font>”继续安装</div>
+                            <div class="stepOneCon pp_30 ml_40 mr_40 pd_40">
+                                <ul class="templateBox clearfix">
+
+
+
+                                    <li class="md_25">
+                                        <div class="template border">
+                                            <label class="show p-relative">
+                                                <img src="http://yun.kesion.com/UploadFiles/2018-12/78/W131899459411440.jpg" class="show">
+                                                <input name="skinid" type="radio" class="p-absolute" value="772">
+                                            </label>
+                                            <div class="c-858585 mp_10 lh-25 md_10 mr_10 ml_10 fz-14 ellipsis"><a href="http://yun.kesion.com/item/772" target="_blank" class="fr c-white ro_3 bg-yellow plr_10 fz-12">预览</a>v6.0单用户响应式红色风格</div>
+                                        </div>
+                                    </li>
+
+                                    <li class="md_25">
+                                        <div class="template border">
+                                            <label class="show p-relative">
+                                                <img src="http://yun.kesion.com/UploadFiles/2018-12/78/2131897813963769.jpg" class="show">
+                                                <input name="skinid" type="radio" class="p-absolute" value="770">
+                                            </label>
+                                            <div class="c-858585 mp_10 lh-25 md_10 mr_10 ml_10 fz-14 ellipsis"><a href="http://yun.kesion.com/item/770" target="_blank" class="fr c-white ro_3 bg-yellow plr_10 fz-12">预览</a>v6.0单用户网校绿色风格</div>
+                                        </div>
+                                    </li>
+
+                                    <li class="md_25">
+                                        <div class="template border">
+                                            <label class="show p-relative">
+                                                <img src="http://yun.kesion.com/UploadFiles/2018-12/78/7131897701657307.jpg" class="show">
+                                                <input name="skinid" type="radio" class="p-absolute" value="769">
+                                            </label>
+                                            <div class="c-858585 mp_10 lh-25 md_10 mr_10 ml_10 fz-14 ellipsis"><a href="http://yun.kesion.com/item/769" target="_blank" class="fr c-white ro_3 bg-yellow plr_10 fz-12">预览</a>v6.0单用户网校简洁风格</div>
+                                        </div>
+                                    </li>
+
+                                    <li class="md_25">
+                                        <div class="template border">
+                                            <label class="show p-relative">
+                                                <img src="http://yun.kesion.com/UploadFiles/2018-12/78/2131887092079055.jpg" class="show">
+                                                <input name="skinid" type="radio" class="p-absolute" value="754">
+                                            </label>
+                                            <div class="c-858585 mp_10 lh-25 md_10 mr_10 ml_10 fz-14 ellipsis"><a href="http://yun.kesion.com/item/754" target="_blank" class="fr c-white ro_3 bg-yellow plr_10 fz-12">预览</a>V6.0单用户网校</div>
+                                        </div>
+                                    </li>
+
+                                    <li class="md_25" style='display:none'>
+                                        <div class="template border">
+                                            <label class="show p-relative"><img src="/sysimg/nologo.gif" class="show"><input name="skinid" type="radio" class="p-absolute" value='-1'></label>
+                                            <div class="c-858585 mp_10 lh-25 md_10 mr_10 ml_10 fz-14 ellipsis"><a href="#" class="fr c-white ro_3 bg-yellow plr_10 fz-12"></a>系统默认风格</div>
+                                        </div>
+                                    </li>
+
+
+                                </ul>
+                            </div>
+                            <script>
+                                $("input[name='skinid']").eq(0).click();
+                            </script>
+                            <div class="nextStep pd_25 p-relative t-c  w80 mao">
+                                <a href="javascript:history.back();" class="p-absolute c-c2c2c2 fz-13 lh-35 prevStep"><i class="returnIcon mr_5"></i><span>上一步</span></a>
+                                <input type="submit" name="BtnStep4_1" value="下载并安装" id="BtnStep4_1" class="nextStepBtn c-white ro_3 fz-14" />
+                                <input type="button" name="BtnStep5" value="跳过下载" id="BtnStep5" onclick="step5();" class="nextStepBtn c-white ro_3 fz-14" />
+
+                            </div>
+
+                        </div>
+
+
+
+
+                    </div>
+                    <!--  步骤5 end    -->
+                    <!--  步骤6  begin  -->
+                    <!--  步骤6 end    -->
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer pd_20 p-absolute">
+            <div class="page-width lh-25 c-white t-c fz-14">
+                <p>Powered By KESION Inc. WebUrl:<a href="http://www.kesion.com/" target="_blank" style="color:white;text-decoration:underline">www.kesion.com</a> </p>
+                <p>福建·科技软件有限公司 版权所有 © 2006-2019</p>
+            </div>
+        </div>
+        <div class="bg-img"></div>
+
+        <script>
+		    function step5(){
+                var url = "Index5?"+"@ViewBag.query"
+                self.location = url
+            }
+        </script>
+
+    </form>
+</body>

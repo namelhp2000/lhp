@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "FormGeneration";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <br />
+    <input type="hidden" name="id" value="@ViewBag.dbconnid" />
+   
+    <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+        <tr>
+            <th style="width: 80px;">生成的表：</th>
+            <td>
+                <input type="text" name="tablename" id="tablename" readonly="readonly" class="mytext" value="@ViewBag.tablename" style="width: 75%" />
+                <input type="checkbox" name='dblink' id="dblink" value='1'>
+                <label>勾选复选框关联数据库，默认不勾选</label>
+            </td>
+        </tr>
+        <tr>
+
+            <th style="width: 80px;">生成选项：</th>
+            <td>
+
+                <div id="GroupPanel">
+                    <table width="100%" align="center" border="0">
+                        <tr>
+                            <td wdith='15%'><label><input type="checkbox" name='CodeGroupID' checked value='entity'>实体</label>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td wdith='15%'><label><input type="checkbox" name='CodeGroupID' checked value='data'>数据</label>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td wdith='15%'><label><input type="checkbox" name='CodeGroupID' checked value='business'>业务逻辑</label>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td wdith='15%'><label><input type="checkbox" name='CodeGroupID' checked value='controller'>控制器</label>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td wdith='15%'><label><input type="checkbox" name='CodeGroupID' checked value='view'>视图</label>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">生成区域：</th>
+            <td>
+                <input type="text" name="areaName" id="areaName" class="mytext" style="width: 75%" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">命名空间：</th>
+            <td>
+                <input type="text" name="nameSpace" id="nameSpace" class="mytext" style="width: 75%" />
+                <label>默认为空，生成其他项目可更改命名空间</label>
+            </td>
+        </tr>
+    </table>
+    <div class="buttondiv">
+        <input type="button" value="生成" class="mybutton" onclick="generation(this);" />
+        <input type="button" class="mybutton" value="取消关闭" style="margin-left: 5px;" onclick="new RoadUI.Window().close();" />
+    </div>
+</form>
+
+
+
+    <script>
+
+         $(window).load(function () {
+
+    });
+        function generation(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "BuildCode"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    new RoadUI.Window().reloadOpener();
+                    new RoadUI.Window().close();
+                }
+            });
+        }
+    }
+   </script>

@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Sign";
+}
+
+    <form id="form1" method="post" enctype="multipart/form-data">
+        <div style="margin:0 auto; text-align:center; padding-top:100px;">
+            <div>
+                <input id="file1" name="file1" type="file" style="height:25px; margin-right:5px;" />
+                <input id="Button1" type="submit" class="mybutton" value=" 上 传 " />
+                <input type="submit" name="reset" class="mybutton" value="恢复默认" />
+            </div>
+            <div style="margin-top:80px;">
+                您的签名：
+               
+                 
+                <img alt="" src="@Html.Raw(ViewBag.signSrc+"?ver="+ Guid.NewGuid())" id="signimg" style="vertical-align:middle;" />
+            </div>
+        </div>
+    </form>
+    <script type="text/javascript">
+        @Html.Raw(ViewBag.script)
+    </script>
+
+
+

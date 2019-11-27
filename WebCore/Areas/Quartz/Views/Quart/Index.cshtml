@@ -1,0 +1,294 @@
+@{
+    ViewBag.Title = "TaskOptionsIndex";
+} 
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+        <table cellpadding = "0" cellspacing="1" border="0" width="100%">
+            <tr>
+                <td>
+                    <label>查询类别</label>
+                    <select class="myselect2" id="condition" name="condition" style="width: 210px; ">
+                        <option value="">请选择</option>
+
+                        <option value="TaskName">作业名称</option>
+                        <option value="GroupName">分组名称</option>
+                        <option value="Interval">间隔</option>
+                        <option value="ApiUrl">调用接口</option>
+                        <option value="AuthKey">验证key</option>
+                        <option value="AuthValue">验证值</option>
+                        <option value="Describe">描述说明</option>
+                        <option value="RequestType">请求类型</option>
+                    </select>
+                    <input type="text" class="mytext" name="keyword" id="keyword" placeholder="请输入关键字">
+                    <input type="button" onclick="query(null, 1);" name="Search" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                    <input type="button" onclick="add(); return false;" value="添加" class="mybutton" />
+                    <input type="button" onclick="return delBatch();" value="删除所选" class="mybutton" />
+                    <input type="button" onclick="return PauseBatch();" value="暂停任务" class="mybutton" />
+
+                    <input type="button" onclick="return StartBatch();" value="开启任务" class="mybutton" />
+                    <input type="button" onclick="return RunBatch();" value="立即执行" class="mybutton" />
+                    @*<input type="button" onclick="return GetJobs();" value="所有作业运作" class="mybutton" />*@
+                    <input type="button" onclick="return window.location.reload();" value="刷新数据" class="mybutton" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id = "listtable" ></table >
+    <div class="buttondiv"></div>
+</form>
+
+
+<script type = "text/javascript" >
+    var appid = '@ViewBag.appId';
+    var iframeid = '@ViewBag.tabId';
+    var dialog = top.mainDialog || new RoadUI.Window();
+    var curPageSize;
+    var curPageNumber;
+    $(function () {
+        $("#listtable").jqGrid({
+            url: "Query?@Html.Raw(ViewBag.query)",
+            postData: { appid: appid },
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['作业名称','分组','最后运行时间','间隔','状态','描述说明','调用接口','请求类型','编辑'],
+            colModel: [
+                
+                { name: 'TaskName', index: 'TaskName', width: '20%' },
+                { name: 'GroupName', index: 'GroupName', width: '20%' },
+               { name: 'LastRunTime', index: 'LastRunTime', width: '30%' },
+                { name: 'Interval', index: 'Interval', width: '20%' },
+                { name: 'Status', index: 'Status', width: '15%' },
+                 { name: 'Describe', index: 'Describe', width: '45%' },
+                { name: 'ApiUrl', index: 'ApiUrl', width: '30%' },           
+                { name: 'RequestType', index: 'RequestType', width: '20%' },
+                {name: 'Opation', index: 'Opation', sortable: false, width: 100},
+            ],
+            sortname: "Id",
+            sortorder: "desc",
+            height: '100%',
+            width: $(window).width(),
+            multiselect: true,
+            loadComplete: function() {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                curPageSize = records.pagesize;
+                curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function() {
+                        $(this).css("background", "lightblue");
+                        });
+                    $("#listtable tr").mouseleave(function() {
+                        $(this).css("background", "white");
+                        });
+            }
+        });
+           
+    });
+    
+    //设置显示屏幕宽度
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+
+    //查询功能
+    function query(size, number)
+    {
+            //查询数据获取
+            var data = {
+                    condition: $("#condition").val(),conditionvalue: $("#keyword").val(), pagesize: size, pagenumber: number
+                };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+
+    //添加与编辑方法
+    function add(id)
+    {
+        dialog.open({
+                id: "window_" + appid.replaceAll('-', ''),
+                title: (id && id.length > 0 ? "编辑" : "添加"),
+                width: 700,
+                height: 500,
+                url: 'Edit?id=' + (id || "") + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber + '&@Html.Raw(ViewBag.query)',
+                opener: window,
+                openerid: iframeid
+            });
+    }
+
+
+     //添加与编辑方法
+    function find(id,name)
+    {
+        dialog.open({
+                id: "window_" + appid.replaceAll('-', ''),
+                title:name,
+                width: 800,
+                height: 550,
+                url: 'IndexLog?id=' + (id || "") + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber + '&@Html.Raw(ViewBag.query)',
+                opener: window,
+                openerid: iframeid
+            });
+    }
+
+
+    //批量删除
+    function delBatch()
+    {
+        var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0)
+        {
+            alert("您没有选择要删除的项!");
+            return false;
+        }
+        if (confirm('您真的要删除所选吗?'))
+        {
+            $.ajax({
+                url: "DeleteBatch?@Html.Raw(ViewBag.query)",
+                type: "post",
+                 async:true,
+                data: {
+                            "ids": rowIds.join(','),
+                            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                        },
+                success: function(txt) {
+                    alert(txt.msg);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+        }
+    }
+
+
+    //删除
+    function del(id)
+    {
+        if (confirm('您真的要删除吗?'))
+        {
+            $.ajax({
+                url: "Delete?id="+id+"&@Html.Raw(ViewBag.query)",
+                type: "post",
+                 async:true,
+                data: {
+                            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                        },
+                success: function(txt) {
+                    alert(txt.msg);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+        }
+    }
+
+
+
+      //批量暂停
+    function PauseBatch()
+    {
+        var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0)
+        {
+            alert("您没有选择要暂停的项!");
+            return false;
+        }
+        if (confirm('您真的要暂停所选吗?'))
+        {
+            $.ajax({
+                url: "Pause?@Html.Raw(ViewBag.query)",
+                type: "post",
+                 async:true,
+                data: {
+                            "ids": rowIds.join(','),
+                            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                        },
+                success: function(txt) {
+                    alert(txt.msg);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+        }
+    }
+
+    //批量启动任务
+     function StartBatch()
+    {
+        var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0)
+        {
+            alert("您没有选择要启动的项!");
+            return false;
+        }
+        if (confirm('您真的要启动所选吗?'))
+        {
+            $.ajax({
+                url: "Start?@Html.Raw(ViewBag.query)",
+                type: "post",
+                 async:true,
+                data: {
+                            "ids": rowIds.join(','),
+                            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                        },
+                success: function(txt) {
+                    alert(txt.msg);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+        }
+    }
+
+
+      @*//所有的作业
+     function GetJobs()
+    {
+            $.ajax({
+                url: "GetJobs?@Html.Raw(ViewBag.query)",
+                type: "post",
+                 async:true,
+                data: {
+                         
+                            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                        },
+                success: function (txt) {
+                    if (txt.length > 0) {
+                        alert("触发所有的作业！！！")
+                         query(curPageSize, curPageNumber);
+                    }
+                   
+                }
+            });
+      
+    }*@
+
+
+
+    //批量运行任务
+     function RunBatch()
+    {
+        var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+        if (rowIds.length == 0)
+        {
+            alert("您没有选择要执行的项!");
+            return false;
+        }
+        if (confirm('您真的要执行所选吗?'))
+        {
+            $.ajax({
+                url: "Run?@Html.Raw(ViewBag.query)",
+                type: "post",
+                 async:true,
+                data: {
+                            "ids": rowIds.join(','),
+                            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                        },
+                success: function(txt) {
+                    alert(txt.msg);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+        }
+    }
+
+
+
+    </script>

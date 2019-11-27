@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Events";
+}
+
+<table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable">
+    <tr>
+        <th style="width:60px;">事件：</th>
+        <td>
+            <input type="hidden" id="event_table" value="" />
+            <select class="myselect" id='event_name' onclick="loadEvent(this.value);"></select>
+        </td>
+    </tr>
+    <tr>
+        <th>脚本：</th>
+        <td>
+            <div style="font-family:Verdana; margin-bottom:5px;">function methodName(srcElement){</div>
+            <textarea class="mytextarea" onblur="setEvent(this.value);" style="font-family:Verdana;width:99%;height:240px;" id='event_script'></textarea>
+            <div style="font-family:Verdana;">}</div>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    $(function ()
+    {
+    });
+    function loadEvent(value)
+    {
+        var pluginName = RoadUI.Core.queryString("pluginName");
+        var event_table = $("#event_table").val() || "";
+        if (!event_table || $.trim(event_table).length == 0)
+        {
+            alert('未设置表!');
+            return;
+        }
+        var $iframe = $("div[name='" + pluginName + "_attr'] iframe", parent.document);
+        var event_id = ((event_table || '') + "-" + ($("#bindfiled", $iframe.get(0).contentWindow.document).val() || '')).toUpperCase();
+        if (event_id == (event_table || '').toUpperCase() + "-")
+        {
+            event_id = $("#elementid", $iframe.get(0).contentWindow.document).val() || '';
+        }
+        if (!event_id || $.trim(event_id).length == 0 || event_id.indexOf('-') < 0)
+        {
+            alert('控件未绑定字段!');
+            return;
+        }
+        var formEventsJSON = parent.formEventsJSON;
+        if ($.isArray(formEventsJSON))
+        {
+            for (var i = 0; i < formEventsJSON.length; i++)
+            {
+                if (event_id == formEventsJSON[i].id && value == formEventsJSON[i].event)
+                {
+                    $("#event_script").val(formEventsJSON[i].scripts);
+                    return;
+                }
+            }
+        }
+        $("#event_script").val("");
+    }
+    function setEvent(value)
+    {
+        var pluginName = RoadUI.Core.queryString("pluginName");
+        var event_table = $("#event_table").val() || "";
+        if (!event_table || $.trim(event_table).length == 0)
+        {
+            alert('未设置表!');
+            return;
+        }
+        var $iframe = $("div[name='" + pluginName + "_attr'] iframe", parent.document);
+        var event_id = ((event_table || '') + "-" + ($("#bindfiled", $iframe.get(0).contentWindow.document).val() || '')).toUpperCase();
+        if (event_id == (event_table || '').toUpperCase() + "-")
+        {
+            event_id = $("#elementid", $iframe.get(0).contentWindow.document).val() || '';
+        }
+        if (!event_id || $.trim(event_id).length == 0 || event_id.indexOf('-') < 0)
+        {
+            alert('控件未绑定字段!');
+            return;
+        }
+
+        var event_name = $("#event_name").val();
+        var isIn = false;
+        var formEventsJSON = parent.formEventsJSON;
+        if ($.isArray(formEventsJSON))
+        {
+            for (var i = 0; i < formEventsJSON.length; i++)
+            {
+                if (event_id == formEventsJSON[i].id && $.trim(event_name).length > 0 && $.trim(event_name) == formEventsJSON[i].event)
+                {
+                    isIn = true;
+                    if ($.trim(value).length > 0)
+                    {
+                        formEventsJSON[i].scripts = value;
+                    } else
+                    {
+                        parent.formEventsJSON.remove(i);
+                    }
+                    break;
+                }
+            }
+        }
+        else
+        {
+            formEventsJSON = new Array();
+        }
+        if (!isIn && $.trim(value).length > 0 && $.trim(event_name).length > 0)
+        {
+            formEventsJSON.push({
+                "id": event_id,
+                "event": event_name,
+                "scripts": value,
+                "functionName": "fun_event_" + RoadUI.Core.newid(false).toUpperCase()
+            });
+        }
+        parent.formEventsJSON = formEventsJSON;
+    }
+</script>   

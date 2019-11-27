@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "Button";
+}
+@model IEnumerable<RoadFlow.Model.AppLibraryButton>
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+     <table cellpadding="0" cellspacing="1" border="0" width="100%" style="width:100%" class="listtable" id="button_listtable">
+        <thead>
+            <tr>
+                <th style="width:14%">按钮库</th>
+                <th style="width:20%">名称</th>
+                <th style="width:20%">脚本</th>
+                <th style="width:20%">图标</th>
+                <th style="width:10%">类型</th>
+                <th style="width:10%">排序</th>
+                <th style="width:6%; text-align: center;"><span onclick="addbutton();" style="vertical-align:middle; cursor:pointer;" title="添加一行"><i style="font-size: 14px;" class="fa fa-plus-square"></i></span></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() > 0)
+            {
+                foreach(var buttons in Model)
+                {
+                <tr>
+                    <td>
+                        <input type="hidden" name="buttonindex" value="@buttons.Id" />
+                        <select class="myselect" data-val="@buttons.ButtonId" onchange="buttonchange(this);" style="width:90%" id="button_@buttons.Id" name="button_@buttons.Id">
+                            <option value=""></option>
+                             @Html.Raw(ViewBag.buttonOptions)
+                        </select>
+                    </td>
+                    <td><input type="text" class="mytext" value="@buttons.Name" style="width:90%" name="buttonname_@buttons.Id" /></td>
+                    <td><textarea class="mytextarea" style="width:90%;height:50px;" name="buttonevents_@buttons.Id">@Html.Raw(buttons.Events)</textarea></td>
+                    <td><input type="text" class="myico" value="@buttons.Ico" style="width:60%" id="buttonico_@buttons.Id" name="buttonico_@buttons.Id" /></td>
+                    <td><select data-val="@buttons.ShowType" class="myselect" style="width:80px" name="showtype_@buttons.Id" id="showtype_@buttons.Id">@Html.Raw(ViewBag.buttonTypeOptions)</select></td>
+                    <td><input type="text" class="mytext" value="@buttons.Sort" style="width:90%" name="buttonsort_@buttons.Id" /></td>
+                    <td style="text-align: center;"><span onclick="delbutton(this);" style="vertical-align:middle; cursor:pointer;" title="删除"><i style="font-size: 14px;" class="fa fa-remove"></i><label></label></span></td>
+                </tr>
+                }
+            }
+
+         
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        function addbutton() {
+            var $table = $("#button_listtable");
+            var index = $("tbody tr", $table).size() + 1;
+            var maxsort = parseInt($("tbody tr:last td:eq(5) input", $table).val() || "5") + 5;
+            var tr = '<tr>';
+            tr += '<td>';
+            tr += '<input type="hidden" name="buttonindex" value="' + index + '"/>';
+            tr += '<select class="myselect" onchange="buttonchange(this);" style="width:90%" id="button_' + index + '" name="button_' + index + '"><option value=""></option>';
+            tr += '@Html.Raw(ViewBag.buttonOptions)';
+            tr += '</select>';
+            tr += '</td>';
+            tr += '<td>';
+            tr += '<input type="text" class="mytext" style="width:90%" name="buttonname_' + index + '"/>';
+            tr += '</td>';
+            tr += '<td>';
+            tr += '<textarea class="mytextarea" style="width:90%;height:50px;" name="buttonevents_' + index + '"/></textarea>';
+            tr += '</td>';
+            tr += '<td>';
+            tr += '<input type="text" class="myico" style="width:60%" id="buttonico_' + index + '" name="buttonico_' + index + '"/>';
+            tr += '</td>';
+            tr += '<td>';
+            tr += '<select class="myselect" style="width:80px" name="showtype_' + index + '" id="showtype_' + index + '">@Html.Raw(ViewBag.buttonTypeOptions)</select>';
+            tr += '</td>';
+            tr += '<td>';
+            tr += '<input type="text" class="mytext" style="width:90%" name="buttonsort_' + index + '" value="' + maxsort + '"/>';
+            tr += '</td>';
+            tr += '<td style="text-align: center;">';
+            tr += '<span onclick="delbutton(this);" style="vertical-align:middle; cursor:pointer;"><i style="font-size: 14px;" class="fa fa-remove"></i><label></label></span>';
+            tr += '</td>';
+            tr += '</tr>';
+            var $tr = $(tr);
+            $("tbody", $table).append($tr);
+
+            new RoadUI.Select().init($(".myselect", $tr));
+            new RoadUI.SelectIco({ obj: $(".myico", $tr) });
+            new RoadUI.Button().init($(".mybutton", $tr));
+            new RoadUI.Text().init($(".mytext", $tr));
+        }
+        function delbutton(img) {
+            $(img).parent().parent().remove();
+        }
+        var buttonJson = @Html.Raw(ViewBag.buttonJSON);
+        function buttonchange(sel) {
+            var $tr = $(sel).parent().parent();
+            for (var j = 0; j < buttonJson.length; j++) {
+                if (buttonJson[j].Id == $(sel).val()) {
+                    var json = buttonJson[j];
+                    $("input[name^='buttonname_']", $tr).val(json.Name);
+                    $("textarea[name^='buttonevents_']", $tr).val(json.Events);
+                    $("input[name^='buttonico_']", $tr).val(json.Ico);
+                    $("input[name^='buttonsort_']", $tr).val(json.Sort);
+                    new RoadUI.SelectIco().setIco($("input[name^='buttonico_']", $tr));
+                }
+            }
+        }
+    </script>
+
+    <div class="buttondiv">
+        <input type="button" value="确定保存" class="mybutton" onclick="checkform(this);" />
+        <input type="button" class="mybutton" value="取消关闭" style="margin-left: 5px;" onclick="new RoadUI.Window().close();" />
+    </div>
+</form>
+<script type="text/javascript">
+    $(function () {
+        $("#button_listtable tbody tr").each(function () {
+            var $sel = $("select[id^='button_']", $(this));
+            $sel.val($sel.attr("data-val"));
+            var $showtype = $("select[id^='showtype_']", $(this));
+            $showtype.val($showtype.attr("data-val"));
+        });
+    });
+    function checkform(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            $.ajax({
+                url: "SaveButton"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    var win = new RoadUI.Window();
+                    //win.reloadOpener(undefined,undefined,"query('${pageSize}','${pageNumber}')");
+                    win.close();
+                }
+            });
+        }
+    }
+</script>

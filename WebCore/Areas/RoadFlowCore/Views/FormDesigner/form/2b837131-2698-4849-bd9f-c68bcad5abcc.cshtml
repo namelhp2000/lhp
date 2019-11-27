@@ -1,0 +1,63 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new RoadFlow.Business.FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new RoadFlow.Business.Form().GetFormData("f823225e-abcf-4734-93b0-743669ef5f89", "HIS_patient_account1", "Id", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new RoadFlow.Business.Form().GetDefaultValuesJSON("[]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "HIS_patient_account1", "@display", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="f823225e-abcf-4734-93b0-743669ef5f89"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="HIS_patient_account1"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="Id"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value="s_name"/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<p>&nbsp;</p>
+
+<table border="4" cellpadding="4" cellspacing="1" style="width:500px;">
+	<tbody>
+		<tr>
+			<td style="height: 26px; vertical-align: baseline; border-color: rgb(0, 0, 0); width: 89px;">姓名</td>
+			<td style="vertical-align: baseline; height: 26px; border-color: rgb(0, 0, 0); width: 402px;"><input data-isflow="1" data-type="text" data-valuetype="" id="HIS_PATIENT_ACCOUNT1-S_NAME" style="" type="text" value="" class="mytext" name="HIS_PATIENT_ACCOUNT1-S_NAME"></td>
+		</tr>
+		<tr>
+			<td style="height: 26px; vertical-align: baseline; border-color: rgb(0, 0, 0); width: 89px;">性别</td>
+			<td style="height: 26px; vertical-align: baseline; border-color: rgb(0, 0, 0); width: 402px;"><input data-isflow="1" data-type="text" data-valuetype="" id="HIS_PATIENT_ACCOUNT1-S_SEX" style="" type="text" value="" class="mytext" name="HIS_PATIENT_ACCOUNT1-S_SEX"></td>
+		</tr>
+		<tr>
+			<td style="vertical-align: baseline; border-color: rgb(0, 0, 0); width: 89px;">电话</td>
+			<td style="vertical-align: baseline; border-color: rgb(0, 0, 0); width: 402px;"><input data-isflow="1" data-type="serialnumber" id="HIS_PATIENT_ACCOUNT1-S_TELLPHONE" style="" type="text" value="" placeholder="自动生成流水号" class="mytext" readonly="" name="HIS_PATIENT_ACCOUNT1-S_TELLPHONE"><textarea style="width:0;height:0;display:none;" name="rf_serialnumber_config_HIS_PATIENT_ACCOUNT1-S_TELLPHONE">{"maxfiled":"s_No","length":"11","formatstring":"{Date<yyyyMMdd>}-{SerialNumber}","sqlwhere":""}</textarea><input type="hidden" value="HIS_PATIENT_ACCOUNT1-S_TELLPHONE" name="rf_serialnumber"></td>
+		</tr>
+		<tr>
+			<td style="vertical-align: baseline; border-color: rgb(0, 0, 0); width: 89px;">IC卡号</td>
+			<td style="vertical-align: baseline; border-color: rgb(0, 0, 0); width: 402px;"><input data-isflow="1" data-type="text" data-valuetype="" id="HIS_PATIENT_ACCOUNT1-S_IC_NO" style="" type="text" value="" class="mytext" name="HIS_PATIENT_ACCOUNT1-S_IC_NO"></td>
+		</tr>
+		<tr>
+			<td style="vertical-align: baseline; border-color: rgb(0, 0, 0); width: 89px;">年龄</td>
+			<td style="vertical-align: baseline; border-color: rgb(0, 0, 0); width: 402px;"><textarea data-isflow="1" data-type="textarea" data-valuetype="empty" id="HIS_PATIENT_ACCOUNT1-N_AGE" style="" class="mytextarea" name="HIS_PATIENT_ACCOUNT1-N_AGE"></textarea></td>
+		</tr>
+		<tr>
+			<td style="width: 89px;">&nbsp;</td>
+			<td style="width: 402px;">&nbsp;</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>

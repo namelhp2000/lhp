@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "FlowBack";
+}
+
+<table cellpadding="0" cellspacing="1" border="0" width="99%" align="center" style="margin-top:6px;">
+    <tr>
+        <td style="vertical-align:top;width:50%;">
+            <fieldset style="padding:4px; min-height:200px; border:1px solid #e8e8e8;">
+                <legend>&nbsp;退回步骤&nbsp;</legend>
+                <table cellpadding="0" cellspacing="1" border="0" width="95%" align="center" style="margin-top:0px;">
+                    @Html.Raw(ViewBag.backSteps)
+                </table>
+            </fieldset>
+        </td>
+    </tr>
+</table>
+<div style="width:95%; margin:12px auto 0 auto; text-align:center;">
+    <input type="submit" class="mybutton" onclick="return confirm1();" name="Save" value="&nbsp;确&nbsp;定&nbsp;" style="margin-right:5px;" />
+    <input type="button" class="mybutton" value="&nbsp;取&nbsp;消&nbsp;" onclick="new RoadUI.Window().close();" />
+</div>
+<script type="text/javascript">
+        var frame = null;
+        var openerid = '@ViewBag.openerId';
+        var iframeid = '@ViewBag.tabId';
+        var iframeid1 = '@ViewBag.iframeId';
+        $(function () {
+
+            var message = "@Html.Raw(ViewBag.message)";
+            if (message.length > 0)
+            {
+                alert(message);
+                new RoadUI.Window().close();
+                return;
+            }
+            var iframes = top.frames;
+            for (var i = 0; i < iframes.length; i++) {
+                var fname = "";
+                try {
+                    fname = iframes[i].name;
+                }
+                catch (e) {
+                    fname = "";
+                }
+                if (fname == openerid + "_iframe") {
+                    frame = iframes[i];
+                    break;
+                }
+            }
+            if (frame == null) {
+                frame = parent;
+            }
+            if (frame == null) {
+                return;
+            }
+        });
+        function confirm1() {
+            var opts = {};
+            opts.type = "back";
+            opts.steps = [];
+            var isSubmit = true;
+            $(":checked[name='stepid']").each(function () {
+                var step = $(this).val();
+                var member = $("#user_" + step).val() || "";
+                if (member.length == 0)
+                {
+                    alert($(this).next().text() + "步骤没有找到要退回的人员!");
+                    isSubmit = false;
+                    return true;
+                }
+                else
+                {
+                    opts.steps.push({ id: step, member: member });
+                }
+            });
+            if (!isSubmit)
+            {
+                return;
+            }
+            if (opts.steps.length == 0) {
+                alert("没有选择要退回的步骤!");
+                return false;
+            }
+            frame.formSubmit(opts);
+            new RoadUI.Window().close();
+        }
+</script>
+

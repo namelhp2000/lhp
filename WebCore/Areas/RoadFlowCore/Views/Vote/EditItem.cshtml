@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "EditItem";
+}
+@model List<RoadFlow.Model.VoteItem>
+@if (ViewBag.vote.Status == 0)
+{
+    <div class="toolbar" id="toolbardiv" style="margin:0 auto; border-top:none 0; position:fixed; top:0; left:0; right:0; z-index:999; width:100%;">
+        <div style="padding-left:6px;">
+            <input type="button" class="mybutton" value="添加选题" onclick="editOption();" />
+        </div>
+    </div>
+    <div style="height:42px;"></div>
+}
+
+@if (Model.Count > 0)
+{
+    var i = 1;
+    @foreach (var model1 in Model.OrderBy(s => s.Sort).ToList<RoadFlow.Model.VoteItem>())
+    {
+        <table cellpadding="0" cellspacing="0" border="0" style="width:98%" align="center">
+            <tr>
+                <td>
+                    @i . @model1.ItemTitle
+                    @if (ViewBag.vote.Status == 0)
+                    {
+                        <label style="margin-left:8px;"><input type="button" onclick="window.location = 'EditOption?itemid=@model1.Id&@Html.Raw(ViewBag.query)';" class="mybutton" value="修改" /></label>
+                        <label style="margin-left:3px;"><input type="button" onclick="delItem('@model1.Id', this);" class="mybutton" value="删除" /></label>
+                    }
+                </td>
+            </tr>
+
+            @foreach (var item in ((List<RoadFlow.Model.VoteItemOption>)ViewBag.voteItemOptions).Where(s => s.ItemId == model1.Id).OrderBy(x => x.Sort).ToList<RoadFlow.Model.VoteItemOption>())
+            {
+
+                <tr>
+                    <td style="padding-left:11px;">
+                        @if (model1.SelectModel == 1)
+                        {
+                        <input type="radio" style="vertical-align:middle;" name="radio_@model1.Id" />
+                        }
+                        else if (model1.SelectModel == 2)
+                        {
+                        <input type="checkbox" style="vertical-align:middle;" name="radio_@model1.Id" />
+                        }
+                       
+                        <label style="vertical-align:middle;">@item.OptionTitle</label>
+                        @if (item.IsInput == 1)
+                        {
+                            <div><input type="text" class="mytext" style="vertical-align:middle;margin-top:5px;margin-left:5px; @item.InputStyle" /></div>
+                        }
+                        else if (item.IsInput == 2)
+                        {
+                            <div><textarea class="mytextarea" style="vertical-align:middle;margin-top:5px;margin-left:5px; @item.InputStyle"></textarea></div>
+                        }
+
+                    </td>
+                </tr>
+             }
+
+
+            <tr>
+                <td style="height:10px;"></td>
+            </tr>
+            <tr>
+                <td style="border-top:1px dashed #e8e8e8; height:18px;"></td>
+            </tr>
+        </table>
+        i++;
+    }
+
+
+}
+
+
+<script type="text/javascript">
+    function editOption(id) {
+        window.location = 'EditOption?itemid=' + (id || '') + "&@Html.Raw(ViewBag.query)";
+    }
+    function delItem(id, but) {
+        if (!confirm('真的要删除吗?')) {
+            return;
+        }
+        $(but).prop("disabled", true);
+        $.ajax({
+            url: "DeleteItem?itemid=" + (id || '') + "&@Html.Raw(ViewBag.query)", type: "post", success: function (text) {
+                if (RoadUI.Core.checkLogin(text, false)) {
+                    alert(text);
+                }
+                $(but).prop("disabled", false);
+                window.location = 'EditItem?@Html.Raw(ViewBag.query)';
+            }
+        });
+    }
+</script>
+
+
+

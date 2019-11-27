@@ -1,0 +1,10 @@
+body { margin: 0px; font-size: 12px; color:#000000;}
+table { border-collapse:collapse;border:1px solid #000000;}
+table, td, th, p, div, span, label { font-size: 12px; }
+p { margin:8px 0;}
+table { background-color:#dddddd; width:98%; margin:0 auto; border-collapse:collapse; border:1px solid #000000;}
+table tbody tr td { background:#ffffff; padding:5px 0 5px 3px; vertical-align:middle; border-collapse:collapse; border:1px solid #000000;}
+table thead tr td { background:#ffffff; padding:5px 0 5px 3px; vertical-align:middle; border-collapse:collapse; border:1px solid #000000;}
+table thead tr th { background:#ffffff; padding:5px 0 5px 3px; vertical-align:middle; border-collapse:collapse; border:1px solid #000000;}
+table tbody tr th { background:#ffffff; padding:5px 0 5px 3px; vertical-align:middle; border-collapse:collapse; border:1px solid #000000;}
+table tfoot tr td { background:#ffffff; padding:5px 0 5px 3px; vertical-align:middle; border-collapse:collapse; border:1px solid #000000;}

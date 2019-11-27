@@ -1,0 +1,193 @@
+﻿@{
+    ViewBag.Title = "FlowSend";
+}
+
+    <table cellpadding="0" cellspacing="1" border="0" width="99%" align="center" style="margin-top:6px;">
+        <tr>
+            <td style="vertical-align:top;width:50%;" id="steptd">
+                <fieldset style="padding:4px; min-height:200px; border:1px solid #e8e8e8;">
+                    <legend>&nbsp;接收步骤和人员&nbsp;</legend>
+                    <table cellpadding="0" cellspacing="1" border="0" width="97%" id="steptable" align="center" style="margin-top:0px;">
+                        @Html.Raw(ViewBag.nextSteps)
+                    </table>
+                </fieldset>
+            </td>
+        </tr>
+    </table>
+
+    <div style="width:95%; margin:12px auto 0 auto; text-align:center;">
+        <input type="button" class="mybutton" onclick="return confirm1();" name="Save" value="&nbsp;确&nbsp;定&nbsp;" style="margin-right:5px;" />
+        <input type="button" class="mybutton" value="&nbsp;取&nbsp;消&nbsp;" onclick="new RoadUI.Window().close();" />
+    </div>
+    <script type="text/javascript">
+    var frame = null;
+    var openerid = '@ViewBag.openerId';
+    var nextStepsCount = @ViewBag.nextStepCount;
+    var isAddWrite = "1" == "@ViewBag.isAddWrite";
+    var isFreedomSend = "1" == "@ViewBag.freedomSend";//是否是自由发送
+    var iframeid = '@ViewBag.tabId';
+    var iframeid1 = '@ViewBag.iframeId';
+    var autoCinfirm = "1" == "@ViewBag.autoConfirm";//是否自动确认
+    var isDebug = false;
+    var isCompleted = false;//是否完成
+      var isMobile = "@ViewBag.isMobile";
+    $(function () {
+        var iframes = top.frames;
+        for (var i = 0; i < iframes.length; i++) {
+            var fname = "";
+            try {
+                fname = iframes[i].name;
+            }
+            catch (e) {
+                fname = "";
+            }
+            if (fname == openerid + "_iframe") {
+                frame = iframes[i];
+                break;
+            }
+        }
+        if (frame == null && top.roadflowCurrentWindow) {
+            frame = top.roadflowCurrentWindow;
+        }
+        if (frame == null) {
+            frame = parent;
+        }
+        if (frame == null) {
+            alert("未找到父窗口!");
+            return;
+        }
+        //如果后面没有步骤，则完成该流程实例
+        if (nextStepsCount == 0) {
+            var options = {};
+            options.type = "completed";
+            options.steps = [];
+            frame.formSubmit(options);
+            new RoadUI.Window().close();
+        }
+        else if (nextStepsCount > 2) {
+            new RoadUI.Window().resize(550, (nextStepsCount - 2) * 45 + 300);
+        }
+        isCompleted = nextStepsCount == 0;
+        if (isCompleted) {
+            $("#steptd").hide();
+        }
+        //自动确认
+        if (autoCinfirm) {
+            isSubmit = true;
+            $("input[name='step']").each(function () {
+                var step = $(this).val();
+                var member = $("#user_" + step).val() || "";
+                if (member.length == 0) {
+                    isSubmit = false;
+                    return false;
+                }
+                var $completedTime_ = $("#CompletedTime_" + step);
+                if ($completedTime_.size() > 0 && $completedTime_.val().length == 0) {
+                    isSubmit = false;
+                    return false;
+                }
+            });
+            if (isSubmit) {
+                $("input[name='step']").prop("checked", true);
+                confirm1();
+            }
+        }
+    });
+    function dynamicAdd(trId, stepId, setTime, a) {
+        var $tr = $("#" + trId);
+        var $tr1 = $("#" + trId + "_1");
+        if ($tr.size() == 0 || $tr1.size() == 0) {
+            return;
+        }
+        var newTrId = RoadUI.Core.newid(false);
+        var newGuid = RoadUI.Core.newid();
+        var stepName = $("label[for^='step_']", $tr).text();
+        var rootId = $("#user_" + stepId + "_text", $tr1).attr("rootid") || "";
+        var parallel = "0" == $(":checked[name='parallelorserial_" + stepId + "']").val();
+        var tr = '<tr data-dynamic="1" id="' + newTrId + '" data-beforestepid="' + stepId+'">';
+        tr += '<td>';
+        tr += '<input type="hidden" value="' + stepId + '" id="before_' + newGuid + '"/>';
+        tr += '<input type="checkbox" checked="checked" disabled="disbaled" value="' + newGuid + '" id="step_' + newGuid + '" name="step" style="vertical-align:middle;">';
+        tr += '<label for="step_' + newGuid + '"><input type="text" id="name_' + newGuid + '" class="mytext" style="width:130px;" value="' + stepName + '"/></label>';
+        tr += '<label class="flowsendstepadd"><i onclick="dynamicDel(\'' + newTrId + '\', \'' + stepId + '\');" class="fa fa-minus-square-o" title="删除步骤"></label></i>';
+        tr += '</td></tr>';
+        tr += '<tr data-dynamic="1" id="' + newTrId + '_1" data-beforestepid="' + stepId +'">';
+        tr += '<td style="padding:2px 0 4px 0;">';
+        tr += '<input type="text" class="mymember" opener="parent" ismobile="' + isMobile + '" id="user_' + newGuid + '" name="user_' + newGuid + '" value="" ischangetype="'
+            + (rootId.length > 0 ? "0" : "1") + '" rootid="' + rootId + '" style="width: 45%;">';
+        if (1 == setTime && parallel) {
+            tr += '<span style="margin-left:5px;">完成时间：</span>';
+            tr += '<input type="text" class="mycalendar" istime="1" dayafter="1" value="" style="width:120px;" id="CompletedTime_' + newGuid + '" name="CompletedTime_' + newGuid+'"/>';
+        }
+        tr += '</td></tr>';
+        var $tr = $(tr);
+        $("#steptable tbody tr[data-beforestepid='" + stepId + "']:last").after($tr);
+        new RoadUI.Member().init($("#user_" + newGuid, $tr));
+        new RoadUI.Calendar().init($("#CompletedTime_" + newGuid, $tr));
+        setParallel(stepId);
+    }
+    function dynamicDel(trId, stepId) {
+        $("#" + trId).remove();
+        $("#" + trId + "_1").remove();
+        setParallel(stepId);
+    }
+    //设置并行和串行按钮是否可用
+    function setParallel(stepId) {
+        var disabled = $("#steptable tbody tr[data-beforestepid='" + stepId + "']").size() > 2;
+        $("input[name='parallelorserial_" + stepId + "']").prop("disabled", disabled);
+    }
+    function confirm1() {
+        if (isCompleted) {
+            var options = {};
+            options.type = "completed";
+            options.steps = [];
+            frame.formSubmit(options);
+            new RoadUI.Window().close();
+        }
+        var opts = {};
+        opts.type = isAddWrite ? "addwrite" : isFreedomSend ? "freesubmit" : "submit";
+        opts.steps = [];
+        var isSubmit = true;
+        $(":checked[name='step']").each(function () {
+            var stepId = $(this).val();
+            var member = $("#user_" + stepId).val() || "";
+            var stepName = $(this).next("label").text();
+            if ($.trim(stepName).length == 0) {
+                stepName = $(this).next("label").find("input").val();
+            }
+            if ($.trim(member).length == 0) {
+                alert(stepName + "没有选择处理人员!");
+                isSubmit = false;
+                return false;
+            }
+            var $completedTime_ = $("#CompletedTime_" + stepId);
+            if ($completedTime_.size() > 0 && $.trim($completedTime_.val()).length == 0) {
+                alert(stepName + "没有设置完成时间!");
+                isSubmit = false;
+                return false;
+            }
+            var $before = $("#before_" + stepId);
+            var $stepName = $("#name_" + stepId);
+            var $parallelorserial = $(":checked[name='parallelorserial_" + ($before.size() > 0 ? $before.val() : "") + "']");
+            opts.steps.push({
+                id: stepId,
+                name: $stepName.size() > 0 ? $stepName.val() : "",
+                member: member,
+                beforestepid: $before.size() > 0 ? $before.val() : "",
+                parallelorserial: $parallelorserial.size() > 0 ? $parallelorserial.val() : "",
+                completedtime: $completedTime_.val()
+            });
+        });
+        if (!isSubmit) {
+            return false;
+        }
+        if (opts.steps.length == 0) {
+            alert("没有选择要处理的步骤!");
+            return false;
+        }
+        if (isSubmit) {
+            frame.formSubmit(opts);
+            new RoadUI.Window().close();
+        }
+    }
+    </script>

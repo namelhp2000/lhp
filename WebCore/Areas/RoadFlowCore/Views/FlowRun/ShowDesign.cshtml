@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "ShowDesign";
+}
+
+<script type="text/javascript">
+    var isshowDesign = true;
+    var taskJSON = {};
+</script>
+<div id="flowdiv" style="margin:0; padding:0;"></div>
+<script src="/RoadFlowResources/scripts/flowDesigner/draw-min.js" type="text/javascript"></script>
+<script src="/RoadFlowResources/scripts/flowDesigner/workflow-show.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var appid = '@ViewBag.appid';
+    var iframeid = '@ViewBag.tabid';
+    $(function () {
+        openFlow1('@ViewBag.flowid');
+        $(window.document.body).niceScroll({ cursorcolor: "#ACACAC", autohidemode: "leave" });
+    });
+</script>
+
+
+
+

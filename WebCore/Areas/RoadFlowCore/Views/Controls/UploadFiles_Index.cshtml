@@ -1,0 +1,244 @@
+﻿@{
+    ViewBag.Title = "UploadFiles_Index";
+}
+
+<form>
+    @Html.AntiForgeryToken()
+    <div id="tabdiv">
+        <div id="div_upload" title="&nbsp;&nbsp;上传文件&nbsp;&nbsp;">
+            <link href="~/RoadFlowResources/scripts/webuploader/webuploader.css" rel="stylesheet" />
+            <script type="text/javascript" src="~/RoadFlowResources/scripts/webuploader/webuploader.nolog.min.js"></script>
+            <div id="uploader" style="margin:6px;">
+                <div>
+                    <div id="picker" style="float:left;">选择要上传文件</div>
+                    <button type="button" class="uploadbut" style="height: 31px;" onclick="confirm1();">&nbsp;&nbsp;确&nbsp;&nbsp;定&nbsp;&nbsp;</button>
+                </div>
+                <div id="thelist" class="filelist" style="height:370px">
+
+                </div>
+            </div>
+        </div>
+        @if (@ViewBag.isselectuserfile == "1")
+        {
+            <div id="div_myfile" title="选择我的文件">
+                <iframe frameborder="0" border="0" style="border:none 0;width:100%;height:410px" src="/RoadFlowCore/UserFile/Index?isselect=1&ismobile=@ViewBag.ismobile"></iframe>
+            </div>
+        }
+        </div>
+</form>
+<script type="text/javascript">
+        var eid = '@ViewBag.eid';
+        var values = @Html.Raw(ViewBag.values);
+        var filetype = "@ViewBag.fileType";
+        var showFileWidth = "1000";
+        var filepath = "@Html.Raw(ViewBag.filepath)";//文件管理上传文件
+        var isUserFile = $.trim(filepath).length > 0;
+        var uploader;
+      $(function () {
+        new RoadUI.Tab({ id: "tabdiv", replace: true, contextmenu: false, dblclickclose: false });
+        for (var i = 0; i < values.length; i++) {
+            addFile(values[i], false);
+        }
+         uploader = WebUploader.create({
+            // swf文件路径
+            swf: '../../RoadFlowResources/scripts/webuploader/Uploader.swf',
+            // 文件接收服务端。
+            server: isUserFile ? 'UserFiles_Save' : 'UploadFiles_Save',
+            // 选择文件的按钮。可选。内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker',
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+            //选择文件后自动上传
+            auto: true,
+            //分片上传大文件
+            chunked: false,
+            // 每块文件大小（默认5M）
+            chunkSize: 15 * 1024 * 1024,
+            // 开启几个并非线程（默认3个）
+             threads: 3,
+            //fileSingleSizeLimit:2000 * 1024 * 1024,
+            // 在上传当前文件时，准备好下一个文件
+             prepareNextFile: true,
+                        //配置压缩的图片的选项。如果此选项为false, 则图片在上传前不进行压缩。
+            compress: false,
+            //配置生成缩略图的选项
+            thumb: {
+                width: 108,
+                height: 86,
+                // 图片质量，只有type为`image/jpeg`的时候才有效。
+                quality: 100,
+                // 是否允许放大，如果想要生成小图的时候不失真，此选项应该设置为false.
+                allowMagnify: false,
+                // 是否允许裁剪。
+                crop: true,
+                // 为空的话则保留原有图片格式。
+                // 否则强制转换成指定的类型。
+                type: ''
+            },
+
+            // 只允许选择图片文件。
+            //accept: {
+            //    title: filetype,
+            //    extensions: '',
+            //    mimeTypes: 'image/*'
+            //},
+            //其他参数
+            formData: { "userid": "eb03262c-ab60-4bc6-a4c0-96e66a4229fe", "filepath": filepath, "filetype": filetype, "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() }
+        });
+        $("#ctlBtn").bind('click', function () {
+            uploader.upload();
+        });
+        // 当有文件被添加进队列的时候
+        uploader.on('fileQueued', function (file) {
+            if (isImgFile(file.name)) {
+                var $item = $('<div id="' + file.id + '" class="fileitem">' +
+                    '<div class="fileitemname"><img src="" width="108" height="86" /></div>' +
+                    '<div class="fileitemstate"><div class="fileitemstatebg"></div><div class="fileitemstateword">等待上传</div></div>' +
+                    '</div>');
+                uploader.makeThumb(file, function (error, src) {
+                    if (!error) {
+                        $item.find("img").attr("src", src);
+                    }
+                }, 98, 68);
+                $("#thelist").append($item);
+            } else {
+                var $item = $('<div id="' + file.id + '" class="fileitem">' +
+                    '<div class="fileitemname">' + file.name + '</div>' +
+                    '<div class="fileitemstate"><div class="fileitemstatebg"></div><div class="fileitemstateword">等待上传</div></div>' +
+                    '</div>');
+                $("#thelist").append($item);
+            }
+
+        });
+
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on('uploadProgress', function (file, percentage) {
+            $("#" + file.id).find('.fileitemstateword').text('已上传' + Math.round(percentage * 100) + '%');
+        });
+
+        uploader.on('uploadSuccess', function (file, response) {
+            if (response.error) {
+                $("#" + file.id).find('.fileitemstateword').html('<span style="color:red;font-weight:bold;">' + response.error.message + '</span>');
+            } else {
+                var $fid = $("#" + file.id);
+                $fid.attr("issuccess", "1");
+                $fid.attr("path", response.id);
+                $fid.find('.fileitemstateword').html(response.size + '<a href="javascript:;" onclick="delFile(\'' + response.id + '\', this);"><i title="删除" style="font-size:14px;margin-left:4px;" class="fa fa-trash-o"></i></a>');
+                $fid.find(".fileitemname").css({ "cursor": "pointer" }).bind("click", function () {
+                    RoadUI.Core.open("ShowFile?file=" + response.id + (isUserFile ? "&fullpath=1" : ""), showFileWidth, 500, "显示文件");
+                });
+            }
+        });
+        uploader.on('error', function (type) {
+            //alert(type);
+        });
+        uploader.on('uploadError', function (file, response) {
+            $("#" + file.id).find('.fileitemstateword').text(response.error.message);
+        });
+
+        uploader.on('uploadComplete', function (file) {
+            //$('#' + file.id).find('.progress').fadeOut();
+        });
+        //所有文件上传完成发生
+        uploader.on('uploadFinished', function () {
+
+        });
+    });
+    //添加文件 isSelectUserFile:是否是从我的文件中选择添加
+    function addFile(file, isSelectUserFile) {
+        if ($("#" + file.id).size() > 0) {
+            return;
+        }
+        var $thelist = $("#thelist");
+        var fileName = file.name;
+        var fileId = file.id;
+        var size = file.size;
+        if (isImgFile(fileName)) {
+            var $item = $('<div id="' + fileId + '" path="' + fileId + '" issuccess="1" class="fileitem">' +
+                '<div class="fileitemname" style="cursor:pointer;" onclick="RoadUI.Core.open(\'ShowFile?file=' + fileId + '\',' + showFileWidth + ',500,\'\');" title="' + fileName + '">'
+                + '<img src="ShowFile?file=' + fileId + '"/>' + '</div>' +
+                '<div class="fileitemstate"><div class="fileitemstatebg"></div><div class="fileitemstateword">'
+                + size + '<a href="javascript:;" onclick="delUserFile(\'' + fileId + '\', this);"><i title="删除" style="font-size:14px;margin-left:4px;" class="fa fa-trash-o"></i></a>' + '</div></div>' +
+                '</div>');
+            $thelist.append($item);
+        } else {
+            var $item = $('<div id="' + fileId + '" path="' + fileId + '" issuccess="1" class="fileitem">' +
+                '<div class="fileitemname" style="cursor:pointer;" onclick="RoadUI.Core.open(\'ShowFile?file=' + fileId + '\',' + showFileWidth + ',500,\'\');">' + fileName + '</div>' +
+                '<div class="fileitemstate"><div class="fileitemstatebg"></div><div class="fileitemstateword">'
+                + size + '<a href="javascript:;" onclick="delUserFile(\'' + fileId + '\', this);"><i title="删除" style="font-size:14px;margin-left:4px;" class="fa fa-trash-o"></i></a>' + '</div></div>' +
+                '</div>');
+            $("#thelist").append($item);
+        }
+    }
+    //删除从我的文件中选择的文件
+    function delUserFile(fileId, a) {
+        if (a) {
+            $(a).parent().parent().parent().remove();
+        } else {
+            $("#" + fileId).remove();
+        }
+    }
+    //判断是否为图片文件
+    function isImgFile(fileName) {
+        if (!fileName || fileName.indexOf('.') < 0) {
+            return false;
+        }
+        var fileExtName = fileName.substr(fileName.lastIndexOf('.')).toLowerCase();
+        if (fileExtName == ".jpg" || fileExtName == ".png" || fileExtName == ".gif" || fileExtName == ".jpeg" || fileExtName == ".bmp") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function delFile(fileId, a) {
+        if (!confirm('您真的要删除该文件吗?')) {
+            return;
+        }
+        var $div = $(a).parent().parent().parent();
+        $.ajax({
+            url: "DeleteFile",
+            data: { "file": fileId, "fullpath": isUserFile ? "1" : "0", "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+            type: "post",
+            async: false,
+            success: function (txt) {
+                if ("1" != txt) {
+                    alert(txt);
+                }
+                $div.remove();
+            }
+        });
+    }
+
+    function confirm1() {
+        var files = new Array();
+        var win = new RoadUI.Window();
+        $("[issuccess='1']", $("#thelist")).each(function () {
+            var path = $(this).attr("path");
+            if (path) {
+                files.push(path);
+            }
+        })
+        if (isUserFile) { //如果是从文件管理中上传的文件
+            parent.location = parent.location;
+            win.close();
+            return;
+        }
+        var ele = win.getOpenerElement(eid);
+        var ele1 = win.getOpenerElement(eid + "_text");
+        if (ele1 != null && ele1.size() > 0) {
+            if (files.length == 0) {
+                ele1.val('');
+            } else {
+                ele1.val('共' + files.length + '个文件');
+            }
+        }
+        if (ele != null && ele.size() > 0) {
+            ele.val(files.join('|'));
+        } else {
+            ele.val('');
+        }
+         uploader.destroy();
+        win.close();
+    }
+</script>

@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Set_Validate";
+   
+}
+
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <div style="margin:5px 0; padding-left:5px;">
+            将所有字段状态设置为：<select class="myselect" onchange="$('select[name^=\'status_\']').val(this.value);">
+                <option value="0"></option>
+                <option value="0">编辑</option>
+                <option value="1">只读</option>
+                <option value="2">隐藏</option>
+            </select>
+            将所有字段验证类型设置为：<select class="myselect" onchange="$('select[name^=\'valdate_\']').val(this.value);">
+                <option value="0"></option>
+                <option value="0">不检查</option>
+                <option value="1">允许为空,非空时检查</option>
+                <option value="2">不允许为空,并检查</option>
+            </select>
+        </div>
+        <div>
+            <table id="listtable"></table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" onclick="save(this);" value="保存设置" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var rows = @Html.Raw(ViewBag.list);
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['表名', '字段名', '字段说明', '字段状态', '验证类型'],
+                colModel: [
+                    { name: 'tableName', index: 'tableName' },
+                    { name: 'fieldName', index: 'fieldName' },
+                    { name: 'fieldNote', index: 'fieldNote' },
+                    { name: 'Status', index: 'Status', sortable: false, title: false },
+                    { name: 'validateType', index: 'validateType', sortable: false, title: false },
+                ],
+                multiselect: false,
+                height: $(window).height() - 120,
+                rowNum: rows.length,
+                width: $(window).width(),
+                data: rows
+            });
+        });
+
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveSet_Validate"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        alert(text);
+                        $(but).prop("disabled", false);
+                        if (text.indexOf('成功!') >= 0) {
+                            window.location = "Set_Validate"+"@Html.Raw(ViewBag.queryString)";
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+

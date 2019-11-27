@@ -1,0 +1,99 @@
+﻿@{
+
+}
+<link href="~/RoadFlowResources/install/images/install.css" rel="stylesheet" />
+<script src="~/RoadFlowResources/install/js/common.js"></script>
+
+<body class="bg-bgradualChange p-relative pd_70">
+    <form name="form1" method="post"  id="form1">
+        @Html.AntiForgeryToken()
+        <div class="header bg-white">
+            <div class="page-width clearfix">
+                <div class="fl logoBox c-yellow fz-26 fw-bold lh-60">
+                    @ViewBag.ProductName&nbsp;&nbsp;安装向导
+                </div>
+                <div class="fr introText c-666 lh-40 fz-13 mt_20">
+                    当前安装版本：@ViewBag.ProductVersion &nbsp;&nbsp;
+                </div>
+            </div>
+        </div>
+        <div class="floor pp_15">
+            <div class="page-width">
+                <div class="installInfo c-white md_25 fz-13">
+                    <p class="lh-25">欢迎使用 @ViewBag.ProductName 安装向导;</p>
+                    <p class="lh-25">本向导即将安装软件到您的系统中，安装前仔细阅读一下协议，点击<font class="fz-16 c-yellow">同意</font>进入下一步</p>
+                </div>
+                <div class="installCon bg-white">
+                    <div class="stepBox pp_20 pd_20">
+                        <ul class="clearfix t-c">
+
+                            <li class="on">
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">1</span>
+                                <div class="c-474747 fw-bold fz-13">阅读许可协议</div>
+                                <em class="p-absolute bg-ygradualChange line on"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">2</span>
+                                <div class="c-474747 fw-bold fz-13">检查安装环境</div>
+                                <em class="p-absolute bg-eee line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">3</span>
+                                <div class="c-474747 fw-bold fz-13">创建数据库</div>
+                                <em class="p-absolute bg-eee line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">4</span>
+                                <div class="c-474747 fw-bold fz-13">网站基本配置</div>
+                                <em class="p-absolute bg-eee line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">5</span>
+                                <div class="c-474747 fw-bold fz-13">安装完成</div>
+                                <em class="p-absolute bg-eee line hide"></em>
+                            </li>
+
+                        </ul>
+                    </div>
+
+
+                    <div id="Step1">
+
+                        <div class="stepTips c-747474 t-c pd_10 pp_10 bg-gray lh-25 gray-borderColor borderWidth borderTop borderBottom">阅读许可协议，点击“<font class="c-yellow2">同意</font>”进入下一步</div>
+                        <div class="stepOneCon plr_40 pp_40 pd_30">
+                            <h2 class="t-c fw-normal md_20">@ViewBag.ProductName 安装许可协议</h2>
+                            <div class="stepOneText lh-25 c-747474" style="height:420px;overflow-y:auto">
+                                @Html.Raw(ViewBag.License)
+                            </div>
+                        </div>
+                        <div class="nextStep pd_25 t-c">
+                            <input type="button" name="BtnStep1" value="同意" id="BtnStep1" onclick="startstep();" class="nextStepBtn c-white ro_3 fz-14" />
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer pd_20 p-absolute">
+            <div class="page-width lh-25 c-white t-c fz-14">
+                <p>Powered By KESION Inc. WebUrl:<a href="http://www.kesion.com/" target="_blank" style="color:white;text-decoration:underline">www.kesion.com</a> </p>
+                <p>福建·科技软件有限公司 版权所有 © 2006-@DateTime.Now.Year.ToString()</p>
+            </div>
+        </div>
+        <div class="bg-img"></div>
+
+
+        <script type="text/javascript">
+
+            function startstep(){
+                var url = "Index1?"+"@ViewBag.query"
+                self.location = url
+            }
+
+        </script>
+
+    </form>
+</body>

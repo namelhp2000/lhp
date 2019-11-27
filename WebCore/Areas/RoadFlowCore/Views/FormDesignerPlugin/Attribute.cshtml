@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "Attribute";
+
+}
+
+    <table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable">
+        <tr>
+            <th style="width:80px;">表单ID：</th>
+            <td><input type="text" class="mytext" readonly="readonly" id="id" style="width:80%" /></td>
+        </tr>
+        <tr>
+            <th style="width:80px;">表单名称：</th>
+            <td><input type="text" class="mytext" id="name" style="width:80%" /></td>
+        </tr>
+        <tr>
+            <th>数据连接：</th>
+            <td><select class="myselect" id="dbconn" onchange="db_change('')" style="width:227px"><option></option>@Html.Raw(ViewBag.dbconnOptions)</select></td>
+        </tr>
+        <tr>
+            <th>数据表：</th>
+            <td><select class="myselect2" id="dbtable" onchange="table_change('','')" style="width:80%"></select></td>
+        </tr>
+        <tr>
+            <th>主键：</th>
+            <td><select class="myselect2" id="dbpk" style="width:80%"></select></td>
+        </tr>
+        <tr>
+            <th>标题字段：</th>
+            <td>
+                <select class="myselect2" id="dbtitle" style="width:80%"></select>
+                <div style="color:#666;">提示：如果下面设置了标题表达式，任务标题会取标题表达式</div>
+            </td>
+        </tr>
+        <tr>
+            <th>标题表达式：</th>
+            <td>
+                <textarea class="mytextarea" id="dbtitle1" style="width:96%;height:50px"></textarea>
+                <div style="color:#666;">例：综合测试流程-{字段名} （{字段名}将被当前业务数据对应的字段值替换）</div>
+            </td>
+        </tr>
+        <tr>
+            <th style="width:80px;">管理人员：</th>
+            <td><input type="text" class="mymember" id="manageuser" opener="parent" unit="0" dept="0" station="0" workgroup="0" user="1" style="width:72%" /></td>
+        </tr>
+        <tr>
+            <th>表单分类：</th>
+            <td>
+                <select class="myselect" id="type" style="width:110px;"><option value=""></option>@Html.Raw(ViewBag.formTypeOptions)</select>
+                <span>
+                    <label style="vertical-align:middle; margin-left:10px;">验证提示：</label><input type="radio" value="0" style="vertical-align:middle;" id="validatePromptType_0" name="validatePromptType" /><label style="vertical-align:middle;" for="validatePromptType_0">图标信息</label> <input type="radio" value="1" style="vertical-align:middle;" id="validatePromptType_1" name="validatePromptType" /><label style="vertical-align:middle;" for="validatePromptType_1">图标</label><input type="radio" value="2" style="vertical-align:middle;" id="validatePromptType_2" name="validatePromptType" /><label style="vertical-align:middle;" for="validatePromptType_2">弹出(alert)</label>
+                </span>
+            </td>
+        </tr>
+        @*<tr>
+            <th>验证提示：</th>
+            <td>
+                <input type="radio" value="0" style="vertical-align:middle;" id="validatePromptType_0" name="validatePromptType" /><label style="vertical-align:middle;" for="validatePromptType_0">图标信息</label>
+                <input type="radio" value="1" style="vertical-align:middle;" id="validatePromptType_1" name="validatePromptType" /><label style="vertical-align:middle;" for="validatePromptType_1">图标</label>
+                <input type="radio" value="2" style="vertical-align:middle;" id="validatePromptType_2" name="validatePromptType" /><label style="vertical-align:middle;" for="validatePromptType_2">弹出(alert)</label>
+            </td>
+        </tr>*@
+        <tr>
+            <td colspan="2" style="height:23px; text-align:center; color:blue;">提示：属性设置完成点击确定后即可在编辑器区域设计表单</td>
+        </tr>
+    </table>
+<script type="text/javascript">
+    $(window).load(function () {
+        var json = parent.formAttributeJSON;
+        if (json)
+        {
+            $("#id").val(json.id || parent.formid);
+            $("#name").val(json.name);
+            $("#dbconn").val(json.dbConn);
+            $("#dbtitle1").val(json.dbTableTitleExpression);
+            $("#type").val(json.formType || parent.typeId);
+              $("#manageuser").val(json.manageUser || '@ViewBag.userId');
+            $("[name='validatePromptType'][value='" + json.validatePromptType + "']").prop("checked", true);
+            db_change(json.dbTable);
+            table_change(json.dbTablePrimaryKey, json.dbTableTitle);
+        }
+        initSelect2();
+         initMember();
+    });
+    function db_change(table) {
+        var conn = $("#dbconn").val();
+        if (!conn) return;
+        $("#dbtable").html('<option></option>' + parent.getTables(conn, table));
+    }
+    function table_change(field, field1) {
+        var conn = $("#dbconn").val();
+        var table = $("#dbtable").val();
+        var opts = parent.getFields(conn, table, field);
+        $("#dbpk").html('<option></option>' + opts);
+        var opts1 = parent.getFields(conn, table, field1);
+        $("#dbtitle").html('<option></option>' + opts1);
+    }
+    function initSelect2() {
+        new RoadUI.Select().init2($("#dbtable"));
+        new RoadUI.Select().init2($("#dbpk"));
+        new RoadUI.Select().init2($("#dbtitle"));
+        }
+    function initMember() {
+        new RoadUI.Member().setValue($("#manageuser"));
+    }
+</script>

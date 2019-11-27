@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "TaskLogIndex";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+      
+    </div>
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+
+
+<script type="text/javascript">
+    var appid = '@ViewBag.appId';
+    var iframeid = '@ViewBag.tabId';
+    var dialog = top.mainDialog || new RoadUI.Window();
+    var curPageSize;
+    var curPageNumber;
+    $(function () {
+        $("#listtable").jqGrid({
+            url: "QueryLog?@Html.Raw(ViewBag.query)",
+            postData: { appid: appid },
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['作业开始时间','作业结束时间','作业信息'],
+            colModel: [
+
+              
+              //  { name: 'TaskName', index: 'TaskName', width: '20%' },
+                { name: 'BeginDate', index: 'BeginDate', width: '20%' },
+                { name: 'EndDate', index: 'EndDate', width: '20%' },
+                { name: 'Msg', index: 'Msg', width: '50%' },
+              
+            ],
+            sortname: "BeginDate desc,EndDate ",
+            sortorder: "desc",
+            height: '100%',
+            width: $(window).width(),
+           // multiselect: true,
+            loadComplete: function() {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                curPageSize = records.pagesize;
+                curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function() {
+                        $(this).css("background", "lightblue");
+                        });
+                    $("#listtable tr").mouseleave(function() {
+                        $(this).css("background", "white");
+                        });
+            }
+        });
+
+    });
+
+    //设置显示屏幕宽度
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+
+    //查询功能
+    function query(size, number)
+    {
+            //查询数据获取
+            var data = {
+                    pagesize: size, pagenumber: number
+                };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+
+
+  
+
+</script>

@@ -1,0 +1,222 @@
+﻿@using RoadFlow.Utility
+<link href="~/RoadFlowResources/install/images/install.css" rel="stylesheet" />
+<script src="~/RoadFlowResources/install/js/common.js"></script>
+<body class="bg-bgradualChange p-relative pd_70">
+    <form name="form1" method="post" id="form1">
+
+        @Html.AntiForgeryToken()
+        <div class="header bg-white">
+            <div class="page-width clearfix">
+                <div class="fl logoBox c-yellow fz-26 fw-bold lh-60">
+                    @ViewBag.ProductName &nbsp;&nbsp;安装向导
+                </div>
+                <div class="fr introText c-666 lh-40 fz-13 mt_20">
+                    当前安装版本：@ViewBag.ProductVersion &nbsp;&nbsp;
+
+                </div>
+            </div>
+        </div>
+        <div class="floor pp_15">
+            <div class="page-width">
+                <div class="installInfo c-white md_25 fz-13">
+                    <p class="lh-25">欢迎使用 @ViewBag.ProductName 安装向导;</p>
+                    <p class="lh-25">本向导即将安装软件到您的系统中，安装前仔细阅读一下协议，点击<font class="fz-16 c-yellow">同意</font>进入下一步</p>
+                </div>
+                <div class="installCon bg-white pd_70">
+                    <div class="stepBox pp_20 pd_20">
+                        <ul class="clearfix t-c">
+
+                            <li class="on">
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">1</span>
+                                <div class="c-474747 fw-bold fz-13">阅读许可协议</div>
+                                <em class="p-absolute bg-yellow line on"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">2</span>
+                                <div class="c-474747 fw-bold fz-13">检查安装环境</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">3</span>
+                                <div class="c-474747 fw-bold fz-13">创建数据库</div>
+                                <em class="p-absolute bg-ygradualChange line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">4</span>
+                                <div class="c-474747 fw-bold fz-13">网站基本配置</div>
+                                <em class="p-absolute bg-eee line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">5</span>
+                                <div class="c-474747 fw-bold fz-13">安装完成</div>
+                                <em class="p-absolute bg-eee line hide"></em>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <!--  步骤1  begin  -->
+                    <!--  步骤1 end    -->
+                    <!--  步骤2  begin  -->
+                    <!--  步骤2 end    -->
+                    <!--  步骤3  begin  -->
+                    <div id="Step3">
+
+
+                        <div id="Step3_1">
+
+                            <div class="stepTips c-747474 t-c pd_10 pp_10 bg-gray lh-25 gray-borderColor borderWidth borderTop borderBottom">创建数据库，<font class="c-yellow2">填写</font>信息后，点击“<font class="c-yellow2">下一步</font>”继续安装</div>
+                            <div class="stepOneCon w80 mao pd_30">
+                                <h2 class="t-c md_20 pp_20 fz-14 c-747474">填写数据库信息</h2>
+                                <table cellpadding="0" cellspacing="0" border="0" class="fileItem c-c2c2c2 t-c gray2-borderColor borderLeft borderRight borderTop borderWidth">
+                                    <tr class="attributeTitle">
+                                        <td class="w4 c-747474 borderWidth borderBottom gray2-borderColor fz-13">数据库服务器</td>
+                                        <td class="w4 c-747474 borderWidth borderBottom gray2-borderColor fz-13">数据库名</td>
+                                        <td class="w4 c-747474 borderWidth borderBottom gray2-borderColor fz-13">数据库用户名</td>
+                                        <td class="w4 c-747474 borderWidth borderBottom gray2-borderColor fz-13">数据库密码</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><input name="TxtDBService" type="text" value="." id="TxtDBService" class="dataBtn border w80 ro_3 c-747474 bg-gray2 lh-30 t-c" /></td>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><input name="TxtDBName" type="text" value="NewRoadFlowCore" maxlength="50" id="TxtDBName" class="textdataBtn border w80 ro_3 c-747474 bg-gray2 lh-30 t-c" /></td>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><input name="TxtDBUser" type="text" value="sa" maxlength="50" id="TxtDBUser" class="dataBtn border w80 ro_3 c-747474 bg-gray2 lh-30 t-c" /></td>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><input name="TxtDBPass" type="text" value="sa" maxlength="50" id="TxtDBPass" class="dataBtn border w80 ro_3 c-747474 bg-gray2 lh-30 t-c" /></td>
+                                    </tr>
+                                </table>
+                                <div class="c-c2c2c2 mp_15">温馨提示：如果无法在线安装，点此了解<a href="http://bbs.kesion.com/forumthread-1238712.html" target="_blank"><font class="c-yellow2">手工安装方式</font></a>。</div>
+                            </div>
+                            <div class="nextStep pd_25 p-relative t-c w80 mao">
+                                <a href="javascript:;" onclick="history.back();" class="p-absolute c-c2c2c2 fz-13 lh-35 prevStep"><i class="returnIcon mr_5"></i><span>上一步</span></a>
+                                <input type="button" name="BtnStep2_1" value="下一步" id="BtnStep2_1" onclick="save(this)" class="nextStepBtn c-white ro_3 fz-14" />
+                            </div>
+
+                        </div>
+
+
+                        <div id="Step3_2" style="display:none;">
+                            <div class="stepTips c-747474 t-c pd_10 pp_10 bg-gray lh-25 gray-borderColor borderWidth borderTop borderBottom">创建数据库，<font class="c-yellow2">填写</font>信息后，点击“<font class="c-yellow2">下一步</font>”继续安装</div>
+                            <div class="stepOneCon w80 mao pd_40">
+                                <h2 class="t-c md_20 pp_20 fz-14 c-747474">填写数据库信息</h2>
+                                <table cellpadding="0" cellspacing="0" border="0" class="fileItem c-747474 t-c gray2-borderColor borderLeft borderRight borderTop borderWidth">
+                                    <tr class="attributeTitle">
+                                        <td class="w4 borderWidth borderBottom gray2-borderColor fz-13">数据库服务器</td>
+                                        <td class="w4 borderWidth borderBottom gray2-borderColor fz-13">数据库名</td>
+                                        <td class="w4 borderWidth borderBottom gray2-borderColor fz-13">数据库用户名</td>
+                                        <td class="w4 borderWidth borderBottom gray2-borderColor fz-13">数据库密码</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><p id="TxtDBService1"></p></td>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><p id="TxtDBName1"></p></td>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><p id="TxtDBUser1"></p></td>
+                                        <td class="borderWidth borderBottom gray2-borderColor"><p id="TxtDBPass1"></p></td>
+                                    </tr>
+                                </table>
+                                <div class="c-c2c2c2 mp_15">温馨提示：如果无法在线安装，点此了解<a href="http://bbs.kesion.com/forumthread-1238712.html" target="_blank"><font class="c-yellow2">手工安装方式</font></a>。</div>
+                            </div>
+
+
+                            <div class="stepOneCon w80 mao progressShow">
+                                <table cellpadding="0" cellspacing="0" border="0" class="applicationTable md_30" width="100%;">
+                                    <tr>
+                                        <td class="t-r w90">
+
+                                            <img src="~/RoadFlowResources/install/images/wait.gif" width="57" class="mr_20 va-m">
+                                        </td>
+                                        <td class="t-l va-t">
+                                            <div class="c-747474 lh-20 md_10">正在安装数据库，请稍后...</div>
+                                            <div class="progressBarBg ro_11 o-hidden bg-eee">
+                                                <span class="show progressBar bg-ygradualChange ro_11"></span>
+                                            </div>
+                                            <div class="c-595959 lh-30 p-relative progressData"><span class="p-absolute progressBar_percent"></span></div>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+
+                            <div class="stepOneCon w80 mao progressShow_error"></div> <!--安装出错时，显示-->
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer pd_20 p-absolute">
+            <div class="page-width lh-25 c-white t-c fz-14">
+                <p>Powered By KESION Inc. WebUrl:<a href="http://www.kesion.com/" target="_blank" style="color:white;text-decoration:underline">www.kesion.com</a> </p>
+                <p>福建·科技软件有限公司 版权所有 © 2006-2019</p>
+            </div>
+        </div>
+        <div class="bg-img"></div>
+        <div id="555">
+
+        </div>
+        <script type="text/javascript">
+
+
+            //返回编辑的界面
+             function save(but) {
+
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+
+            $("#TxtDBService1").html(o.TxtDBService)
+            $("#TxtDBName1").html(o.TxtDBName)
+            $("#TxtDBUser1").html(o.TxtDBUser)
+            $("#TxtDBPass1").html(o.TxtDBPass)
+            $("#Step3_1").hide();
+            $("#Step3_2").show();
+
+           $(but).prop("disabled", true);
+            $.ajax({
+                url: "beginInstallDB?"+"@ViewBag.query",
+                data: o, type: "post", success: function (json) {
+                    $(but).prop("disabled", false);
+                  
+                    $("#555").html(json);
+                    //成功就返回编辑界面
+                    if (json!="") {
+                         var url = "Index3?"+"@ViewBag.query"
+                        self.location = url
+                    }
+                    else {
+                        $.post("EchoErrorTips", null, function (data) {
+                            $("#555").html( data)
+                        }
+);
+                     
+                    }
+                }
+            });
+        }
+    }
+
+
+           
+
+
+        </script>
+
+
+
+
+
+    </form>
+</body>
+

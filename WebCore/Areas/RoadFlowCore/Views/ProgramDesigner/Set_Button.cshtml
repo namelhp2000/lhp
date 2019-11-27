@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "Set_Button";
+}
+
+    <form id="form1" method="post">
+        <div>
+            <table id="listtable"></table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" onclick="edit('');" value="添加按钮" />
+            <input type="button" value="删除所选" name="delete" onclick="return del();" class="mybutton" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var rows = @Html.Raw(ViewBag.list);
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['按钮名称', '图标', '类型', '权限控制', '排序', '操作'],
+                colModel: [
+                    { name: 'buttonName', index: 'ButtonName' },
+                    { name: 'ico', index: 'Ico' },
+                    { name: 'showType', index: 'ShowType' },
+                    { name: 'isValidate', index: 'IsValidateShow' },
+                    { name: 'sort', index: 'Sort' },
+                    { name: 'opation', index: '', sortable: false, align: "left" }
+                ],
+                multiselect: true,
+                height: "100%",
+                rowNum: rows.length,
+                width: $(window).width(),
+                data: rows,
+                loadComplete: function () {
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+        });
+
+        function checkAll(checked) {
+            $("input[name='checkbox_app']").prop("checked", checked);
+        }
+        function edit(id) {
+            window.location = "Set_Button_Edit?buttonid=" + (id || "") + "&@Html.Raw(ViewBag.query)";
+        }
+        function del() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的按钮!");
+                return false;
+            }
+            if (!confirm('您真的要删除所选按钮吗?')) {
+                return false;
+            }
+            $.ajax({
+                url: "Delete_Set_Button?@Html.Raw(ViewBag.query)",
+                data: { "ids": rowIds.join(",") },
+                type: "post",
+                success: function (txt) {
+                    alert(txt);
+                    window.location = window.location;
+                }
+            });
+            return true;
+        }
+    </script>
+

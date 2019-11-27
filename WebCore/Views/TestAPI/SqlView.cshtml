@@ -1,0 +1,29 @@
+﻿<table cellpadding="0" cellspacing="1" border="0" width="97%" class="formtable">
+    <tr>
+       
+        <td>
+            <input type="text" name="s_name" id="s_name" class="mytext"  value="@Html.Raw(ViewBag.sql)" style="width: 75%" />
+        </td>
+    </tr>
+    <tr>
+     
+        <td  colspan="2" style="position:center">
+            <input type="button" value="确定保存" class="mybutton" onclick="saveApp(this);" />
+        </td>
+    </tr>
+</table>
+
+
+<script type="text/javascript">
+    function saveApp(but) {
+
+        $.ajax({
+            /**/
+            url: "../RoadFlowCoreApi/Flow/GetStepAddress?systemcode=68", type: "post", success: function (text) {
+                /**/
+                alert(text);
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "DocEdit";
+
+}
+@model RoadFlow.Model.Doc
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+    <div class="toolbar" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto;">
+        <a href="javascript:void(0);" onclick="window.location='List?@Html.Raw(ViewBag.query)';return false;"><i class="fa fa-reply"></i><label>返回列表</label></a>
+        <span class="toolbarsplit">&nbsp;</span>
+        <a href="javascript:void(0);" onclick="checkf(this);"><i class="fa fa-save"></i><label>保存文档</label></a>
+    </div>
+    <table cellpadding="0" cellspacing="1" border="0" width="99%;" class="formtable" style="margin-top:45px;">
+        <tr>
+            <th style="width: 80px;">栏目：</th>
+            
+            <td>
+                @Model.DirName
+                <input type="hidden" name="id" id="id" value="@Model.Id" />
+                <input type="hidden" name="DirId" id="DirId" value="@Model.DirId" />
+                <input type="hidden" name="DirName" id="DirName" value="@Model.DirName" />
+                <input type="hidden" name="WriteTime" id="WriteTime" value="@Model.WriteTime" />
+                <input type="hidden" name="WriteUserID" id="WriteUserID" value="@Model.WriteUserID" />
+                <input type="hidden" name="WriteUserName" id="WriteUserName" value="@Model.WriteUserName" />
+                <input type="hidden" name="ReadCount" id="ReadCount" value="@Model.ReadCount " />
+
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">标题：</th>
+            <td><input type="text" id="Title" name="Title" value="@Model.Title" validate="empty" class="mytext" style="width: 85%" /></td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">阅读人员：</th>
+            <td>
+                <input type="text" id="ReadUsers" name="ReadUsers" value="@Model.ReadUsers" class="mymember" style="width: 200px;" />
+                &nbsp;&nbsp;来源：<input type="text" class="mytext" id="source" value="@Model.Source" name="source" />
+                &nbsp;&nbsp;等级：<select id="DocRank" name="DocRank" class="myselect">
+                  @Html.Raw(ViewBag.rank)
+               </select>
+                <span style="color:red; font-weight: bold;">*如果不指定阅读人员，则有该目录阅读权的所有人均可查看该文档</span>
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">内容：</th>
+            <td style="padding-right:4px;">
+                <textarea id="Contents" name="Contents" validate="editor" style="width:100%;height:400px;">@Model.Contents</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">附件：</th>
+            <td><input type="text" id="Files" name="Files" value="@Model.Files" class="myfile" style="width: 85%" /></td>
+        </tr>
+    </table>
+    <br /><br />
+</form>
+<script src="/RoadFlowResources/scripts/ckeditor/ckeditor.js"></script>
+<script src="/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var editor = CKEDITOR.replace("Contents", {
+            height: 400,
+            toolbarGroups: formLoad.ckeditor_toolbarFullGroups,
+            filebrowserImageUploadUrl: '/RoadFlowCore/Controls/SaveCKEditorFiles'
+        });
+    });
+    function checkf(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            var contents = CKEDITOR.instances.Contents.getData();
+            o.Contents = contents;
+            var click = RoadUI.Core.disableda(but);
+            $.ajax({
+                url: "SaveDocEdit?@Html.Raw(ViewBag.query)&docid=@ViewBag.docid", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    RoadUI.Core.enableda(but, click);
+                    if (text.indexOf("成功") >= 0) {
+                        window.location = 'Show?@Html.Raw(ViewBag.query)&docid=@Model.Id';
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+

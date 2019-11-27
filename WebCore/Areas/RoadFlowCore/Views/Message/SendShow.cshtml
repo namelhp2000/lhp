@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "SendShow";
+    var s = new RoadFlow.Business.Message();
+}
+@using RoadFlow.Utility
+@model RoadFlow.Model.Message
+
+<table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable" style="margin-top:10px;">
+    <tr>
+        <th style="width: 80px;">接收方式：</th>
+        <td> @s.GetSendTypeString(Model.SendType)  </td>
+    </tr>
+    <tr>
+        <th style="width: 80px;">消息内容：</th>
+        <td>@Html.Raw(Model.Contents)</td>
+    </tr>
+    <tr>
+        <th style="width: 80px;">附    件：</th>
+        <td>
+            <span style="margin-right:4px;">
+                @Html.Raw(Model.Files.ToFilesShowString(false))
+            </span> 
+        </td>
+    </tr>
+    @if (ViewBag.showreadlist == "1")
+    {
+        <tr>
+            <th style="width: 80px;">阅读情况：</th>
+            <td>
+                <table id="listtable"></table>
+                <div class="buttondiv"></div>
+            </td>
+        </tr>
+    }
+</table>
+<table id="listtable"></table>
+<script type="text/javascript">
+        var showReadList = "1" == "@ViewBag.showreadlist";
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            if (showReadList) {
+                $("#listtable").jqGrid({
+                    url: "QuerySendRead"+"@Html.Raw(ViewBag.queryString)",
+                    postData: { pagesize: curPageSize, pagenumber: curPageNumber || 1 },
+                    mtype: 'POST',
+                    datatype: "json",
+                    colNames: ['接收人', '所在组织', '是否阅读', '阅读时间'],
+                    colModel: [
+                        { name: 'UserId', index: 'UserId', width: 50 },
+                        { name: 'Organize', index: '', width: 250 },
+                        { name: 'IsRead', index: 'IsRead', width: 30 },
+                        { name: 'ReadTime', index: 'ReadTime', width: 90 },
+                    ],
+                    sortname: "UserId",
+                    sortorder: "asc",
+                    height: '100%',
+                    width: $(window).width() - 95,
+                    multiselect: false,
+                    onSelectRow: function () {
+
+                    },
+                    loadComplete: function () {
+                        var gridObj = $("#listtable");
+                        var records = gridObj.getGridParam("userData");
+                        curPageSize = records.pagesize;
+                        curPageNumber = records.pagenumber;
+                        $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                        //鼠标移动背景颜色变化
+                        $("#listtable tr").mouseenter(function () {
+                            $(this).css("background", "lightblue");
+                        });
+                        $("#listtable tr").mouseleave(function () {
+                            $(this).css("background", "white");
+                        });
+                    }
+                });
+            };
+           
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                pagesize: curPageSize, pagenumber: number || curPageNumber
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+</script>
+
+

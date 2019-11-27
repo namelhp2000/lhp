@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Set_Export";
+}
+
+    <form id="form1" method="post">
+        <div>
+            <table id="listtable"></table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" onclick="copyListFields(this);" value="复制列表字段" />
+            <input type="button" class="mybutton" onclick="edit('');" value="添加字段" />
+            <input type="button" value="删除所选" name="delete" onclick="return del();" class="mybutton" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var rows =@Html.Raw(ViewBag.list);
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['字段名称', '显示名称', '显示方式', '数据类型', '对齐方式', '显示宽度', '显示顺序', '操作'],
+                colModel: [
+                    { name: 'fieldName', index: 'fieldName' },
+                    { name: 'showName', index: 'showName' },
+                    { name: 'showType', index: 'showType' },
+                    { name: 'dataType', index: 'dataType' },
+                    { name: 'align', index: 'align' },
+                    { name: 'width', index: 'width' },
+                    { name: 'sort', index: 'sort' },
+                    { name: 'opation', index: '', sortable: false, align: "left", width: 60 }
+                ],
+                multiselect: true,
+                height: "100%",
+                rowNum: rows.length,
+                width: $(window).width(),
+                data: rows,
+                loadComplete: function () {
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+        });
+
+        function copyListFields(but) {
+            if (!confirm("此操作将清空现有字段,确定要复制吗?")) {
+                return false;
+            }
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "Copy_Export?@Html.Raw(ViewBag.query)",
+                data: {},
+                type: "post",
+                success: function (txt) {
+                    alert(txt);
+                    window.location = window.location;
+                }
+            });
+        }
+
+        function edit(id) {
+            window.location = "Set_Export_Edit?exportid=" + (id || "") + "&@Html.Raw(ViewBag.query)";
+        }
+        function del() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length === 0) {
+                alert("您没有选择要删除的字段!");
+                return false;
+            }
+            if (!confirm('您真的要删除所选字段吗?')) {
+                return false;
+            }
+            $.ajax({
+                url: "Delete_Export?@Html.Raw(ViewBag.query)",
+                data: { "ids": rowIds.join(",") },
+                type: "post",
+                success: function (txt) {
+                    alert(txt);
+                    window.location = window.location;
+                }
+            });
+            return true;
+        }
+    </script>
+
+

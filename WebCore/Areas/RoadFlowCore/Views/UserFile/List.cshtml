@@ -1,0 +1,253 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+    <style type="text/css">
+        .querybar div i {
+            margin: 0 5px;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+    <form id="form1">
+        @Html.AntiForgeryToken()
+        <div class="toolbar">
+            <a href="javascript:void(0);" onclick="addDir(this);"><i class='fa fa-folder' style='font-size:14px;margin-right:3px;'></i><label>新建文件夹</label></a>
+            <a href="javascript:void(0);" onclick="addFile(this);"><i class='fa fa-file-word-o' style='font-size:14px;margin-right:3px;'></i><label>添加文件</label></a>
+            <span class="toolbarsplit">&nbsp;</span>
+            <a href="javascript:void(0);" onclick="delSelect(this);"><i class='fa fa-remove' style='font-size:14px;margin-right:3px;'></i><label>删除</label></a>
+            <a href="javascript:void(0);" id="renamea" onclick="rename(this);"><i class='fa fa-pencil-square' style='font-size:14px;margin-right:3px;'></i><label>重命名</label></a>
+            <a href="javascript:void(0);" onclick="move(this);"><i class='fa fa-sign-in' style='font-size:14px;margin-right:3px;'></i><label>移动到</label></a>
+            <a href="javascript:void(0);" onclick="share(this);"><i class='fa fa-share-alt' style='font-size:14px;margin-right:3px;'></i><label>分享</label></a>
+            <div style="float:right; margin-right:30px;">
+                <input type="text" class="mytext" placeholder="输入关键字搜索" style="width:150px; border-right:none 0;" id="searchword" name="searchword" /><input style="" type="button" value="搜索" class="mybutton" onclick="query();" />
+            </div>
+        </div>
+        <div class="querybar" style="height:20px;padding:0px 0 8px 6px;">
+            <div>
+                @Html.Raw(ViewBag.path)
+            </div>
+        </div>
+        <table id="listtable"></table>
+    </form>
+    <script type="text/javascript">
+        var appid = "@ViewBag.appid";
+        var isSelect = "1" === "@ViewBag.isselect";
+        var isMobile = "1" === "@ViewBag.ismobile";
+        var colNames = isMobile ? ['名称', '', '类型', '大小'] : ['名称', '', '修改日期', '类型', '大小']
+        var colModel = [
+            { name: 'Name', index: 'Name', width: 330 },
+            { name: 'Name1', index: 'Name1' },
+            { name: 'Date', index: 'Date', width: 140 },
+            { name: 'Type', index: 'Type', width: 90 },
+            { name: 'Size', index: 'Size', width: 100 }
+        ];
+        if (isMobile) {
+            colModel = [
+                { name: 'Name', index: 'Name', width: 330 },
+                { name: 'Name1', index: 'Name1' },
+                { name: 'Type', index: 'Type', width: 90 },
+                { name: 'Size', index: 'Size', width: 100 }
+            ];
+        }
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "QueryList"+"@Html.Raw(ViewBag.queryString)",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(), "appid": appid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: colNames,
+                colModel: colModel,
+                sortname: "Type",
+                sortorder: "ASC",
+                height: $(window).height() - 105,
+                multiselect: true,
+                width: $(window).width(),
+                rowNum: -1,
+                loadComplete: function () {
+                    var grid = $("#listtable");
+                    grid.setGridParam().hideCol("Name1");
+                    if (isMobile) {
+                        grid.setGridParam().hideCol("Size");
+                    }
+                    grid.setGridWidth($(window).width());
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                },
+                onSelectRow: function (rowid, status) {
+                    //选择文件时，选中行要触发事件
+                    if (isSelect) {
+                        var rowData = $("#listtable").jqGrid('getRowData', rowid);
+                        if (rowData.Type != "文件夹") {
+                            var fileName = rowData.Name1;
+                            var fileType = parent.parent.filetype;
+                            if (status) {
+                                if (fileType) {
+                                    var extName = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length).toLowerCase();
+                                    if ((',' + fileType.toLowerCase() + ',').indexOf(',' + extName + ",") < 0) {
+                                        alert('当前设置只能选择' + fileType + "文件!");
+                                        return;
+                                    }
+                                }
+                                parent.parent.addFile({ id: rowid, name: fileName, size: rowData.Size }, true);
+                            }
+                            else {
+                                parent.parent.delUserFile(rowid);
+                            }
+                        }
+                        else {
+                            $("#listtable").jqGrid('setSelection', rowid, false);
+                        }
+                    }
+                },
+                onSelectAll: function (aRowids, status) {
+                    //选择文件时，全选要触发事件
+                    if (isSelect) {
+                        for (i = 0; i < aRowids.length; i++) {
+                            var rowData = $("#listtable").jqGrid('getRowData', aRowids[i]);
+                            if (rowData.Type === "文件夹") {
+                                continue;
+                            }
+                            var fileName = rowData.Name1;
+                            var fileType = parent.parent.filetype;
+                            if (status) {
+                                if (fileType) {
+                                    var extName = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length).toLowerCase();
+                                    if ((',' + fileType.toLowerCase() + ',').indexOf(',' + extName + ",") < 0) {
+                                        continue;
+                                    }
+                                }
+                                parent.parent.addFile({ id: aRowids[i], name: rowData.Name1, size: rowData.Size }, true);
+                            } else {
+                                parent.parent.delUserFile(aRowids[i]);
+                            }
+                        }
+                    }
+                }
+            });
+
+           
+        });
+
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                searchword: $("#searchword").val(), appid: appid
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+
+        function addDir(a) {
+            var newName = prompt("请输入文件夹名称：", "");
+            if (!newName || $.trim(newName).length == 0) {
+                //alert("文件夹名称不能为空！");
+                return false;
+            }
+            var click = RoadUI.Core.disableda(a);
+            var o = { "DirName": newName, "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() };
+            $.ajax({
+                url: "AddDir"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert("1" == text ? "文件夹创建成功!" : text);
+                    }
+                    RoadUI.Core.enableda(a, click);
+                    if ("1" == text) {
+                        parent.frames[0].reLoad('@ViewBag.id');
+                        query();
+                    }
+                }
+            });
+        }
+        function addFile() {
+            var url = '/RoadFlowCore/Controls/UploadFiles_Index'+'@Html.Raw(ViewBag.queryString)&filepath=@ViewBag.id';
+            new RoadUI.Window().open({ url: url, width: 790, height: 500, opener: window, title: "添加文件" })
+        }
+        function delSelect(a) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的文件夹或文件!");
+                return false;
+            }
+            if (!confirm("删除文件夹或文件后将不可恢复，确定要删除吗?")) {
+                return;
+            }
+            var click = RoadUI.Core.disableda(a);
+            $.ajax({
+                url: "Delete"+"@Html.Raw(ViewBag.queryString)", cache: false, async: false, type: "post",
+                data: {
+                    "files": rowIds.join(','),
+                    "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                }, success: function (txt) {
+                    alert(txt);
+                    RoadUI.Core.enableda(a, click);
+                    parent.frames[0].reLoad('@ViewBag.id');
+                    query();
+                }
+            });
+        }
+        function rename(a) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要重命名的文件夹或文件!");
+                return false;
+            }
+            if (rowIds.length > 1) {
+                if (!confirm("您选择了多个文件夹或文件，默认重命名第一个，确定要重命名吗?")) {
+                    return false;
+                }
+            }
+            var newName = prompt("请输入新的名称：", "");
+            if (!newName || $.trim(newName).length == 0) {
+                //alert("文件夹或文件名称不能为空！");
+                return false;
+            }
+            var click = RoadUI.Core.disableda(a);
+            $.ajax({
+                url: "ReName"+"@Html.Raw(ViewBag.queryString)", cache: false, async: false, type: "post",
+                data: {
+                    "file": rowIds[0], "newname": newName,
+                    "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                }, success: function (txt) {
+                    RoadUI.Core.enableda(a, click);
+                    if (txt == '1') {
+                        alert('重命名成功!');
+                        query();
+                       parent.frames[0].reLoad('@ViewBag.id');
+                    } else {
+                        alert(txt);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(textStatus);
+                    RoadUI.Core.enableda(a, click);
+                }
+            });
+        }
+        function move(a) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要移动的文件夹或文件!");
+                return false;
+            }
+            new RoadUI.Window().open({ url: "MoveTo" + "@Html.Raw(ViewBag.queryString)&movedir=" + rowIds.join(','), width: 400, height: 400, title: "移到到" });
+        
+        }
+        function share(a) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要分享的文件夹或文件!");
+                return false;
+            }
+            new RoadUI.Window().open({ url: "Share"+"@Html.Raw(ViewBag.queryString)", data: { "sharedir": rowIds.join(',') }, width: 430, height: 420, title: "分享" });
+        }
+    </script>
+

@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Lrselect";
+}
+<table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:270px"></select></td>
+    </tr>
+    <tr>
+        <th>默认值：</th>
+        <td>
+            <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+            <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:50px; margin-right:6px;"></textarea></div>
+        </td>
+    </tr>
+    <tr>
+        <th>宽度：</th>
+        <td><input type="text" id="width" class="mytext" style="width:150px" /></td>
+    </tr>
+    <tr>
+        <th>选择框标题：</th>
+        <td><input type="text" class="mytext" id="dialogtitle" style="width:270px;" /></td>
+    </tr>
+    <tr>
+        <th>选择控制：</th>
+        <td>
+            <span style="margin-left:0px;">
+                <input type="checkbox" id="ismore" value="1" style="vertical-align:middle;" /><label for="ismore" style="vertical-align:middle;">是否允许多选</label>
+            </span>
+            <span style="margin-left:3px;">
+                <input type="checkbox" id="isroot" value="1" style="vertical-align:middle;" /><label for="isroot" style="vertical-align:middle;">是否允许选择根节点</label>
+            </span>
+            <span style="margin-left:3px;">
+                <input type="checkbox" id="isparent" value="1" style="vertical-align:middle;" /><label for="isparent" style="vertical-align:middle;">是否允许选择父节点</label>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <th>字典根：</th>
+        <td>
+            <input type="text" id="ds_dict_value" class="mydict" opener="parent" more="0" style="width:160px;" />
+            <input type="checkbox" id="ds_dict_allchild" value="1" style="vertical-align:middle;" /><label for="ds_dict_allchild" style="vertical-align:middle;">是否加载所有下级节点</label>
+        </td>
+    </tr>
+    <tr>
+        <th>父窗口：</th>
+        <td><input type="text" id="opener" class="mytext" style="" /> <span style="color:#666;">打开弹窗的父窗口如:window,parent,top</span></td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

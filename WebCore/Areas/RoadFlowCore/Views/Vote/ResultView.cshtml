@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "ResultView";
+}
+@using  RoadFlow.Utility
+@model List<RoadFlow.Model.VoteItem>
+
+<form method="post" id="form1">
+    <div class="toolbar" id="toolbardiv" style="margin:0 auto; border-top:none 0; position:fixed; top:0; left:0; right:0; z-index:999; width:100%;">
+        <div style="padding-left:6px;">
+            @if (ViewBag.vote.Anonymous== 0)
+            {
+                <input type="button" class="mybutton" value="按选题查看" onclick="window.location='ResultView?@Html.Raw(ViewBag.query)';" />
+                <input type="button" class="mybutton" value="按人员查看" onclick="window.location='ResultViewUser?@Html.Raw(ViewBag.query)';" style="margin-left:6px;" />
+            }
+            <input type="button" class="mybutton" value="关闭窗口" onclick="top.mainTab.closeTab();" style="margin-left:6px;" />
+        </div>
+    </div>
+    <div style="height:36px;"></div>
+
+    <div style="font-size:16px; font-weight:bold; width:98%; margin:3px auto; text-align:center;">
+        @Html.Raw(ViewBag.vote.Topic)
+        @if (ViewBag.vote.Anonymous == 1)
+        {
+            <label style="margin-left:8px;font-weight:bold; color:red;">(匿名提交)</label>
+        }
+    </div>
+    <div style="width:98%; margin:0 auto; text-align:center; color:#666;">
+        <label>发起人：@(new RoadFlow.Business.User().GetName(ViewBag.vote.CreateUserId))</label>
+        <label style="margin-left:8px;">发起时间：@ViewBag.vote.CreateTime</label>
+        <label style="margin-left:8px;">结束时间：@ViewBag.EndTime</label>
+        @if (ViewBag.Note == 1)
+        {
+            <label style="margin-left:8px;">说明：@Html.Raw(ViewBag.vote.Note)</label>
+        }
+    </div>
+
+    <div style="width:98%; margin:0 auto;">
+        @if (Model.Count > 0)
+        {
+            var i = 1;
+            @foreach (var model1 in Model.OrderBy(s => s.Sort).ToList<RoadFlow.Model.VoteItem>())
+            {
+                <input type="hidden" name="VoteItemId" value="@model1.Id" />
+                <div style="font-weight:bold;">@i . @model1.ItemTitle</div>
+
+                @foreach (var item in ((List<RoadFlow.Model.VoteItemOption>)ViewBag.voteItemOptions).Where(s => s.ItemId == model1.Id).OrderBy(x => x.Sort).ToList<RoadFlow.Model.VoteItemOption>())
+                {
+                    <div style="margin:3px 0 3px 15px;">
+                        <a href="javascript:void(0);" class="blue" onclick="showUsers('@item.Id')">
+                            <i class="fa fa-file-o" style="vertical-align:middle; font-size:10px; margin-right:3px;"></i><label style="vertical-align:middle;">@Html.Raw(item.OptionTitle)</label><label style="vertical-align:middle;">（@(((List<RoadFlow.Model.VoteResult>)ViewBag.voteResults).Where(s => s.OptionId == item.Id).ToList<RoadFlow.Model.VoteResult>().Count)）</label>
+                        </a>
+                    </div>
+
+                    @if(ViewBag.vote.Anonymous ==0)
+                    {
+
+
+
+                        <div id="users_@item.Id" style="padding-left:11px; margin:5px; display:none;">
+                            @foreach (var vateresult in ((List<RoadFlow.Model.VoteResult>)ViewBag.voteResults).Where(s => s.OptionId == item.Id).ToList<RoadFlow.Model.VoteResult>())
+                            {
+
+                                var optionother = vateresult.OptionOther.IsNullOrEmpty() ? "" : "提交信息：" + vateresult.OptionOther;
+                                <div style="float:left; width:70px; margin:0 6px 6px 0; text-align:center; border-radius:4px; background:#e8e8e8; height:20px; padding: 2px 3px 0 3px;white-space: nowrap; overflow:hidden; text-overflow:ellipsis;" title="@(Html.Raw(new RoadFlow.Business.User().GetOrganizeMainShowHtml(vateresult.UserId,false)))
+@optionother">@(new RoadFlow.Business.User().GetName(vateresult.UserId))</div>
+}
+                            <div style="clear:both;"></div>
+                        </div>
+                    }
+
+
+                }
+
+
+                i++;
+                <div style="border-top:1px dashed #e8e8e8; height:1px; margin:5px auto 10px auto;"></div>
+
+            }
+
+
+        }
+
+    </div>
+</form>
+<script type="text/javascript">
+    function showUsers(id) {
+        $("#users_" + id).toggle();
+    }
+</script>
+
+

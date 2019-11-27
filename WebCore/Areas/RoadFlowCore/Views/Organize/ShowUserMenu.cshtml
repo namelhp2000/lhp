@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "ShowUserMenu";
+    var userss =   Html.Raw(ViewBag.prevUrl);
+}
+
+<style>
+    body {
+        overflow: hidden;
+    }
+</style>
+<div class="toolbar" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto; height:30px;">
+    <a href="javascript:void(0);" onclick="window.location='@userss';"><i class="fa fa-reply"></i><label>返回</label></a>
+    <span class="toolbarsplit">&nbsp;</span>
+    <a href="javascript:void(0);"><i class="fa fa-eye"></i><label>查看 @ViewBag.userName 的已分配菜单</label></a>
+</div>
+<div style="padding:40px 1px 1px 4px; overflow:auto;">
+    <div id="treeDiv" style="margin:0;"></div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#treeDiv").height($(window).height() - 40);
+        initMenu();
+    });
+    function initMenu() {
+        mainTree = new RoadUI.Tree({
+            id: "treeDiv", path: "../../Home/Menu?showsource=1&userid=@ViewBag.userId",
+            refreshpath: "../../Home/MenuRefresh?showsource=1&userid=@ViewBag.userId",
+            showroot: false, showline: true, onclick: null
+        });
+    }
+</script>
+
+
+
+

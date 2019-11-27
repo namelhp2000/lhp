@@ -1,0 +1,124 @@
+﻿@{
+    ViewBag.Title = "EditOption";
+}
+@using RoadFlow.Utility
+@model RoadFlow.Model.VoteItem
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <div>
+            <div style="height:8px;"></div>
+            <input type="hidden" name="Id" value="@Model.Id">
+            <input type="hidden" name="VoteId" value="@Model.VoteId">
+            <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+                <tr>
+                    <th style="width: 80px;">标题：</th>
+                    <td><input type="text" name="ItemTitle" class="mytext" value="@Model.ItemTitle" validate="empty" style="width: 81%" /></td>
+                </tr>
+                <tr>
+                    <th>选择方式：</th>
+                    <td>
+                        <input type="radio" id="SelectModel0" validate="radio" value="0" name="SelectModel" style="vertical-align:text-top;" /><label style="vertical-align:middle;" for="SelectModel0">不能选择</label>
+                        <input type="radio" id="SelectModel1" validate="radio" value="1" name="SelectModel" checked="checked" ; style="vertical-align:text-top;" /><label style="vertical-align:middle;" for="SelectModel1">单选</label>
+                        <input type="radio" id="SelectModel2" validate="radio" value="2" name="SelectModel" style="vertical-align:text-top;" /><label style="vertical-align:middle;" for="SelectModel2">多选</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<label style="vertical-align:middle;">排序：<input type="text" class="mytext" name="Sort" style="width:50px;" value="@Model.Sort" /></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table border="0" style="width:100%;" cellpadding="2" cellspacing="0" id="optionsTable">
+                            <thead>
+                                <tr>
+                                    <th align="left" style="text-align:left; width:48%">选项标题</th>
+                                    <th align="left" style="text-align:left; width:22%">输入</th>
+                                    <th align="left" style="text-align:left; width:20%">样式</th>
+                                    <th align="left" style="text-align:left; width:10%"><input type="button" class="mybutton" value="添加" onclick="addOption();" /></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.ItemTitle.IsNullOrEmpty())
+                                {
+                                    @foreach (var item in ((List<RoadFlow.Model.VoteItemOption>)ViewBag.voteItemOptions).Where(s => s.ItemId == Model.Id).OrderBy(x => x.Sort).ToList<RoadFlow.Model.VoteItemOption>())
+                                    {
+                                        var isinpu_0 = "isinput_" + item.Id + "_0";
+                                        var isinpu_1 = "isinput_" + item.Id + "_1";
+                                        var isinpu_2 = "isinput_" + item.Id + "_2";
+
+                                <tr>
+                                    <td><input type="hidden" name="trindex" value="@item.Id" /><input type="text" class="mytext" name="title_@item.Id" value="@item.OptionTitle" style="width:98%;" /></td>
+                                    @if (item.IsInput == 0)
+                                    {
+                                        <td><input type="radio" name="isinput_@item.Id" id="@isinpu_0" checked="checked" value="0" style="vertical-align:middle;" /><label for="@isinpu_0" style="vertical-align:middle;">无</label><input type="radio" name="isinput_@item.Id" id="@isinpu_1" value="1" style="vertical-align:middle;" /><label for="@isinpu_1" style="vertical-align:middle;">文本框</label><input type="radio" name="isinput_@item.Id" id="@isinpu_2" value="2" style="vertical-align:middle;" /><label for="@isinpu_2" style="vertical-align:middle;">文本域</label></td>
+                                    }
+                                    else if (item.IsInput == 1)
+                                    {
+                                        <td><input type="radio" name="isinput_@item.Id" id="@isinpu_0" value="0" style="vertical-align:middle;" /><label for="@isinpu_0" style="vertical-align:middle;">无</label><input type="radio" name="isinput_@item.Id" id="@isinpu_1" checked="checked" value="1" style="vertical-align:middle;" /><label for="@isinpu_1" style="vertical-align:middle;">文本框</label><input type="radio" name="isinput_@item.Id" id="@isinpu_2" value="2" style="vertical-align:middle;" /><label for="@isinpu_2" style="vertical-align:middle;">文本域</label></td>
+                                    }
+                                    else if (item.IsInput == 2)
+                                    {
+                                        <td><input type="radio" name="isinput_@item.Id" id="@isinpu_0" value="0" style="vertical-align:middle;" /><label for="@isinpu_0" style="vertical-align:middle;">无</label><input type="radio" name="isinput_@item.Id" id="@isinpu_1" value="1" style="vertical-align:middle;" /><label for="@isinpu_1" style="vertical-align:middle;">文本框</label><input type="radio" name="isinput_@item.Id" id="@isinpu_2" checked="checked" value="2" style="vertical-align:middle;" /><label for="@isinpu_2" style="vertical-align:middle;">文本域</label></td>
+                                    }
+
+                                    <td><input type="text" class="mytext" placeholder="例:width:100px" name="style_@item.Id" value="@item.InputStyle" style="width:98%;" /></td>
+                                    <td><input type="button" class="mybutton" onclick="$(this).parent().parent().remove();" value="删除" /></td>
+                                </tr>
+
+
+
+                                    }
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <div class="buttondiv">
+                <input type="button" value="确定保存" class="mybutton" onclick="saveApp(this);" />
+                <input type="button" class="mybutton" value="  返 回  " style="margin-left: 5px;" onclick="return1();" />
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    $(function () {
+          $(":radio[name='SelectModel'][value='" + @Model.SelectModel + "']").prop("checked", "checked");
+         });
+
+    function return1() {
+        window.location = 'EditItem'+'@Html.Raw(ViewBag.queryString)';
+    }
+
+    function addOption() {
+        var $table = $("#optionsTable");
+        var trIndex = $("tbody tr", $table).size() + 1;
+        var html = '<tr>';
+        html += '<td><input type="hidden" name="trindex" value="' + trIndex + '"/><input type="text" class="mytext" name="title_' + trIndex + '" style="width:98%;"/></td>';
+        html += '<td><input type="radio" name="isinput_' + trIndex + '" id="isinput_' + trIndex + '_0" value="0" style="vertical-align:middle;" checked="checked"/><label for="isinput_' + trIndex + '_0" style="vertical-align:middle;">无</label>';
+        html += '<input type="radio" name="isinput_' + trIndex + '" id="isinput_' + trIndex + '_1" value="1" style="vertical-align:middle;"/><label for="isinput_' + trIndex + '_1" style="vertical-align:middle;">文本框</label>';
+        html += '<input type="radio" name="isinput_' + trIndex + '" id="isinput_' + trIndex + '_2" value="2" style="vertical-align:middle;"/><label for="isinput_' + trIndex + '_2" style="vertical-align:middle;">文本域</label></td>';
+        html += '<td><input type="text" class="mytext" placeholder="例:width:100px" name="style_' + trIndex + '" style="width:98%;"/></td>';
+        html += '<td><input type="button" class="mybutton" onclick="$(this).parent().parent().remove();" value="删除"/></td>';
+        html += '</tr>';
+        $("tbody", $table).append(html);
+    }
+    function saveApp(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SaveOption"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    window.location = 'EditItem'+'@Html.Raw(ViewBag.queryString)';
+                }
+            });
+        }
+    }
+</script>
+

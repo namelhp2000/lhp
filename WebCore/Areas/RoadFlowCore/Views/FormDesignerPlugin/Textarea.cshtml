@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "TextTarea";
+
+}
+
+<table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:290px"></select></td>
+    </tr>
+    <tr>
+        <th>默认值：</th>
+        <td>
+            <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+            <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:80px; margin-right:6px;"></textarea></div>
+        </td>
+    </tr>
+    <tr>
+        <th>最大字符数:</th>
+        <td><input type="text" id="maxlength" class="mytext" style="width:150px" /></td>
+    </tr>
+    <tr>
+        <th>宽度:</th>
+        <td><input type="text" id="width" class="mytext" style="width:150px" /></td>
+    </tr>
+    <tr>
+        <th>高度:</th>
+        <td><input type="text" id="height" class="mytext" style="width:150px" /> </td>
+    </tr>
+    <tr>
+        <th>背景文字:</th>
+        <td><input type="text" id="placeholdertext" class="mytext" style="width:98%" /> </td>
+    </tr>
+    <tr>
+        <th>值类型:</th>
+        <td><select class="myselect" id="valuetype"></select></td>
+    </tr>
+    @if (RoadFlow.Utility.Config.IsRemarks == "1")
+    {
+        <tr>
+            <th> 说明：</th>
+            <td>
+                1、自定义默认值：MVC写法为：{Method<命名空间.类名.方法名>}：将执行一个方法的返回值来替换。<br />
+                2、默认值绑定字段：{<字段名>}
+                3、格式：显示时的格式，如金额可以是：##.##
+          </td>
+        </tr>
+    }
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

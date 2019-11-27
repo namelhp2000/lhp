@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+@model RoadFlow.Model.HomeSet
+    <link href="/RoadFlowResources/scripts/bigcolorpicker/css/jquery.bigcolorpicker.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/jquery.bigcolorpicker.js"></script>
+    <script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shCore.js"></script>
+    <script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shBrushJScript.js"></script>
+    <script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shBrushJava.js"></script>
+    <link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+    <link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+    <form id="form1" method="post">
+        <br />
+        @Html.AntiForgeryToken()
+        <table cellpadding="0" cellspacing="1" border="0" width="90%" class="formtable" style="margin-top:10px;">
+            <tr>
+                <th style="width: 80px;">模块名称：</th>
+                <td>
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="text" class="mytext" validate="empty" id="Name" name="Name" value="@Model.Name" style="width:300px;" />
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">显示标题：</th>
+                <td><input type="text" class="mytext" validate="empty" id="Title" name="Title" value="@Model.Title" style="width:300px;" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">类型：</th>
+                <td>
+                    <select id="Type" name="Type" class="myselect" validate="empty">
+                        <option name="Type"  value=""></option>
+                        <option name="Type"  value="0" >顶部统计</option>
+                        <option name="Type"  value="1">左边模块</option>
+                        <option name="Type"  value="2">右边模块</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">数据来源：</th>
+                <td>
+                    <select id="DataSourceType" name="DataSourceType" onchange="dstypecng(this.value);" class="myselect" validate="empty">
+                        <option name="DataSourceType" value=""></option>
+                        <option name="DataSourceType" value="0">SQL语句</option>
+                        <option name="DataSourceType" value="1" >C#方法</option>
+                        <option name="DataSourceType" value="2">URL地址</option>
+                    </select>
+                    <span id="DBConnIDSpan" style="display:none;">
+                        数据连接：
+                        <select class="myselect" id="DbConnId" name="DbConnId">
+                            <option value=""></option>
+                            @Html.Raw(ViewBag.dbconnOptions)
+
+                        </select>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">来源：</th>
+                <td><textarea class="mytextarea" validate="empty" style="width:99%;height:160px;" name="DataSource" id="DataSource">@Html.Raw(Model.DataSource)</textarea></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">连接地址：</th>
+                <td><input type="text" class="mytext" id="LinkURL" name="LinkURL" style="width:99%;" value="@Model.LinkURL" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">图标：</th>
+                @*<td><input type="text" class="myico" source="/Images/ico" id="Ico" name="Ico" value="@Model.Ico" style="width:300px;" /></td>*@
+                <td><input type="text" class="myico" id="Ico" name="Ico"  value="@Model.Ico"  style="width:300px;" /></td>
+               
+            </tr>
+            <tr>
+                <th style="width: 80px;">背景颜色：</th>
+                <td><input type="text" class="mytext" id="BackgroundColor" value="@Model.BackgroundColor"  name="BackgroundColor" style="width:300px;" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">字体颜色：</th>
+                <td><input type="text" class="mytext" id="FontColor" name="FontColor" value="@Model.FontColor" style="width:300px;" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">使用对象：</th>
+                <td><input type="text" class="mymember" id="UseOrganizes" value="@Model.UseOrganizes" name="UseOrganizes" style="width:300x;" /></td>
+            </tr>
+
+            <tr>
+                <th style="width: 80px;">备注：</th>
+                <td><input type="text" class="mytext" id="Note" name="Note" value="@Model.Note" style="width:99%;" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">排序：</th>
+                <td><input type="text" class="mytext" id="Sort" name="Sort" style="" value="35" /></td>
+            </tr>
+        </table>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" value=" 保 存 " onclick="save(this);" />
+            <input type="button" class="mybutton" value=" 返 回 " onclick="window.location='Index?@ViewBag.query'" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("[name='Type'][value='" + @Model.Type + "']").prop("selected", "selected");
+            $("[name='DataSourceType'][value='" + @Model.DataSourceType + "']").prop("selected", "selected");
+
+            dstypecng($("#DataSourceType").val());
+            $("#BackgroundColor").bigColorpicker();
+            $("#FontColor").bigColorpicker();
+
+        });
+        function dstypecng(type) {
+            if ("0" == type) {
+                $("#DBConnIDSpan").show();
+            }
+            else {
+                $("#DBConnIDSpan").hide();
+            }
+        }
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "EditSave?@ViewBag.query", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                            window.location = 'Index?@ViewBag.query'
+                        }
+                        $(but).prop("disabled", false);
+                    }
+                });
+            }
+        }
+    </script>

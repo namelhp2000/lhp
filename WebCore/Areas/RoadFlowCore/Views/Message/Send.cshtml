@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Send";
+
+}
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <br /><br />
+        <table cellpadding="0" cellspacing="1" border="0" width="90%" class="formtable">
+            <tr>
+                <th style="width:100px;">接收人员：</th>
+                <td>
+                    <input type="text" id="ReceiverId" name="ReceiverId" validate="empty" class="mymember" style="width: 55%" />
+                </td>
+            </tr>
+            <tr>
+                <th>接收方式：</th>
+                <td>
+                    <input type="checkbox" value="0" checked="checked" name="ReceiveType" validate="checkbox" id="ReceiveType_0" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="ReceiveType_0">站内消息</label>
+                    <input type="checkbox" value="1" name="ReceiveType" id="ReceiveType_1" validate="checkbox" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="ReceiveType_1">手机短信</label>
+                    <input type="checkbox" value="2" checked="checked" name="ReceiveType" id="ReceiveType_2" validate="checkbox" style="vertical-align:middle;" /><label style="vertical-align:middle;" for="ReceiveType_2">微信</label>
+                </td>
+            </tr>
+            <tr>
+                <th>消息内容：</th>
+                <td><textarea id="Contents" name="Contents" style="width:99%; height:250px;"></textarea></td>
+               
+            </tr>
+            
+            <tr>
+                <th>附件：</th>
+                <td><input type="text" id="Files" name="Files" class="myfile" style="width: 65%" /></td>
+            </tr>
+            
+        </table>
+        <div class="buttondiv">
+            <input type="button" value="确定发送" onclick="return save(this); " class="mybutton" />
+        </div>
+    </form>
+    <script src="/RoadFlowResources/scripts/ckeditor/ckeditor.js"></script>
+    <script src="/RoadFlowResources/scripts/flowRun/form.js"></script>
+    <script type="text/javascript">
+        $(function () {
+        //    var editor = CKEDITOR.replace("Contents", {
+        //        height:250,
+        //        toolbarGroups: formLoad.ckeditor_toolbarFullGroups,
+        //        filebrowserImageUploadUrl: '/RoadFlowCore/Controls/SaveCKEditorFiles'
+        //});
+            var editor = CKEDITOR.replace("Contents", {
+                height: 250,
+                toolbarGroups: formLoad.ckeditor_toolbarMessageGroups,
+                filebrowserImageUploadUrl: '/RoadFlowCore/Controls/SaveCKEditorFiles'
+            });
+        });
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+               var contents = CKEDITOR.instances.Contents.getData();
+                if (o.Contents.length > 900) {
+                    alert("内容太长!");
+                    return;
+                }
+                o.Contents = contents;
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveSend"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                        }
+                        $(but).prop("disabled", false);
+                        window.location = window.location;
+                    }
+                });
+            }
+        }
+    </script>
+
+

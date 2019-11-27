@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "SendMail";
+}
+<form id="form1" method="post">
+    <br />
+    <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+        <tr>
+            <th style="width: 80px;">收件人：</th>
+            <td><input type="text" name="ReceiveUsers" id="ReceiveUsers" errmsg="收件人不能为空" class="mymember" value="@Html.Raw(ViewBag.receiveUsers)" validate="empty" style="width: 703px" /></td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">抄送：</th>
+            <td>
+                <input type="text" name="CarbonCopy" id="CarbonCopy" class="mymember" value="@Html.Raw(ViewBag.CarbonCopy)" style="width: 305px" />
+                <span style="margin-left:15px;">密送：<input type="text" name="SecretCopy" id="SecretCopy" class="mymember" value="@Html.Raw(ViewBag.SecretCopy)" style="width: 305px" /></span>
+            </td>
+        </tr>
+
+        <tr>
+            <th style="width: 80px;">主题：</th>
+            <td>
+                <input type="text" name="Subject" class="mytext" placeholder="最大200个字" errmsg="主题不能为空" value="@Html.Raw(ViewBag.subject)" validate="empty" style="width: 589px" />
+                &nbsp;&nbsp;颜色：<input type="text" id="SubjectColor" name="SubjectColor" value="@ViewBag.subjectColor" class="mytext" style="width:99px" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">附件：</th>
+            <td><input type="text" name="Files" id="Files" class="myfile" value="@Html.Raw(ViewBag.files)" style="width: 703px" /></td>
+        </tr>
+        <tr>
+            <th style="width: 80px;">正文：</th>
+            <td><textarea id="Contents" name="Contents" maxlength="200" errmsg="正文不能为空" validate="editor" style="width:100%;height:350px;">@Html.Raw(ViewBag.contents)</textarea></td>
+        </tr>
+
+    </table>
+    <div class="buttondiv">
+        <input type="button" value="存草稿箱" class="mybutton" onclick="save(this, 0);" />
+        &nbsp;<input type="button" value="发送邮件" class="mybutton" onclick="save(this, 1);" />
+        &nbsp;<input type="button" value="关闭窗口" class="mybutton" onclick="top.mainTab.closeTab();" />
+    </div>
+</form>
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/jquery.bigcolorpicker.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/jquery.bigcolorpicker.js"></script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shCore.js"></script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shBrushJScript.js"></script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shBrushJava.js"></script>
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shCore.css" rel="stylesheet" type="text/css" />
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shThemeDefault.css" rel="stylesheet" type="text/css" />
+<script src="/RoadFlowResources/scripts/ckeditor/ckeditor.js"></script>
+<script src="/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+    var refreshTabId = "@Html.Raw(ViewBag.refreshtabid)";
+    $(function () {
+        var editor = CKEDITOR.replace("Contents", {
+            height: 300,
+            toolbarGroups: formLoad.ckeditor_toolbarFullGroups,
+            filebrowserImageUploadUrl: '/RoadFlowCore/Controls/SaveCKEditorFiles'
+        });
+        //初始化颜色选择
+        $("#SubjectColor").bigColorpicker();
+    });
+    function save(but, status) {
+        //如果是存草稿，收件人可以为空
+        if (0 == status) {
+            $("#ReceiveUsers_text").removeAttr("validate");
+        } else {
+            $("#ReceiveUsers_text").attr("validate", "empty");
+        }
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            if (1 == status) {
+                if (!confirm('您确定要发送此邮件吗?')) {
+                    return;
+                }
+            }
+            var o = RoadUI.Core.serializeForm($(f));
+            var contents = CKEDITOR.instances.Contents.getData();
+            o.Contents = contents;
+            o.Status = status;
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SaveSendMail"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", dataType: "json", success: function (json) {
+                    $(but).prop("disabled", false);
+                    if (json.success == 0) {
+                        alert(json.message);
+                    } else {
+                        alert(json.message);
+                        //如果是发送邮件，则关闭TAB
+                        if (refreshTabId) {
+                            top.mainTab.refresh(refreshTabId);
+                        }
+                        if (1 == status) {
+                            top.mainTab.closeTab();
+                        } else {
+                            window.location = "SendMail?@Html.Raw(ViewBag.query)" + (0 == status && json.id ? "&id=" + json.id : "");
+                        }
+                    }
+                }
+            });
+        }
+    }
+</script>
+

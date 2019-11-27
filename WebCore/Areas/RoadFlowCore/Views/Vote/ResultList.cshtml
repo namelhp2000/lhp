@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "ResultList";
+}
+
+
+    <form method="post" id="form1">
+        @Html.AntiForgeryToken()
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        主题：<input type="text" class="mytext" id="Topic" name="Topic" value="" style="width:200px" />
+                        创建时间：<input type="text" class="mycalendar" id="Date1" name="Date1" style="width:90px;" value="" /> 至 <input type="text" class="mycalendar" id="Date2" name="Date2" style="width:90px;" value="" />
+                        <input type="button" name="Search" onclick="query();" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input type="hidden" name="checkbox_app" id="checkbox_app" value="" />
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+    var dialog = new RoadUI.Window();
+    var curPageSize;
+    var curPageNumber;
+    $(function ()
+    {
+        $("#listtable").jqGrid({
+            url: "QueryResultList?@ViewBag.query",
+            postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['主题', '创建人', '创建时间', '结束时间', '状态', '查看'],
+            colModel: [
+                { name: 'Topic', index: 'Topic'},
+                { name: 'CreateUserId', index: 'CreateUserId', align: "left", width: 80 },
+                { name: 'CreateTime', index: 'CreateTime', align: "left", width: 120 },
+                { name: 'EndTime', index: 'EndTime', align: "left", width: 120 },
+                { name: 'Status', index: 'Status', width: 80 },
+                { name: 'Opation', index: '', sortable: false, title: false, align: "left", width: 50 }
+            ],
+            sortname: "CreateTime",
+            sortorder: "DESC",
+            height: '100%',
+            multiselect: false,
+            width: $(window).width(),
+            loadComplete: function ()
+            {
+                 //鼠标移动背景颜色变化
+                $("#listtable tr").mouseenter(function () {
+                    $(this).css("background", "lightblue");
+                });
+                $("#listtable tr").mouseleave(function () {
+                    $(this).css("background", "white");
+                });
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                curPageSize = records.pagesize;
+                curPageNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+            }
+        });
+    });
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number) {
+        var data = {
+            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+            Topic: $("#Topic").val(), Date1: $("#Date1").val(), Date2: $("#Date2").val(),
+            pagesize: size, pagenumber: number
+        };
+        $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+    function view(id) {
+        var url = '/RoadFlowCore/Vote/ResultView?id=' + id + '&@ViewBag.query&pagesize=' + curPageSize + "&pagenumber=" + curPageNumber;
+        top.openApp(url, 0, '查看问卷结果', id);
+    }
+    </script>

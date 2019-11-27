@@ -1,0 +1,91 @@
+﻿<form method="post">
+   
+    <br />
+
+    @*修改table表的数据列表*@
+    <table cellpadding="0" cellspacing="1" border="0" width="97%" class="formtable">
+        <tr>
+            <th>输入值：</th>
+            <td>
+                <input type="text" name="s_name" id="s_name" class="mytext" validate="empty" style="width: 75%" />
+            </td>
+        </tr>
+        <tr>
+            <th>加密：</th>
+            <td>
+                <input type="text" name="s_glide" id="s_glide" class="mytext" style="width: 75%" />
+                <input type="button" value="加密" class="mybutton" onclick="saves(this);" />
+            </td>
+        </tr>
+        <tr>
+            <th>解密：</th>
+            <td>
+                <input type="text" name="s_ic_no" id="s_ic_no" class="mytext" style="width: 75%" />
+                <input type="button" value="解密" class="mybutton" onclick="saves2(this);" />
+            </td>
+        </tr>
+
+
+
+
+    </table>
+
+
+
+
+   
+</form>
+<script type="text/javascript">
+        var win = new RoadUI.Window();
+        $(function () {
+        });
+        $(window).load(function () {
+
+    });
+    //保存方法
+    function saves(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "FuncTry" ,
+                    data: o,
+                    type: "post",
+                    success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            $("#s_glide").val(text)
+                            alert(text)
+                        }
+                        $(but).prop("disabled", false);
+                     
+                    }
+                });
+            }
+    }
+
+
+
+    //保存方法
+    function saves2(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "DesDecrypt1" ,
+                    data: o,
+                    type: "post",
+                    success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            $("#s_ic_no").val(text) 
+                            alert(text)
+                        }
+                        $(but).prop("disabled", false);
+                       
+                    }
+                });
+            }
+        }
+</script>
+

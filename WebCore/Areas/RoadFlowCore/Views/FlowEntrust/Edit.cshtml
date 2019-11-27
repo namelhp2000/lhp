@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "Instance";
+}
+    @model RoadFlow.Model.FlowEntrust
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <br />
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="WriteTime" value="@Model.WriteTime" />
+        <table cellpadding="0" cellspacing="1" border="0" width="97%" class="formtable">
+          
+            <tr  id="weitou">
+                <th style="width:100px;">委托人：</th>    
+                <td><input type="text" name="UserId" dept="0" station="0" unit="0" user="1" group="0" id="UserId" class="mymember" validate="empty" value="u_@Model.UserId" /></td>
+            </tr>
+          
+            <tr>
+                <th>被委托人：</th>
+                <td>
+                    <input type="text" name="ToUserId" dept="0" station="0" unit="0" user="1" group="0" id="ToUserId" class="mymember" validate="empty" value="@Model.ToUserId" />
+                </td>
+            </tr>
+            <tr>
+                <th>开始时间：</th>
+                <td><input type="text" name="StartTime" id="StartTime" class="mycalendar" istime="1" validate="empty" value="@Model.StartTime" /></td>
+            </tr>
+            <tr>
+                <th>结束时间：</th>
+                <td><input type="text" name="EndTime" id="EndTime" class="mycalendar" istime="1" validate="empty"  /></td>
+            </tr>
+            <tr>
+                <th>委托流程：</th>
+                <td><select class="myselect2" id="flowId" name="flowId" style="width:210px;"><option value=""></option>@Html.Raw(ViewBag.flowOptions)</select> *为空表示全部流程</td>
+            </tr>
+            <tr>
+                <th>备注说明：</th>
+                <td><textarea class="mytextarea" id="Note" name="Note" cols="1" rows="1" style="width:95%;height:50px;">@Html.Raw(Model.Note)</textarea></td>
+            </tr>
+
+        </table>
+        <div class="buttondiv">
+            <input type="button" value="确定保存" class="mybutton" onclick="checkform(this);" />
+            <input type="button" class="mybutton" value="取消关闭" style="margin-left: 5px;" onclick="new RoadUI.Window().close();" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var win = new RoadUI.Window();
+        $(function () {
+            var endTime ="@ViewBag.isAdd"=="1"?'':"@Model.EndTime";;
+            $("#EndTime").val(endTime);
+            if ("@ViewBag.isOneSelf"=="1") {
+                $("#weitou").hide();
+            };
+
+        });
+        $(window).load(function () {
+            
+        });
+        function checkform(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "Save"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                        }
+                        $(but).prop("disabled", false);
+                        win.reloadOpener(undefined, undefined, "query('@ViewBag.pageSize','@ViewBag.pageNumber')");
+                        win.close();
+                    }
+                });
+            }
+        }
+    </script>
+

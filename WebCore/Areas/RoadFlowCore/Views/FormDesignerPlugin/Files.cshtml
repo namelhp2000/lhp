@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Files";
+}
+
+<table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:270px"></select></td>
+    </tr>
+    <tr>
+        <th>宽度：</th>
+        <td><input type="text" id="width" class="mytext" style="width:270px;" /> </td>
+    </tr>
+    <tr>
+        <th>文件类型：</th>
+        <td><input type="text" id="fileType" class="mytext" style="width:270px;" /> <span style="color:#666;">格式：png,jpg,gif</span></td>
+    </tr>
+    <tr>
+        <th>显示：</th>
+        <td>
+            <input type="checkbox" id="fileshow" value="1" style="vertical-align:middle;" /><label for="fileshow" style="vertical-align:middle;">显示为图片</label>
+            &nbsp;&nbsp;宽度：<input type="text" id="fileshowwidth" class="mytext" style="width:80px;" />px
+            &nbsp;&nbsp;高度：<input type="text" id="fileshowheight" class="mytext" style="width:80px;" />px
+        </td>
+    </tr>
+    <tr>
+        <th>父窗口：</th>
+        <td><input type="text" id="opener" class="mytext" style="" /> <span style="color:#666;">打开弹窗的父窗口如:window,parent,top</span></td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

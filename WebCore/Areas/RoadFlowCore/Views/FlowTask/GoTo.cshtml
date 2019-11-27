@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Designate";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <table class="listtable">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" onclick="$('[name=\'step\']').prop('checked', this.checked);" style="vertical-align:middle;" id="checkall" /><label for="checkall">步骤</label></th>
+                    <th>处理人员</th>
+                </tr>
+            </thead>
+            <tbody id="tableGoto">
+                @{
+                    foreach (var stepss in (IEnumerable<RoadFlow.Model.FlowRunModel.Step>)ViewBag.Steps)
+                    {
+                        <tr>
+                            <td><input type="checkbox" style="vertical-align:middle;" name="step" id="step_@stepss.Id" value="@stepss.Id" /><label style="vertical-align:middle;" for="step_@stepss.Id">@stepss.Name</label></td>
+                            <td><input type="text" value="" opener="window.parent.parent" style="width:200px;" class="mymember" id="member_@stepss.Id" name="member_@stepss.Id" /></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="buttondiv" style="margin-top:10px;">
+            <input type="button" class="mybutton" value="确定跳转" onclick="goto(this);" />
+            <input type="button" class="mybutton" value="关闭窗口" onclick="new RoadUI.Window().close();" />
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    
+    @*$(function () {
+           var html = '';
+            foreach (var  data in  @Html.Raw(ViewBag.steps)) {//循环json对象，拼接tr,td的html       
+            html = html + '<tr>';
+            html = html + '<td> <input type="checkbox" style="vertical-align:middle;" name="step" id="step_' + data.id + '" value="' + data.id + '" /><label style="vertical-align:middle;" for="step_' + data.id +'">'+data.name+'</label></td>';
+            html = html + '<td><input type="text" value="" opener="window.parent.parent" style="width:200px;" class="mymember" id="member_' + data.id + '" name="member_' + data.id +'" /></td>';
+            html = html + '</tr>';
+        }
+        $('#tableGoto').html(html);
+});*@
+
+
+
+    var win = new RoadUI.Window();
+    function goto(but) {
+        var f = document.forms[0];
+        var isValidate = true;
+        var $checkeds = $(":checked[name='step']");
+        if ($checkeds.size() == 0) {
+            alert('未选择要跳转的步骤!');
+            return;
+        }
+        $checkeds.each(function () {
+            var stepId = $(this).val();
+            if ($.trim($("#member_" + stepId).val()).length == 0) {
+                alert($(this).next("label").text() + '未选择接收人!');
+                isValidate = false;
+                return true;
+            }
+        });
+        if (!isValidate) {
+            return;
+        }
+        var o = RoadUI.Core.serializeForm($(f));
+        $(but).prop("disabled", true);
+        $.ajax({
+            url: "SaveGoTo"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                alert(text);
+                $(but).prop("disabled", false);
+                win.reloadOpener();
+                win.close();
+            }
+        });
+    }
+</script>
+
+

@@ -1,0 +1,82 @@
+﻿@using RoadFlow.Utility
+@{
+    ViewBag.Title = "Show";
+    var DocEdits = "DocEdit" + Html.Raw(ViewBag.queryString);
+    var lists = "List" + Html.Raw(ViewBag.queryString);
+}
+
+@model RoadFlow.Model.Doc
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+    <div class="toolbar" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:99999; width:100%; margin-right:auto;">
+        <a href="javascript:void(0);" onclick="window.location='@lists';return false;"><i class="fa fa-reply"></i><label>返回列表</label></a>
+        <span class="toolbarsplit">&nbsp;</span>
+        @if (ViewBag.isPublish == "1")
+        {
+
+            <a href="javascript:void(0);" onclick="showRead(this);return false;"><i class="fa fa-eye"></i><label>阅读情况</label></a>
+            <span class="toolbarsplit">&nbsp;</span>
+            <a href="javascript:void(0);" onclick="window.location='@DocEdits';"><i class="fa fa-pencil-square-o"></i><label>编辑文档</label></a>
+            <a href="javascript:void(0);" onclick="del(this);return false;"><i class="fa fa-times"></i><label>删除文档</label></a>
+        }
+    </div>
+    <div style="height:30px;"></div>
+    <table class="formtable" style="margin-top:10px;" width="98%;" cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+            <tr>
+                <td style="height:28px; font-weight:bold; font-size:16px; text-align:left;">
+                    @Model.Title
+                </td>
+            </tr>
+            <tr>
+                <td style="height:28px; color:#666; text-align:left;">
+                    <span style="margin-right:12px;">所属栏目：@Model.DirName</span>
+                    <span style="margin-right:12px;">来源：@Model.Source</span>
+                    <span style="margin-right:12px;">发布时间：@Model.WriteTime</span>
+                    <span style="margin-right:12px;">发布人：@Model.WriteUserName</span>
+                    <span>阅读次数：@Model.ReadCount</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="border-bottom:1px solid #ccc;"></td>
+            </tr>
+            <tr>
+                <td style="padding:8px 10px;text-align:left; line-height:21px;">
+                    @Html.Raw(Model.Contents)
+                </td>
+            </tr>
+            @if (!Model.Files.IsNullOrEmpty())
+            {
+                <tr>
+
+                    <td style="height:28px;padding:8px 10px;">
+                        相关附件：  @Html.Raw(RoadFlow.Business.UserFile.GetFilesShowString(Model.Files))
+
+                    </td>
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br>
+</form>
+<script type="text/javascript">
+    function del(a) {
+        if (confirm('您真的要删除该文档吗?')) {
+            $.ajax({
+                url: "DocDelete"+"@Html.Raw(ViewBag.queryString)", type: "post",
+                data: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                success: function (txt) {
+                    alert(txt);
+                    window.location = 'List'+'@Html.Raw(ViewBag.queryString)';
+                }
+            });
+        }
+    }
+    function showRead(a) {
+        top.openApp("/RoadFlowCore/Doc/ShowRead"+"@Html.Raw(ViewBag.queryString)", 2,
+            "查看文档阅读情况", "", 900, 480, true, "@ViewBag.tabId");
+    }</script>
+
+

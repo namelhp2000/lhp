@@ -1,0 +1,120 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new RoadFlow.Business.FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new RoadFlow.Business.Form().GetFormData("978c56b7-1e32-4458-b4ef-0c932e72f475", "View_Reports", "PatID", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new RoadFlow.Business.Form().GetDefaultValuesJSON("[{'id':'VIEW_REPORTS-VERIFYDATE','value':'{<ShortDate>}'},{'id':'VIEW_REPORTS-REPORTDATE','value':'{<ShortDate>}'}]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "View_Reports", "@display", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="978c56b7-1e32-4458-b4ef-0c932e72f475"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="View_Reports"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="PatID"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value=""/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<p>&nbsp;</p>
+
+<table border="0" cellpadding="0" cellspacing="0" style="width:750px;">
+	<tbody>
+		<tr>
+			<td style="text-align: center; width: 40px;">&nbsp;</td>
+			<td colspan="8" style="text-align: center; width: 700px;">&nbsp; &nbsp;<span style="font-size:36px;">&nbsp;沙县中医医院</span></td>
+		</tr>
+		<tr>
+			<td style="text-align: center; width: 40px;">&nbsp;</td>
+			<td colspan="8" style="text-align: center; width: 700px;"><strong><span style="font-size:18px;">放射科CT检查报告单</span></strong></td>
+		</tr>
+		<tr>
+			<td rowspan="1" style="text-align: right; height: 25px; width: 40px;">&nbsp;</td>
+			<td colspan="7" rowspan="1" style="text-align: right; height: 25px; width: 530px;"><span style="font-size:14px;"><strong>CT号：</strong></span></td>
+			<td style="width: 160px; height: 25px;"><input type="hidden" id="VIEW_REPORTS-PATID_hidden" name="VIEW_REPORTS-PATID" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-PATID" id="VIEW_REPORTS-PATID" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td style="width: 63px;"><strong>姓&nbsp; &nbsp;名：</strong></td>
+			<td style="width: 105px;"><input type="hidden" id="VIEW_REPORTS-PATNAM_hidden" name="VIEW_REPORTS-PATNAM" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-PATNAM" id="VIEW_REPORTS-PATNAM" style=""></label></td>
+			<td style="width: 57px;"><strong>性&nbsp; &nbsp;别：</strong></td>
+			<td style="width: 82px;"><input type="hidden" id="VIEW_REPORTS-PATSEX_hidden" name="VIEW_REPORTS-PATSEX" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-PATSEX" id="VIEW_REPORTS-PATSEX" style=""></label></td>
+			<td style="width: 75px;"><strong>年&nbsp; &nbsp; &nbsp; &nbsp;龄：</strong></td>
+			<td style="width: 51px;"><input type="hidden" id="VIEW_REPORTS-PATAGE_hidden" name="VIEW_REPORTS-PATAGE" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-PATAGE" id="VIEW_REPORTS-PATAGE" style=""></label></td>
+			<td style="width: 77px; text-align: right;"><strong>检查日期：</strong></td>
+			<td style="width: 160px;"><input type="hidden" id="VIEW_REPORTS-VERIFYDATE_hidden" name="VIEW_REPORTS-VERIFYDATE" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-VERIFYDATE" id="VIEW_REPORTS-VERIFYDATE" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td style="width: 63px;"><strong>住院号：</strong></td>
+			<td style="width: 105px;"><input type="hidden" id="VIEW_REPORTS-HOSNUMBER_hidden" name="VIEW_REPORTS-HOSNUMBER" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-HOSNUMBER" id="VIEW_REPORTS-HOSNUMBER" style=""></label></td>
+			<td style="width: 57px;"><strong>床位号：</strong></td>
+			<td style="width: 82px;"><input type="hidden" id="VIEW_REPORTS-BEDNUMBER_hidden" name="VIEW_REPORTS-BEDNUMBER" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-BEDNUMBER" id="VIEW_REPORTS-BEDNUMBER" style=""></label></td>
+			<td style="width: 75px;"><strong>检查设备：</strong></td>
+			<td style="width: 51px;">&nbsp;</td>
+			<td style="width: 77px; text-align: right;"><strong>报告日期：</strong></td>
+			<td style="width: 160px;"><input type="hidden" id="VIEW_REPORTS-REPORTDATE_hidden" name="VIEW_REPORTS-REPORTDATE" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-REPORTDATE" id="VIEW_REPORTS-REPORTDATE" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td style="width: 63px;"><strong>检查名称：</strong></td>
+			<td colspan="7" rowspan="1" style="width: 629px;"><input type="hidden" id="VIEW_REPORTS-STUDES_hidden" name="VIEW_REPORTS-STUDES" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-STUDES" id="VIEW_REPORTS-STUDES" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td colspan="8" style="width: 700px;"><span style="font-size:16px;"><strong>影像表现：</strong></span></td>
+		</tr>
+		<tr>
+			<td style="width: 40px; height: 126px;">&nbsp;</td>
+			<td colspan="8" style="width: 700px; height: 126px;"><input type="hidden" id="VIEW_REPORTS-INTERPRETATION_hidden" name="VIEW_REPORTS-INTERPRETATION" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-INTERPRETATION" id="VIEW_REPORTS-INTERPRETATION" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td colspan="8" style="width: 700px;"><strong><span style="font-size:16px;">影像诊断：</span></strong></td>
+		</tr>
+		<tr>
+			<td style="width: 40px; height: 127px;">&nbsp;</td>
+			<td colspan="8" style="width: 700px; height: 127px;"><input type="hidden" id="VIEW_REPORTS-IMPRESSIONS_hidden" name="VIEW_REPORTS-IMPRESSIONS" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-IMPRESSIONS" id="VIEW_REPORTS-IMPRESSIONS" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td style="width: 63px;">&nbsp;</td>
+			<td colspan="2" rowspan="1" style="width: 161px; text-align: right;"><strong>报告医生：</strong></td>
+			<td style="width: 82px;"><input type="hidden" id="VIEW_REPORTS-REPORTPHY_hidden" name="VIEW_REPORTS-REPORTPHY" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-REPORTPHY" id="VIEW_REPORTS-REPORTPHY" style=""></label></td>
+			<td rowspan="1" style="width: 75px; text-align: right;"><strong>审核医师：</strong></td>
+			<td rowspan="1" style="width: 51px;"><input type="hidden" id="VIEW_REPORTS-VERIFYPHY_hidden" name="VIEW_REPORTS-VERIFYPHY" value=""/><label data-isflow="1" data-type="label" data-bindfiled="VIEW_REPORTS-VERIFYPHY" id="VIEW_REPORTS-VERIFYPHY" style=""></label></td>
+			<td style="width: 77px;">&nbsp;</td>
+			<td style="width: 160px;">&nbsp;</td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td style="width: 63px;">&nbsp;</td>
+			<td style="width: 105px;">&nbsp;</td>
+			<td style="width: 57px;">&nbsp;</td>
+			<td style="width: 82px;">&nbsp;</td>
+			<td style="width: 75px;">&nbsp;</td>
+			<td style="width: 51px;">&nbsp;</td>
+			<td style="width: 77px;">&nbsp;</td>
+			<td style="width: 160px;">&nbsp;</td>
+		</tr>
+		<tr>
+			<td style="width: 40px;">&nbsp;</td>
+			<td colspan="8" style="width: 700px;"><span style="font-size:12px;"><strong>本报告审核医师签名有效，仅供本院临床医师参考，不做证明之用。</strong></span></td>
+		</tr>
+	</tbody>
+</table>
+
+<p dir="rtl">&nbsp;</p>

@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "Set_Attr";
+}
+@model RoadFlow.Model.Program
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+       <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="CreateTime" value="@Model.CreateTime" />
+        <input type="hidden" name="CreateUserId" value="@Model.CreateUserId" />
+        <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable" style="margin-top:10px;">
+            <tr>
+                <th style="width: 80px;">应用名称：</th>
+                <td><input type="text" id="Name" name="Name" value="@Model.Name" class="mytext" validate="empty" style="width: 85%" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">应用分类：</th>
+                <td>
+                    <select class="myselect" name="Type" errmsg="应用分类不能为空" validate="empty">
+                        <option value=""></option>
+                        @Html.Raw(ViewBag.appTypeOptions)
+                    </select>
+                    &nbsp;&nbsp;数据连接：<select class="myselect" name="ConnId" id="ConnId">
+                        @Html.Raw(ViewBag.dbconnOptions)
+                    </select>
+                    &nbsp;&nbsp;按钮显示位置：<select class="myselect" name="ButtonLocation" id="ButtonLocation">
+                        <option name="ButtonLocation" value="0">新行</option>
+                        <option name="ButtonLocation" value="1">查询后面</option>
+                    </select>
+                    &nbsp;&nbsp;是否分页：<select class="myselect" name="IsPager">
+                        <option name="IsPager" value="1">是</option>
+                        <option name="IsPager" value="0">否</option>
+                    </select>
+                    &nbsp;&nbsp;选择列：<select class="myselect" name="SelectColumn">
+                        <option name="SelectColumn" value="0">无</option>
+                        <option name="SelectColumn" value="1">单选</option>
+                        <option name="SelectColumn" value="2">多选</option>
+                    </select>
+                    &nbsp;&nbsp;序号列：<select class="myselect" name="RowNumber">
+                        <option name="RowNumber" value="0">不显示</option>
+                        <option name="RowNumber" value="1">显示</option>
+                    </select>
+                    &nbsp;&nbsp;是否分组：<select class="myselect" name="IsGroup" onchange="group_change(this.value)" id="IsGroup">
+                        <option name="IsGroup" value="0">否</option>
+                        <option name="IsGroup" value="1">是</option>
+                    </select>
+
+                    <span id="group_span">
+                        &nbsp;&nbsp;是否合计汇总：<select class="myselect" name="IsFooterrow" id="IsFooterrow">
+                            <option name="IsFooterrow" value="0">否</option>
+                            <option name="IsFooterrow" value="1">是</option>
+                        </select>
+                    </span>
+
+
+                </td>
+            </tr>
+            <tr>
+                <th>表单：</th>
+                <td>
+                    <select class="myselect" style="width:130px; max-height:200px;" onchange="form_types_change(this.value);" id="form_types">
+                        <option value=""></option>
+                        @Html.Raw(ViewBag.formTypeOptions)
+                    </select>
+                    <select class="myselect" id="FormId" name="FormId"></select>
+                    &nbsp;&nbsp;编辑方式：<select id="EditModel" data-val="@Model.EditModel" onchange="form_editmodel_change(this.value)" class="myselect" name="EditModel">
+                        <option name="EditModel" value="0">当前窗口</option>
+                        <option name="EditModel" value="1">弹出层</option>
+                        <option name="EditModel" value="2">弹出窗口</option>
+                    </select>
+                    <span id="form_editmodel_span">
+                        &nbsp;&nbsp;弹出宽度：<input type="text" class="mytext" id="Width" value="@Model.Width" name="Width" style="width:60px" />
+                        高度：<input type="text" id="Height" name="Height" class="mytext" value="@Model.Height" style="width:60px" />
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">查询SQL：</th>
+                <td><textarea style="width:99%; height:200px; font-family:Verdana; font-size:14px;" id="SqlString" name="SqlString" validate="empty" class="mytextarea">@Html.Raw(Model.SqlString)</textarea></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">默认排序：</th>
+                <td><input class="mytext" style="width:200px;" name="DefaultSort" id="DefaultSort" value="@Model.DefaultSort" /></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">表头合并：</th>
+                <td><textarea style="width:99%; height:100px; font-family:Verdana; font-size:14px;" id="GroupHeaders" name="GroupHeaders" class="mytextarea">@Html.Raw(Model.GroupHeaders)</textarea></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">页面脚本：</th>
+                <td><textarea style="width:99%; height:100px; font-family:Verdana; font-size:14px;" id="ClientScript" name="ClientScript" class="mytextarea">@Html.Raw(Model.ClientScript)</textarea></td>
+            </tr>
+            <tr style="display: none">
+                <th style="width: 80px;">列表表头：</th>
+                <td><textarea style="width:99%; height:80px; font-family:Verdana; font-size:14px;" id="TableHead" name="TableHead" class="mytextarea">@Html.Raw(Model.TableHead)</textarea></td>
+            </tr>
+            <tr>
+                <th style="width: 80px;">导出：</th>
+                <td>
+                    <span style="display: none">模板：<input type="text" id="ExportTemplate" name="ExportTemplate" value="@Model.ExportTemplate" class="myfile" /></span>
+                    &nbsp;&nbsp;表头：<input type="text" class="mytext" id="ExportHeaderText" name="ExportHeaderText" value="@Model.ExportHeaderText" style="width:400px" />
+                    &nbsp;&nbsp;文件名：<input type="text" class="mytext" id="ExportFileName" name="ExportFileName" value="@Model.ExportFileName" style="width:200px" />
+                </td>
+            </tr>
+            @if (RoadFlow.Utility.Config.IsRemarks == "1")
+            {
+                <tr>
+                    <th style="width: 80px;">说明：</th>
+                    <td>
+                        1、设置标题：<br />
+                        $(this).jqGrid("setCaption","采购退货单列表").trigger('reloadGrid');<br />
+                        2、设置汇总 <br />
+                        $("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x": "hidden" });<br />
+                        var rowNum = parseInt($(this).getGridParam("records"),10); <br />
+                        if (rowNum > 0) {<br />
+                        $(".ui-jqgrid-sdiv").show();<br />
+                        var sum_inAmount = $(this).getCol("n_money", false, "sum");<br />
+                        var sum_balance = $(this).getCol("s_in_mark", false, "sum");<br />
+                        $(this).footerData("set", { "n_money":sum_inAmount, "s_in_mark": sum_balance }); //将合计值显示出来<br />
+                        }<br />
+                        else {<br />
+                        $(".ui-jqgrid-sdiv").hide();<br />
+                        }<br />
+                        3、设置表头<br />
+                        $("#listtable").jqGrid("setGroupHeaders", {<br />
+                        useColSpanStyle:true,<br />
+                        groupHeaders:[{startColumnName:'S_HOSPITAL_NO', numberOfColumns:3, titleText: '患者信息' },<br />
+                        { startColumnName: 'D_TIME_ENTER',numberOfColumns: 3, titleText: '&lt;span style="color:red;"&gt;相关时间&lt;/span&gt;' }]<br />
+                        });<br />
+                        useColSpanStyle:true 合并标题 <br />
+                        startColumnName：开始字段名称<br />
+                        numberOfColumns：跨越字段长度<br />
+                        titleText：显示标题名称，使用html对应的方式显示<br />
+                        4、查询语句含有：where ，请在最后面添加where 1=1的条件<br />
+                        5、排序优先顺序是成组排序→字段排序<br />
+                        6、 设置序号的标题：$("#listtable").jqGrid('setLabel','rn', '排名', {'text-align':'left'},''); <br />
+                        7、行满足条设置背景色<br />
+                        var ids = $("#listtable").jqGrid("getDataIDs");//获取所有行的id <br />
+                        var rowDatas = $("#listtable").jqGrid("getRowData");//获取所有行的数据 <br />
+                        for(var ii=0;ii &lt; rowDatas.length;ii++){ <br />
+                        var rowData = rowDatas[ii]; <br />
+                        if(rowData.n_assessment_type &gt; 20){//如果某一行中的“n_assessment_type”字段为大于20，那就把这一整行的背景颜色设为红色，根据实际的字段进行设置背景颜色 <br />
+                        $("#"+ids[ii]+ " td").css("background-color","red");<br />
+                        }<br />
+                        }<br />
+                        8、通过存储查询数据：execute TestProc1 其中带参数的话，在存储过程中，要进行设定参数，然后查询位置最好跟参数位置一致<br />
+                        9、设置排序规则不要使用汉语作为别名<br />
+
+                    </td>
+                </tr>
+            }
+        </table>
+        <input type="hidden" name="InDataNumberFiledName" value="@Model.InDataNumberFiledName" />
+        <div class="buttondiv">
+            <input type="button" value=" 保 存 " onclick="save(this);" class="mybutton" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(function () {
+
+            $("[name='ButtonLocation'][value='" + @Model.ButtonLocation + "']").prop("selected", "selected");
+            $("[name='IsPager'][value='" + @Model.IsPager + "']").prop("selected", "selected");
+            $("[name='SelectColumn'][value='" + @Model.SelectColumn + "']").prop("selected", "selected");
+            $("[name='RowNumber'][value='" + @Model.RowNumber + "']").prop("selected", "selected");
+            $("[name='EditModel'][value='" + @Model.EditModel + "']").prop("selected", "selected");
+
+            $("[name='IsGroup'][value='" + @Model.IsGroup + "']").prop("selected", "selected");
+
+
+            $("[name='IsFooterrow'][value='" + @Model.IsFooterrow + "']").prop("selected", "selected");
+
+
+            form_types_change($("#form_types").val());
+
+            group_change($("#IsGroup").val());
+            form_editmodel_change($("#EditModel").val());
+            //loadTables($("#dbconnId").val(), '', '');
+
+
+             // alert( $('#form_types option:selected').text());//选中的文本
+
+            //alert($('#form_types option:selected') .val());//选中的值
+
+          //alert($("#form_types").get(0).selectedIndex);//索引
+
+
+
+
+        });
+
+       
+
+
+
+        function form_types_change(value) {
+            $.ajax({
+                url: "../Applibrary/GetOptionsByAppType"+"@Html.Raw(ViewBag.queryString)", data: { type: value, "value": "@Model.FormId" }, async: false, type: "post", success: function (txt) {
+                    $("#FormId").html('<option value=""></option>' + txt);
+                }
+            });
+        }
+        function form_editmodel_change(value) {
+              if ("1" === value || "2" === value) {
+                $("#form_editmodel_span").show();
+            }
+            else {
+                $("#form_editmodel_span").hide();
+            }
+        }
+
+        function group_change(value) {
+            if ("1" === value || "2" === value) {
+                $("#group_span").show();
+            }
+            else {
+                $("#group_span").hide();
+            }
+        }
+
+
+        function loadTables(connid, tableName, filedName) {
+            var tables = "<option></option>";
+            $.ajax({
+                url: "../Dbconnection/GetTableOptions?connid=" + connid,
+                dataType: "json",
+                async: false,
+                cache: false,
+                success: function (json) {
+                    for (var i = 0; i < json.length; i++) {
+                        tables += '<option value="' + json[i].name + '"' + (json[i].name.toLowerCase() == tableName.toLowerCase() ? ' selected="selected"' : '') + '>' + json[i].name + '</option>';
+                    }
+                    $("#DBTable").html(tables);
+                    if (tableName && tableName.length > 0) {
+                        getFields(connid, tableName, filedName);
+                    }
+                }
+            });
+        }
+        //得到一个表所有字段
+        function getFields(connid, tableName, filedName) {
+            var fields1 = '<option></option>';
+            $.ajax({
+                url: "../Dbconnection/GetFieldsOptions?connid=" + connid + "&table=" + tableName,
+                dataType: "json",
+                async: false,
+                cache: false,
+                success: function (json) {
+                    for (var i = 0; i < json.length; i++) {
+                        fields1 += '<option value="' + json[i].name + '"' + (json[i].name.toLowerCase() == filedName.toLowerCase() ? ' selected="selected"' : '') + '>' + json[i].name + '</option>';
+                    }
+                    $("#DBFiled").html(fields1);
+                }
+            });
+        }
+
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveAttr"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        alert(text);
+                        $(but).prop("disabled", false);
+                        parent.location = "Edit?programid=@Model.Id"+"&@Html.Raw(ViewBag.query)";
+                    }
+                });
+            }
+        }
+    </script>
+

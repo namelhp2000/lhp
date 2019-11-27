@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    var Endtime =((Model.EndTime == DateTimeExtensions.MaxValue)&&@Model.Topic.IsNullOrEmpty())? "" : Model.EndTime.ToDateTimeString();
+}
+@using RoadFlow.Utility
+@model RoadFlow.Model.Vote
+<form id="form1" method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <div>
+            <div style="height:8px;"></div>
+            <input type="hidden" name="Id" value="@Model.Id">
+            <input type="hidden" name="CreateUserId" value="@Model.CreateUserId">
+            <input type="hidden" name="CreateTime" value="@Model.CreateTime.">
+            <input type="hidden" name="Status" value="@Model.Status">
+            <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+                <tr>
+                    <th style="width: 100px;">问卷主题：</th>
+                    <td><input type="text" name="Topic" class="mytext" value="@Model.Topic" validate="empty" style="width: 81%" /></td>
+                </tr>
+                <tr>
+                    <th>参与人员：</th>
+                    <td><input type="text" class="mymember" style="width:75%" value="@Model.PartakeUsers" validate="empty" id="PartakeUsers" name="PartakeUsers" /></td>
+                </tr>
+                <tr>
+                    <th>结果查询人员：</th>
+                    <td><input type="text" class="mymember" style="width:75%" validate="empty" value="@Model.ResultViewUsers" id="ResultViewUsers" name="ResultViewUsers" /></td>
+                </tr>
+                <!--
+    <tr>
+        <th>结束时间：</th>
+        <td><input type="text" class="mycalendar" istime="1" style="width:150px" id="EndTime" name="EndTime" value="" /></td>
+    </tr>
+    -->
+                <tr>
+                    <th>结束时间：</th>
+                    <td><input type="text" class="mycalendar" istime="1" style="width:150px" id="EndTime" name="EndTime" value="@Endtime" /></td>
+                </tr>
+                <tr>
+                    <th>是否匿名：</th>
+                    <td>
+                        <input type="radio" name="Anonymous" id="Anonymous_0" value="0" style="vertical-align:middle;" /><label for="Anonymous_0" style="vertical-align:middle;">否</label>
+                        <input type="radio" name="Anonymous"  id="Anonymous_1" value="1" style="vertical-align:middle;" /><label for="Anonymous_1" style="vertical-align:middle;">是</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>备注说明：</th>
+                    <td><textarea class="mytextarea" name="Note" id="Note" cols="1" rows="1" style="width: 95%; height: 50px;">@Html.Raw(Model.Note)</textarea></td>
+                </tr>
+            </table>
+            <div class="buttondiv">
+                @if (Model.Status == 0)
+                {
+                    <input type="button" value="确定保存" class="mybutton" onclick="saveApp(this);" />
+                }
+                <input type="button" class="mybutton" value="取消关闭" style="margin-left: 5px;" onclick="closewin();" />
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    $(function () {
+             //radio设置值的方式 Status设置的值
+        $(":radio[name='Anonymous'][value='@Model.Anonymous']").prop("checked", "checked");
+
+    });
+    function closewin() {
+        win.close();
+        return false;
+    }
+    function saveApp(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+          
+           
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "Save"+ "@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    win.reloadOpener(undefined, undefined, "query('@ViewBag.pageSize','@ViewBag.pageNumber')");
+                    win.close();
+                }
+            });
+        }
+    }
+</script>
+

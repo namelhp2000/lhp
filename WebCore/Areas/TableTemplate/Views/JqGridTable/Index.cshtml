@@ -1,0 +1,79 @@
+﻿<form method="post" id="form1">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+        <table cellpadding="0" cellspacing="1" border="0" width="100%">
+            <tr>
+                <td>
+                    应用名称：<input type="text" class="mytext" id="Title" name="Title" value="" style="width:150px" />
+                    应用地址：<input type="text" class="mytext" id="Address" name="address" value="" style="width:220px" />
+                    <input type="button" name="Search" onclick="query();" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" /> 
+                  </td>
+            </tr>
+        </table>
+    </div>
+    <input type="hidden" name="checkbox_app" id="checkbox_app" value="" />
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+<script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var typeid = '@ViewBag.typeId';
+        var dialog = new RoadUI.Window();
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Query?@Html.Raw(ViewBag.query)",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(), "appid": appid, "typeid": typeid },//数据表单
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['应用名称', '应用地址', '应用分类'],//字段名称
+                colModel: [ //字段设置
+                    { name: 'Title', index: 'Title' },
+                    { name: 'Address', index: 'Address', align: "left" },
+                    { name: 'TypeTitle', index: 'Type', align: "left", width: 50 }
+                  // ， { name: 'Opation', index: '', sortable: false, title: false, align: "left", width: 50 }
+                ],
+                sortname: "Title",//排序字段
+                sortorder: "asc",//排序方式
+                height: '100%',
+                multiselect: true,//多行选取
+                width: $(window).width(),
+                loadComplete: function () { //加载数据
+                    //数据设置
+                    var gridObj = $("#listtable"); 
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+
+
+        });
+    //列表自动缩进
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+
+    //查询方式
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                Title: $("#Title").val(), Address: $("#Address").val(), typeid: typeid,
+                pagesize: size, pagenumber: number
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+      
+     
+</script>

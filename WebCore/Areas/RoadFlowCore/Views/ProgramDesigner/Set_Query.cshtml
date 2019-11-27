@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "Set_Query";
+}
+
+    <form id="form1" method="post">
+        <div>
+            <table id="listtable"></table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" onclick="edit('');" value="添加查询" />
+            <input type="button" value="删除所选" name="delete" onclick="return del();" class="mybutton" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var rows = @Html.Raw(ViewBag.list);
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['字段名称', '显示名称', '操作符', '控件名称', '输入类型', '显示顺序', '操作'],
+                colModel: [
+                    { name: 'fieldName', index: 'fieldName' },
+                    { name: 'showTitle', index: 'showTitle' },
+                    { name: 'operator', index: 'operator' },
+                    { name: 'controlName', index: 'controlName' },
+                    { name: 'inputType', index: 'inputType' },
+                    { name: 'sort', index: 'sort' },
+                    { name: 'opation', index: '', sortable: false, align: "left" }
+                ],
+                multiselect: true,
+                height: "100%",
+                rowNum: rows.length,
+                width: $(window).width(),
+                data: rows
+            });
+        });
+
+        function edit(id) {
+            window.location = "Set_Query_Edit?queryid=" + (id || "") + "&@Html.Raw(ViewBag.query)";
+        }
+            function del() {
+                var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+                if (rowIds.length == 0) {
+                    alert("您没有选择要删除的查询!");
+                    return false;
+                }
+                if (!confirm('您真的要删除所选查询吗?')) {
+                    return false;
+                }
+            $.ajax({
+                    url: "Delete_Set_Query?&@Html.Raw(ViewBag.query)",
+                data: { "ids": rowIds.join(",") },
+                type: "post",
+                success: function (txt) {
+                        alert(txt);
+                        window.location = window.location;
+                    }
+                });
+                return true;
+            }
+    </script>
+
+
+

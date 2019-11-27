@@ -1,0 +1,251 @@
+﻿
+<script>
+    /*
+     1、日期控件是单独引入的，需要引入laydate.css与laydate.js，同事设置对应的按钮的加载日期，才能生效
+     
+     2、layui表单设置，可以实现查询，在行内操作，或者工具栏上操作，需要通过api操作处理
+     3、列显示设置需要根据官方文档在进行开发。
+     4、表单的显示，需要结合官方设置，才能美观。
+     */
+
+</script>
+<link href="~/RoadFlowResources/layui/css/layui.css" rel="stylesheet" />
+<link href="~/RoadFlowResources/layui/laydate/theme/default/laydate.css" rel="stylesheet" />
+<script src="~/RoadFlowResources/layui/laydate/laydate.js"></script>
+<script src="~/RoadFlowResources/layui/layui.js" charset="utf-8"></script>
+
+<div class="layui-inline">
+    姓名
+    <div class="layui-input-inline">
+        <input type="text" class="layui-input" id="name" name="name" placeholder="请输入患者姓名" autocomplete="off">
+    </div>
+</div>
+<div class="layui-inline">
+    验证日期
+    <div class="layui-input-inline">
+        <input type="text" name="date" id="date" lay-verify="date" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<div class="layui-inline">
+
+    <button id="search" class="layui-btn" data-type="reload">
+        <i class="layui-icon">查询</i>
+    </button>
+</div>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script type="text/html" id="switchTpl">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="sex" value="{{d.id}}" lay-skin="switch" lay-text="女|男" lay-filter="sexDemo" {{ d.id == 10003 ? 'checked' : '' }}>
+</script>
+
+
+
+
+<script>
+    //执行一个laydate实例
+    laydate.render({
+        elem: '#date' //指定元素
+    });
+
+//    //年选择器
+//laydate.render({ 
+//  elem: '#test'
+//  ,type: 'year'
+//});
+ 
+////年月选择器
+//laydate.render({ 
+//  elem: '#test'
+//  ,type: 'month'
+//});
+ 
+////日期选择器
+//laydate.render({ 
+//  elem: '#test'
+//  //,type: 'date' //默认，可不填
+//});
+ 
+////时间选择器
+//laydate.render({ 
+//  elem: '#test'
+//  ,type: 'time'
+//});
+ 
+////日期时间选择器
+//laydate.render({ 
+//  elem: '#test'
+//  ,type: 'datetime'
+//});
+
+
+
+</script>
+<script>
+    layui.use(['table', 'form'], function () {
+        var table = layui.table;
+        var form = layui.form;
+
+        table.render({
+            id: "simpleReload",//加载id
+            elem: '#test'  //表单的id
+            , url: 'Query'  //json传输数据
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , request: {//设置请求参数名称
+                pageName: 'pageNumber' //页码的参数名称，默认：page
+                , limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+            , response: {//修改数据名称
+                statusName: 'status' //规定数据状态的字段名称，默认：code
+                , statusCode: 0 //规定成功的状态码，默认：0
+                , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                , countName: 'total' //规定数据总数的字段名称，默认：count
+                , dataName: 'rows' //规定数据列表的字段名称，默认：data
+            }
+            , parseData: function (res) { //res 即为原始返回的数据     转换后台传送的值
+                return {
+                    "status": res.status, //解析接口状态
+                    "message": res.message, //解析提示文本
+                    "total": res.total, //解析数据长度
+                    "rows": res.data //解析数据列表
+                };
+            }
+            , defaultToolbar: ['filter', 'exports', 'print'] ///自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+            , title: '用户数据表'  //标题
+             ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            //表头字段设置
+            , cols: [[
+                { type: 'checkbox', fixed: 'left' }//开启复选框    {type:'radio'}单复选框
+                , { field: 'id', title: 'ID',  fixed: 'left', unresize: true, sort: true }
+                , { field: 'Name', title: '用户名', edit: 'text' }
+                , { field: 'Account', title: '账户', edit: 'text', sort: true }
+                , { field: 'Sex', title: '性别',  templet: '#switchTpl', unresize: true }
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo'}
+            ]]
+            , page: true  //设置分页
+
+            , done: function (res, curr, count) {
+                //如果是异步请求数据方式，res即为你接口返回的信息。
+                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                //console.log(res);
+
+                ////得到当前页码
+                //console.log(curr);
+
+                ////得到数据总量
+                //console.log(count);
+            }
+
+
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function (obj) { ///注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var checkStatus = table.checkStatus(obj.config.id);
+
+            switch (obj.event) {  //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                case 'getCheckData':
+                    var data = checkStatus.data;  //获取对应行的数据
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：' + data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                    break;
+
+            };
+        });
+
+
+
+        //监听性别操作
+        form.on('switch(sexDemo)', function (obj) {
+            layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+        });
+
+
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;//获取行的数据
+
+            // console.log(obj)
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.prompt({
+                    formType: 2
+                    , value: data.email
+                }, function (value, index) {
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }
+            else if (obj.event === 'detail') {
+                layer.msg('ID：' + data.id + ' 的查看操作');
+            }
+        });
+
+
+        //监听搜索
+        $("#search").click(function () {  //检索条件
+            var str = $("#name").val();
+            //执行重载
+            table.reload('simpleReload', {
+                page: {
+                    pageNumber: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    name: str
+                }
+            });
+
+        })
+
+
+
+
+        //监听行单击事件/双击事件（单击事件为：rowDouble） 双击事件  ，单击事件row
+        table.on('rowDouble(test)', function (obj) {
+            var data = obj.data;
+
+            layer.alert(JSON.stringify(data), {
+                title: '当前行数据：'
+            });
+
+            //标注选中样式
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+        });
+
+
+
+
+    });
+
+
+
+
+
+</script>
+

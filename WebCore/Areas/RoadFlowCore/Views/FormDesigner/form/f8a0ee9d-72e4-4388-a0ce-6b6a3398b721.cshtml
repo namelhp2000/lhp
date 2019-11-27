@@ -1,0 +1,49 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new RoadFlow.Business.FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new RoadFlow.Business.Form().GetFormData("f823225e-abcf-4734-93b0-743669ef5f89", "test", "Id", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new RoadFlow.Business.Form().GetDefaultValuesJSON("[]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "test", "@display", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="f823225e-abcf-4734-93b0-743669ef5f89"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="test"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="Id"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value=""/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<table border="1" cellpadding="1" cellspacing="1" style="width:500px;">
+	<tbody>
+		<tr>
+			<td style="width: 92px;">操作1</td>
+			<td style="width: 399px;"><input data-isflow="1" data-type="text" data-valuetype="" id="TEST-NAME" style="" type="text" value="" class="mytext" name="TEST-NAME"></td>
+		</tr>
+		<tr>
+			<td style="width: 92px;">&nbsp;</td>
+			<td style="width: 399px;">&nbsp;</td>
+		</tr>
+		<tr>
+			<td style="width: 92px;">&nbsp;</td>
+			<td style="width: 399px;">&nbsp;</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>

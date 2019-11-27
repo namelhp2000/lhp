@@ -1,0 +1,156 @@
+﻿
+<link href="~/RoadFlowResources/install/images/install.css" rel="stylesheet" />
+<script src="~/RoadFlowResources/install/js/common.js"></script>
+
+<body class="bg-bgradualChange p-relative pd_70">
+    <form name="form1" method="post" id="form1">
+
+        @Html.AntiForgeryToken()
+        <div class="header bg-white">
+            <div class="page-width clearfix">
+                <div class="fl logoBox c-yellow fz-26 fw-bold lh-60">
+                    @ViewBag.ProductName &nbsp;&nbsp;安装向导
+                </div>
+                <div class="fr introText c-666 lh-40 fz-13 mt_20">
+                    当前安装版本：@ViewBag.ProductVersion &nbsp;&nbsp;
+
+                </div>
+            </div>
+        </div>
+        <div class="floor pp_15">
+            <div class="page-width">
+                <div class="installInfo c-white md_25 fz-13">
+                    <p class="lh-25">欢迎使用 @ViewBag.ProductName 安装向导;</p>
+                    <p class="lh-25">本向导即将安装软件到您的系统中，安装前仔细阅读一下协议，点击<font class="fz-16 c-yellow">同意</font>进入下一步</p>
+                </div>
+                <div class="installCon bg-white pd_70">
+                    <div class="stepBox pp_20 pd_20">
+                        <ul class="clearfix t-c">
+
+                            <li class="on">
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">1</span>
+                                <div class="c-474747 fw-bold fz-13">阅读许可协议</div>
+                                <em class="p-absolute bg-yellow line on"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">2</span>
+                                <div class="c-474747 fw-bold fz-13">检查安装环境</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">3</span>
+                                <div class="c-474747 fw-bold fz-13">创建数据库</div>
+                                <em class="p-absolute bg-yellow line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod c-white bg-yellow fz-13">4</span>
+                                <div class="c-474747 fw-bold fz-13">网站基本配置</div>
+                                <em class="p-absolute bg-ygradualChange line"></em>
+                            </li>
+                            <li>
+                                <span class="circle mao lh-30 md_10 show rod bg-eee c-9d9d9d fz-13">5</span>
+                                <div class="c-474747 fw-bold fz-13">安装完成</div>
+                                <em class="p-absolute bg-eee line hide"></em>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <!--  步骤1  begin  -->
+                    <!--  步骤1 end    -->
+                    <!--  步骤2  begin  -->
+                    <!--  步骤2 end    -->
+                    <!--  步骤3  begin  -->
+                    <!--  步骤3 end    -->
+                    <!--  步骤4  begin  -->
+                    <div id="Step4">
+
+                        <div class="stepTips c-747474 t-c pd_10 pp_10 bg-gray lh-25 gray-borderColor borderWidth borderTop borderBottom">填写网络基本配置，点击“<font class="c-yellow2">下一步</font>”继续安装</div>
+                        <div class="stepOneCon w80 mao pd_40">
+                            <h2 class="t-c md_20 pp_20 fz-14 c-747474">填写管理员信息</h2>
+                            <table cellpadding="0" cellspacing="0" border="0" class="fileItem gray2-borderColor borderLeft borderRight borderTop borderWidth">
+                                <tr>
+                                    <td width="100" class="borderWidth borderBottom gray2-borderColor c-747474 fz-13 t-r"><font class="c-red">*</font>管理员账号：</td>
+                                    <td class="borderWidth borderBottom gray2-borderColor t-l"><input name="TxtUserName" type="text" value="admin" id="TxtUserName" class="dataBtn border ro_3 c-747474 bg-gray2 lh-30 t-c w220" /><span class="ml_10 c-afafaf">如：账户：zg</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="borderWidth borderBottom gray2-borderColor c-747474 fz-13 t-r"><font class="c-red">*</font>管理员密码：</td>
+                                    <td class="borderWidth borderBottom gray2-borderColor t-l"><input name="TxtUserPass" type="text" value="111" id="TxtUserPass" class="dataBtn border ro_3 c-747474 bg-gray2 lh-30 t-c w220" /><span class="ml_10 c-afafaf">如：密码：111</span></td>
+                                </tr>
+                            </table>
+                            <h2 class="t-c md_20 pp_20 fz-14 c-747474">网站参数配置</h2>
+                            <table cellpadding="0" cellspacing="0" border="0" class="fileItem gray2-borderColor borderLeft borderRight borderTop borderWidth">
+                                <tr>
+                                    <td width="100" class="borderWidth borderBottom gray2-borderColor c-747474 fz-13 t-r"><font class="c-red">*</font>网站名称：</td>
+                                    <td class="borderWidth borderBottom gray2-borderColor t-l"><input name="TxtSiteName" type="text" value="软件管理系统" id="TxtSiteName" class="dataBtn border ro_3 c-747474 bg-gray2 lh-30 t-c w220" /><span class="ml_10 c-afafaf">如：RoadFlow网站</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="borderWidth borderBottom gray2-borderColor c-747474 fz-13 t-r"><font class="c-red">*</font>网站域名：</td>
+                                    <td class="borderWidth borderBottom gray2-borderColor t-l"><input name="TxtSiteUrl" type="text" value="@ViewBag.Host" id="TxtSiteUrl" class="dataBtn border ro_3 c-747474 bg-gray2 lh-30 t-c w220" /><span class="ml_10 c-afafaf">后面不要带“/”,如：http://www.baidu.com</span></td>
+                                </tr>
+                               
+                                @*<tr>
+                                    <td class="borderWidth borderBottom gray2-borderColor c-747474 fz-13 t-r"><font class="c-red">*</font>后台目录：</td>
+                                    <td class="borderWidth borderBottom gray2-borderColor t-l"><input name="TxtManageDir" type="text" value="manage" id="TxtManageDir" class="dataBtn border ro_3 c-747474 bg-gray2 lh-30 t-c w220" /><span class="ml_10 c-afafaf">如：Manage，Admin，不能加“/”</span></td>
+                                </tr>*@
+                                <!--
+                            <tr>
+                                <td class="borderWidth borderBottom gray2-borderColor" colspan="2">
+                                    <span class="c-747474 fz-13 ml_40">安装版本：</span>
+                                    <label class="mr_10">
+                                        <input type="radio" name="version" checked value="1">
+                                        <span class="va-m c-c2c2c2">单用户网站</span>
+                                    </label>
+                                    <label class="mr_40">
+                                        <input type="radio" name="version">
+                                        <span class="va-m c-c2c2c2">多用户网站</span>
+                                    </label>
+
+                                </td>
+                            </tr>
+                            -->
+                            </table>
+                        </div>
+                        <div class="nextStep pd_25 p-relative t-c w80 mao">
+                            <a href="javascript:history.back();" class="p-absolute c-c2c2c2 fz-13 lh-35 prevStep"><i class="returnIcon mr_5"></i><span>上一步</span></a>
+                            <input type="button" name="BtnStep4" value="下一步" id="BtnStep4" onclick="step4();" class="nextStepBtn c-white ro_3 fz-14" />
+                        </div>
+
+                    </div>
+                    <!--  步骤4 end    -->
+                    <!--  步骤5  begin  -->
+                    <!--  步骤5 end    -->
+                    <!--  步骤6  begin  -->
+                    <!--  步骤6 end    -->
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer pd_20 p-absolute">
+            <div class="page-width lh-25 c-white t-c fz-14">
+                <p>Powered By KESION Inc. WebUrl:<a href="http://www.kesion.com/" target="_blank" style="color:white;text-decoration:underline">www.kesion.com</a> </p>
+                <p>福建·科技软件有限公司 版权所有 © 2006-2019</p>
+            </div>
+        </div>
+        <div class="bg-img"></div>
+
+        <script>
+                function step4(){
+                    var url = "Index5?" + "@ViewBag.query&UserName=" + $("#TxtUserName").val() + "&UserPass=" + $("#TxtUserPass").val()
+                self.location = url
+            }
+        </script>
+
+    </form>
+</body>
+
+

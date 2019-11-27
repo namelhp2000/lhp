@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "NoRead";
+   
+}
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td>
+                        消息内容：<input type="text" class="mytext" id="Contents" name="Contents" style="width:150px" value="" />
+                        发送时间：<input type="text" class="mycalendar" style="width:90px;" value="" name="Date1" id="Date1" /> 至 <input type="text" style="width:90px;" class="mycalendar" name="Date2" value="" id="Date2" />
+                        <input type="button" class="mybutton" onclick="query(null, 1);" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" />
+                        <input type="button" class="mybutton" name="delete1" value="将选择消息标记为已读" onclick="return read();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+        var curPageSize=15;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "QuerySendList"+"@Html.Raw(ViewBag.queryString)",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(), status: "1" },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['内容', '发送人', '发送时间', '发送类型', '附件', ''],
+                colModel: [
+                    { name: 'Contents', index: 'Contents', width: 300 },
+                    { name: 'SenderName', index: 'SenderName', width: 60 },
+                    { name: 'SendTime', index: 'SendTime', width: 90 },
+                    { name: 'SendType', index: 'SendType', width: 60 },
+                    { name: 'Files', index: 'Files' },
+                    { name: 'Opation', index: '', title: false, width: 60 }
+                ],
+                sortname: "SendTime",
+                sortorder: "desc",
+                height: '100%',
+                width: $(window).width(),
+                multiselect: true,
+                onSelectRow: function () {
+
+                },
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+           
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                Contents: $("#Contents").val(), status: "1",
+                Date1: $("#Date1").val(), Date2: $("#Date2").val(),
+                pagesize: size || curPageSize, pagenumber: number || curPageNumber
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function show(id) {
+           
+          top.openApp("/RoadFlowCore/Message/SendShow"+"@Html.Raw(ViewBag.queryString)&showreadlist=0&messageid=" + (id || ""), 1, "查看已发送消息", "", 950, 480, true, "@ViewBag.tabId");
+          
+        }
+        function read() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要标记的消息!");
+                return false;
+            }
+            $.ajax({
+                url: "UpdateRead" +"@Html.Raw(ViewBag.queryString)"+ "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber,
+                data: { "ids": rowIds.join(","), "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                type: "post",
+                success: function (txt) {
+                    alert(txt);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+            return true;
+        }
+    </script>
+
+

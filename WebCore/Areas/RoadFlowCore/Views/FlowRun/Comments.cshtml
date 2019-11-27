@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using RoadFlow.Utility;
+@{
+    var Request = (HttpRequest)ViewData["request"];
+    string groupid = Request.Querys("groupid");
+    string stepid = Request.Querys("stepid");
+    string flowid = Request.Querys("flowid");
+
+
+    RoadFlow.Business.FlowTask  bwfTask = new RoadFlow.Business.FlowTask();
+    var taskList = bwfTask.GetListByGroupId(groupid.ToGuid()).Where(p => !p.Comments.IsNullOrEmpty() && p.CompletedTime1.HasValue).OrderBy(p => p.Sort);
+}
+
+<style type="text/css">
+    .commenttable {
+        margin: 12px auto 0 auto;
+        width: 100%;
+        background: #ededee;
+    }
+
+        .commenttable tr th {
+            text-align: left;
+            height: 25px;
+            background: #ffffff;
+            font-weight: normal;
+        }
+
+        .commenttable tr td {
+            height: 28px;
+            background: #ffffff;
+        }
+</style>
+@foreach (var task in taskList)
+{
+    string signSrc = string.Empty;
+    if ( task.IsSign == 1)
+    {
+        signSrc = string.Concat("../../RoadFlowResources/images/userSigns/", task.ReceiveId, "/default.png");
+    }
+<table cellpadding="0" cellspacing="1" border="0" class="commenttable">
+    <tr>
+        <th style="width:30%;">&nbsp;步骤：@task.StepName</th>
+        <th style="width:20%;">&nbsp;处理人：@task.ReceiveName</th>
+        <th style="width:25%;">&nbsp;收件时间：@task.ReceiveTime.ToDateTimeString()</th>
+        <th style="width:25%;">&nbsp;完成时间：@(task.CompletedTime1.HasValue ? task.CompletedTime1.Value.ToDateTimeString() : "")</th>
+    </tr>
+    <tr>
+        <td colspan="4" style="">
+            <div style="float:left; height:26px; padding:9px 0 0 6px; ">
+                处理意见：@Html.Raw(task.Comments)
+            </div>
+            <div style="float:left; margin:5px 0 0 20px;"><img alt="" src="@signSrc" /></div>
+            @if (!StringExtensions.IsNullOrEmpty(task.Attachment))
+            {
+                <div style="float:left;padding:9px 0 0 15px;">附件：@Html.Raw(task.Attachment.ToFilesShowString(false, true))</div>
+
+            }
+        </td>
+            </tr>
+        </table>
+}

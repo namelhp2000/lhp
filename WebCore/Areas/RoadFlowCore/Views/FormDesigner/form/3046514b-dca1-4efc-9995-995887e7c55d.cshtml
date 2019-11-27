@@ -1,0 +1,128 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new RoadFlow.Business.FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new RoadFlow.Business.Form().GetFormData("dba78397-b5df-4145-87af-cb8b5d0655d7", "RF_Test1", "Id", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new RoadFlow.Business.Form().GetDefaultValuesJSON("[{'id':'RF_TEST1-TITLE','value':'{<UserName>}的物资采购申请'},{'id':'RF_TEST1-F1','value':'u_{<UserId>}'},{'id':'RF_TEST1-F2','value':'{<UserDeptId>}'}]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "RF_Test1", "@(display.IsNullOrWhiteSpace() ? ViewData["display"].ToString() : display)", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="dba78397-b5df-4145-87af-cb8b5d0655d7"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="RF_Test1"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="Id"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value="Title"/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<p style="text-align: center;"><span style="font-size:20px;"><strong>物资领用申请</strong></span></p>
+
+<table style="width:98%;" cellspacing="1" cellpadding="1" border="1" align="center">
+	<tbody>
+		<tr>
+			<td style="width: 115px;">标题：</td>
+			<td colspan="3" rowspan="1" style="width: 1559px;"><input data-isflow="1" data-type="text" id="RF_TEST1-TITLE" name="RF_TEST1-TITLE" style="width: 90%;" type="text" value="" class="mytext"></td>
+		</tr>
+		<tr>
+			<td style="width: 115px;">申请人：</td>
+			<td style="width: 724px;"><input data-isflow="1" data-type="organize" id="RF_TEST1-F1" name="RF_TEST1-F1" type="text" value="" class="mymember" unit="0" dept="0" station="0" group="0" user="1" more="0"></td>
+			<td style="width: 144px;">部门：</td>
+			<td style="width: 723px;"><input data-isflow="1" data-type="organize" id="RF_TEST1-F2" name="RF_TEST1-F2" type="text" value="" class="mymember" unit="0" dept="1" station="0" group="0" user="0" more="0"></td>
+		</tr>
+		<tr>
+			<td style="width: 115px;">申请明细：</td>
+			<td colspan="3" rowspan="1" style="width: 724px;"><table data-isflowsubtable="1" width="99%" id="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID">
+	<thead>
+		<tr>
+			<th>物资名称</th>
+			<th>物资型号</th>
+			<th>物资单价</th>
+			<th>申请数量</th>
+			<th>申请金额</th>
+			<th>备注</th>
+			<th width="120px" style="text-align:left;">
+				<input type="hidden" name="SUBTABLE_id" value="RF_TEST1SUB-ID-ID-TESTID"/>
+				<input type="hidden" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_secondtable" value="RF_Test1Sub"/>
+				<input type="hidden" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_primarytablefiled" value="Id"/>
+				<input type="hidden" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_secondtableprimarykey" value="Id"/>
+				<input type="hidden" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_secondtablerelationfield" value="TestId"/>
+				<input type="button" value="添加" class="mybutton" onclick="formLoad.subtableAddRow('SUBTABLE_RF_TEST1SUB-ID-ID-TESTID', $('#SUBTABLE_RF_TEST1SUB-ID-ID-TESTID tbody tr:first'), true);"/>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+		System.Data.DataTable subtableMapList_RF_Test1Sub_Id_Id_TestId = new RoadFlow.Business.DbConnection().GetDataTable(new RoadFlow.Business.DbConnection().Get("dba78397-b5df-4145-87af-cb8b5d0655d7".ToGuid()), "RF_Test1Sub", "TestId", instanceId, "");
+		if(null == subtableMapList_RF_Test1Sub_Id_Id_TestId || subtableMapList_RF_Test1Sub_Id_Id_TestId.Rows.Count == 0)
+		{
+			subtableMapList_RF_Test1Sub_Id_Id_TestId = new System.Data.DataTable();
+			subtableMapList_RF_Test1Sub_Id_Id_TestId.Rows.Add(subtableMapList_RF_Test1Sub_Id_Id_TestId.NewRow());
+		}
+		foreach(System.Data.DataRow dr in subtableMapList_RF_Test1Sub_Id_Id_TestId.Rows)
+		{
+			Object rowIndexObj = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("Id") ? dr["Id"] : null;
+			string rowIndexStr = null == rowIndexObj ? Guid.NewGuid().ToString() : rowIndexObj.ToString();
+			string value_f1 = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("f1") ? dr["f1"].ToString() : string.Empty;
+			string value_f2 = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("f2") ? dr["f2"].ToString() : string.Empty;
+			string value_f3 = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("f3") ? dr["f3"].ToString() : string.Empty;
+			string value_f4 = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("f4") ? dr["f4"].ToString() : string.Empty;
+			string value_f5 = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("f5") ? dr["f5"].ToString() : string.Empty;
+			string value_f6 = subtableMapList_RF_Test1Sub_Id_Id_TestId.Columns.Contains("f6") ? dr["f6"].ToString() : string.Empty;
+		<tr>
+			<td style="text-align:left;"><input type="text" value="@value_f1" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_Test1Sub" data-field="f1" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f1_@(rowIndexStr)" id="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f1_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;">@Html.Raw(new RoadFlow.Business.Form().GetRadioOrCheckboxHtml(1, "dba78397-b5df-4145-87af-cb8b5d0655d7", "", "id", "选项文本1,选项值1;选项文本2,选项值2", value_f2, "radio", "SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f2_" + rowIndexStr, "data-isflow=\"1\" data-type=\"radio\" data-table=\"RF_Test1Sub\" data-field=\"f2\" data-issubtable=\"1\" data-value=\""+value_f2+"\""))</td>
+			<td style="text-align:left;"><input type="text" value="@value_f3" onchange="fun_219E5BD3EA3ADFF4AE935A26F240DB26(this);" validate="positivefloat" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_Test1Sub" data-field="f3" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f3_@(rowIndexStr)" id="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f3_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;"><input type="text" value="@value_f4" onchange="fun_30D82E4966AB9B76C6F0987C28757AA6(this);" validate="positiveint" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_Test1Sub" data-field="f4" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f4_@(rowIndexStr)" id="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f4_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;"><input type="text" value="@value_f5" onchange="fun_880DCCD9C75BE14893499912B57ABA46(this);" validate="positivefloat" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_Test1Sub" data-field="f5" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f5_@(rowIndexStr)" id="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f5_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;"><input type="text" value="@value_f6" data-value="@value_f6" datasource="0" data-isflow="1" data-issubtable="1" data-type="lrselect" data-table="RF_Test1Sub" data-field="f6" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f6_@(rowIndexStr)" id="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f6_@(rowIndexStr)" class="mylrselect" rootid="7f7aba94-8e5d-46e4-a0d2-2d8508b7e96e" more="1"/></td>
+			<td><input type="hidden" name="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_rowindex" value="@rowIndexStr"/><input type="button" value="插入" class="mybutton" onclick="formLoad.subtableAddRow('SUBTABLE_RF_TEST1SUB-ID-ID-TESTID',$(this).parent().parent(), false);" style="margin-right:3px;"/><input type="button" class="mybutton" value="删除" onclick="formLoad.subtableDelRow($(this).parent().parent());"/></td>
+		</tr>
+		}
+		}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td></td>
+			<td></td>
+			<td data-table="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID" data-field="f3" style="text-align:left;"><label id="SUM_SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f3"></label></td>
+			<td data-table="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID" data-field="f4" style="text-align:left;"><label id="SUM_SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f4"></label></td>
+			<td data-table="SUBTABLE_RF_TEST1SUB-ID-ID-TESTID" data-field="f5" style="text-align:left;"><label id="SUM_SUBTABLE_RF_TEST1SUB-ID-ID-TESTID_f5"></label></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tfoot>
+</table>
+<script type="text/javascript">
+	function fun_219E5BD3EA3ADFF4AE935A26F240DB26(srcElement)
+	{
+		formLoad.subTableSum("SUBTABLE_RF_TEST1SUB-ID-ID-TESTID", "f3");
+	}
+	function fun_30D82E4966AB9B76C6F0987C28757AA6(srcElement)
+	{
+		formLoad.subTableSum("SUBTABLE_RF_TEST1SUB-ID-ID-TESTID", "f4");
+	}
+	function fun_880DCCD9C75BE14893499912B57ABA46(srcElement)
+	{
+		formLoad.subTableSum("SUBTABLE_RF_TEST1SUB-ID-ID-TESTID", "f5");
+	}
+</script>
+</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>

@@ -1,0 +1,242 @@
+﻿@{
+    ViewBag.Title = "Set_ListField_Edit";
+    var Set_ListFields = "Set_ListField" + Html.Raw(ViewBag.queryString);
+}
+@model RoadFlow.Model.ProgramField
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
+            <table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable" style="margin-top:10px;">
+                <tr>
+                    <th style="width: 80px;">字段：</th>
+                    <td>
+                        <select class="myselect2" style="width:350px;" maxheight="500" name="Field" id="Field">
+                            <option value=""></option>
+                            @Html.Raw(ViewBag.fieldOptions)
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">显示标题：</th>
+                    <td><textarea class="mytextarea" style="width:80%;height:60px;" name="ShowTitle" id="ShowTitle">@Html.Raw(Model.ShowTitle)</textarea></td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">显示类型：</th>
+                    <td>
+                        <select id="ShowType" name="ShowType" class="myselect" onchange="showCustomTR(this.value);">
+                            @Html.Raw(ViewBag.showTypeOptions)
+                        </select>
+                        <span id="showformatspan" style="margin-left:10px; display:none;">格式：<input type="text" class="mytext" id="ShowFormat" value="@Model.ShowFormat" name="ShowFormat" style="width:200px" /></span>
+                    </td>
+                </tr>
+                <tr id="customtr" style="display:none;">
+                    <th style="width: 80px;">自定义值：</th>
+                    <td><textarea class="mytextarea" style="width:99%;height:60px;" id="CustomString" name="CustomString">@Html.Raw(Model.CustomString)</textarea></td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">对齐方式：</th>
+                    <td>
+                        <select class="myselect" id="Align" name="Align">
+                            @Html.Raw(ViewBag.alignOptions)
+                        </select>
+                    </td>
+                </tr>
+
+
+
+                <tr>
+                    <th style="width: 80px;">运算类型：</th>
+                    <td>
+                        <select class="myselect" id="summaryType" name="summaryType">
+                            <option value=""></option>
+                            @Html.Raw(ViewBag.summaryTypeOption)
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">运算格式：</th>
+                    <td>
+                        <input type="text" class="mytext" style="width:250px;" name="summaryTpl" value="@Model.SummaryTpl" id="summaryTpl" />
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">格式化：</th>
+                    <td>
+                        <select class="myselect" id="formatter" onchange="formatter_Options_change(this.value);" name="formatter">
+                            <option value=""></option>
+                            @Html.Raw(ViewBag.formatterOption)
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">格式化选项：</th>
+                    <td>
+                        <textarea class="mytextarea" style="width:99%;height:60px;" id="FormatOptions" name="FormatOptions">@Html.Raw(Model.FormatOptions)</textarea>
+                    </td>
+                </tr>
+
+
+
+
+
+                <tr>
+                    <th style="width: 80px;">列表宽度：</th>
+                    <td>
+                        <input type="text" class="mytext" name="Width" value="@Model.Width" validate="canempty,int" id="Width" />
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">是否冻结：</th>
+                    <td>
+                        <input type="radio" value="1" name="IsFreeze" id="IsFreeze_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsFreeze_1">是</label>
+                        <input type="radio" value="0" name="IsFreeze" id="IsFreeze_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsFreeze_0">否</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">排序：</th>
+                    <td>
+                        <input type="text" class="mytext" style="width:200px;" name="IsSort" id="IsSort" value="@Model.IsSort" />
+                        @*<input type="hidden" name="IsDefaultSort" value="0" />*@
+                    </td>
+                </tr>
+                @*<tr>
+                    <th style="width: 80px;">是否排序：</th>
+                    <td>
+                        <input type="radio" value="1" name="IsSort" id="IsSort_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsSort_1">是</label>
+                        <input type="radio" value="0" name="IsSort" id="IsSort_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsSort_0">否</label>
+                    </td>
+                </tr> *@
+                <tr>
+                    <th style="width: 80px;">默认排序：</th>
+                    <td>
+                        <input type="radio" value="1" class="IsDefaultSort" name="IsDefaultSort" id="IsDefaultSort_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsDefaultSort_1">是</label>
+                        <input type="radio" value="0" class="IsDefaultSort" name="IsDefaultSort" id="IsDefaultSort_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsDefaultSort_0">否</label>
+                    </td>
+                </tr>
+                <tr id="form_sort_span">
+                    <th style="width: 80px;">排序方式：</th>
+                    <td>
+                        <input type="radio" value="desc" name="SortWay" id="SortWay_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="SortWay_1">降序</label>
+                        <input type="radio" value="asc" name="SortWay" id="SortWay_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="SortWay_0">升序</label>
+                    </td>
+                </tr>
+                   
+                <tr>
+                    <th style="width: 80px;">显示顺序：</th>
+                    <td>
+                        <input type="text" class="mytext" name="sort" id="sort" value="@Model.Sort" />
+                    </td>
+                </tr>
+                @if (RoadFlow.Utility.Config.IsRemarks == "1")
+                {
+                    <tr>
+                        <th style="width: 80px;">说明：</th>
+                        <td>
+                            1、设置日期时间格式，如：yyyy-MM-dd HH:mm:ss<br />
+                            2、在格式中设置数字格式化字符串，参考c#中格式化金额的写法，如：##.## <br />
+                            3、 数据字典ID显示为标题：如果列是存的是数据字典GUID，在显示时会查询数据字典ID对应的标题显示<br />
+                            4、 组织机构ID显示为名称：如果列存的组织机构ID字符串，在显示时会查询部门，岗位名称或人员姓名显示<br />
+                            5、人员ID显示为姓名：即将列存的人员ID显示为人员姓名 <br />
+                            6、运算格式："小计: {0}"  根据需求，添加b标签 <br />
+                            7、添加标题，请勿使用列冻结功能。
+                            8、排序方式，设置三个方式，第一个是属性设置排序，第二是排序设置，最后一个排序不能设置排序方式，第三点击是否排序是默认排序关联。
+                           
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" value=" 保 存 " class="mybutton" onclick="save(this);" />
+            <input type="button" class="mybutton" onclick="window.location = '@Set_ListFields';" value=" 返 回 " />
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(function () {
+          //  $(":radio[name='IsSort'][value='" + @Model.IsSort + "']").prop("checked", "checked");
+           $(":radio[name='IsDefaultSort'][value='" + @Model.IsDefaultSort + "']").prop("checked", "checked");
+            $(":radio[name='IsFreeze'][value='" + @Model.IsFreeze + "']").prop("checked", "checked");
+            $(":radio[name='SortWay'][value='@Model.SortWay']").prop("checked", "checked");
+            showCustomTR($("#ShowType").val());
+
+            IsDefaultSort_change( $("input[name='IsDefaultSort']:checked").val());
+
+
+            $(".IsDefaultSort").change(
+                    function() {
+                    var $selectedvalue = $("input[name='IsDefaultSort']:checked").val();
+                    if ($selectedvalue == "1") {
+                          $("#form_sort_span").show();
+                    }
+                    else {
+                        $("#form_sort_span").hide();
+                        $('input[type=radio][name="SortWay"]:checked').attr("checked", false);//清除选中
+                    }
+              });
+
+           
+
+
+
+
+        });
+
+        function IsDefaultSort_change(value) {
+            if ("1" === value) {
+                $("#form_sort_span").show();
+            }
+            else {
+                $("#form_sort_span").hide();
+            }
+        }
+
+
+
+
+
+        function showCustomTR(v) {
+            if ("6" == v) {
+                $("#customtr").show();
+            }
+            else {
+                $("#customtr").hide();
+            }
+            if ("2" == v || "3" == v) {
+                $("#showformatspan").show();
+            }
+            else {
+                $("#showformatspan").hide();
+            }
+        }
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveSet_ListField" +"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        alert(text);
+                        $(but).prop("disabled", false);
+                        if (text.indexOf('成功!') >= 0) {
+                            window.location = "Set_ListField"+"@Html.Raw(ViewBag.queryString)";
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function formatter_Options_change(value) {
+            $.ajax({
+                url: "GetFormatterOptions"+"@Html.Raw(ViewBag.queryString)", data: { code: value}, async: false, type: "post", success: function (txt) {
+                    $("#FormatOptions").html(txt);
+                }
+            });
+        }
+
+
+    </script>
+

@@ -1,0 +1,1 @@
+DIR *.* /b >res.PBR

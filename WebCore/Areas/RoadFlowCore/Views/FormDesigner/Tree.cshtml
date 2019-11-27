@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "EditPass";
+}
+@using RoadFlow.Utility;
+
+
+    <form id="form1">
+        <div id="tree"></div>
+    </form>
+    <script type="text/javascript">
+        var AppID = '@ViewBag.appId';
+        var iframeid = '@ViewBag.iframeId';
+        var openerid = '@ViewBag.openerId';
+        var roadTree = null;
+        $(function () {
+            roadTree = new RoadUI.Tree({ id: "tree", path: "../Dictionary/Tree1?ischild=1&root=@ViewBag.rootId&tempitemid=00000000-0000-0000-0000-000000000000&tempitem=@("已删除流程".UrlEncode())", refreshpath: "../Dictionary/TreeRefresh", onclick: openUrl });
+        });
+        function openUrl(json) {
+            if (json.id == "00000000-0000-0000-0000-000000000000") {
+                parent.frames[1].location = "ListDelete?typeid=" + json.id + "&appid=" + AppID + "&iframeid=" + iframeid + "&openerid=" + openerid;
+            } else {
+                parent.frames[1].location = "List?typeid=" + json.id + "&appid=" + AppID + "&iframeid=" + iframeid + "&openerid=" + openerid;
+            }
+        }
+        function reLoad(id) {
+            roadTree.refresh(id);
+        }
+    </script>
+

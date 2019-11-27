@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Button";
+}
+
+<table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:270px"></select></td>
+    </tr>
+    <tr>
+        <th>文本:</th>
+        <td><input type="text" id="value" class="mytext" style="width:270px" /></td>
+    </tr>
+    <tr>
+        <th>样式:</th>
+        <td>
+            <textarea class="mytextarea" id="style" style="width: 99%; height: 100px;"></textarea>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

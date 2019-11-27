@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Execute";
+}
+
+
+    <p>@Html.Raw(ViewBag.debutMsg)</p>
+    <script type="text/javascript">
+        var alertMsg = "@Html.Raw(ViewBag.alertMsg)";//提示信息
+        var success = "1" === "@ViewBag.success";
+        var url = "@Html.Raw(ViewBag.url)";//要跳转的URL
+        var rf_appopenmodel = "@ViewBag.rf_appopenmodel";//窗口打开方式 0tab, 1,2弹出层 3,4,5弹出窗口
+        var isMobile = "1" === "@ViewBag.ismobile";//是否是移动端
+        RoadUI.Core.closeWait();
+        if (!success) {
+            new RoadUI.Window().close();
+        }
+        if (alertMsg.length > 0) {
+            alert(alertMsg);
+        }
+        if (success) {
+            if (url.length > 0) {
+                if (top.refreshPage) {
+                    top.refreshPage();
+                }
+                window.parent.location = url;
+            }
+            else {
+                if (isMobile) {//移动端处理后返回到待办
+                    parent.location = "../Mobile/WaitTask";
+                }
+                else if (top.flowCompleted) { //集成使用的时候调用系统首页的流程完成后方法
+                    top.flowCompleted;
+                }
+                else {
+                    if (top.refreshPage) {
+                        top.refreshPage();
+                    }
+                    try {
+                        if (!rf_appopenmodel || "0" === rf_appopenmodel || "" === rf_appopenmodel) {
+                            top.mainTab.closeTab();
+                        }
+                        else if ("1" === rf_appopenmodel || "2" === rf_appopenmodel) {
+                            top.mainDialog.close();
+                        }
+                        else if ("3" === rf_appopenmodel || "4" === rf_appopenmodel || "5" === rf_appopenmodel) {
+                            parent.close();
+                        }
+                    } catch (e) { }
+                }
+            }
+        }
+    </script>
+

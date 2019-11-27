@@ -1,0 +1,194 @@
+﻿@{
+    ViewBag.Title = "Body";
+    var bodys = "Body" +Html.Raw(ViewBag.queryString)+"&isadddept=1";
+    var users = "Users" + Html.Raw(ViewBag.queryString)+"&isadduser=1";
+    var bodysfan = "Body?orgid=" + ViewBag.orgId;
+}
+@model  RoadFlow.Model.Organize
+@using RoadFlow.Utility
+    <script type="text/javascript">
+        var win = new RoadUI.Window();
+        var validate = new RoadUI.Validate();
+    </script>
+    <form method="post" action="">
+        @Html.AntiForgeryToken()
+        <br />
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="parentId" value="@Model.ParentId" />
+        <input type="hidden" name="sort" value="@Model.Sort" />
+        <input type="hidden" name="IntId" value="@Model.IntId" />
+        <table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+            <tr>
+                <th style="width:80px;">名称：</th>
+                <td><input type="text" name="name" class="mytext" value="@Model.Name" validate="empty,minmax" max="100" style="width:75%" /></td>
+            </tr>
+            <tr>
+                <th style="width:80px;">类型：</th>
+                <td>
+                    <input type="radio" validate="radio" value="1" name="Type" id="Type_1" style="vertical-align:middle;" /><label for="Type_1" style="vertical-align:middle;">单位</label>
+                    <input type="radio" validate="radio" value="2" name="Type" id="Type_2" style="vertical-align:middle;" /><label for="Type_2" style="vertical-align:middle;">部门</label>
+                    <input type="radio" validate="radio" value="3" name="Type" id="Type_3" style="vertical-align:middle;" /><label for="Type_3" style="vertical-align:middle;">岗位</label>
+                    <span class="validate"></span>
+                </td>
+            </tr>
+            <tr>
+                <th style="width:80px;">状态：</th>
+                <td>
+                    <input type="radio" validate="radio" value="0" name="Status" id="Status_0" style="vertical-align:middle;" /><label for="Status_0" style="vertical-align:middle;">正常</label>
+                    <input type="radio" validate="radio" value="1" name="Status" id="Status_1" style="vertical-align:middle;" /><label for="Status_1" style="vertical-align:middle;">冻结</label>
+                    <span class="validate"></span>
+                </td>
+            </tr>
+            <tr>
+                <th style="width:80px;">部门/岗位领导：</th>
+                <td><input type="text" class="mymember" unit="0" dept="0" station="0" value="@Model.Leader" user="1" group="0" id="Leader" name="Leader" /></td>
+            </tr>
+            <tr>
+                <th style="width:100px;">分管领导：</th>
+                <td><input type="text" class="mymember" unit="0" dept="0" value="@Model.ChargeLeader" station="0" user="1" group="0" id="ChargeLeader" name="ChargeLeader" /></td>
+            </tr>
+            <tr>
+                <th style="width:80px;">备注：</th>
+                <td><textarea id="note" name="note" class="mytext" style="width:90%; height:50px;">@Html.Raw(Model.Note)</textarea></td>
+            </tr>
+
+            <tr id="deptmove_tr" style="display:none;">
+                <th style="width:80px;">移动到：</th>
+                <td>
+                    <table cellpadding="0" cellspacing="1" border="0">
+                        <tr>
+                            <td><input type="text" style="width:220px;" class="mymember" id="deptmove" name="deptmove" more="false" user="false" station="true" dept="true" unit="true" /></td>
+                            <td><input type="button" class="mybutton" onclick="return deptmove3(this);" value="确定移动" /></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            @if (!Model.Name.IsNullOrEmpty())
+            {
+
+                <tr id="organize1">
+                    <th style="width:80px;">所在组织：</th>
+                    <td>@Html.Raw(ViewBag.parentsName)</td>
+                </tr>
+
+            }
+            </table>
+        <div style="width:95%; margin:10px auto 10px auto; text-align:center;">
+
+            @if (!Model.Name.IsNullOrEmpty())
+            {
+
+
+                <input type="button" class="mybutton" value="设置菜单" onclick="setMenu();" />
+                <input type="button" class="mybutton" onclick="window.location='@bodys';" value="添加单位/部门/岗位" />
+                <input type="button" class="mybutton" onclick="window.location='@users';" value="添加人员" />
+                <input type="button" class="mybutton" id="move1" value="&nbsp;移&nbsp;&nbsp;动&nbsp;" onclick="deptmove2();" />
+                <input type="button" class="mybutton" id="sort2" value="&nbsp;排&nbsp;&nbsp;序&nbsp;" onclick="sort1();" />
+
+            }
+
+            <input type="button" class="mybutton" onclick="saveOrg(this);" value="&nbsp;保&nbsp;&nbsp;存&nbsp;" />
+
+            @if (!Model.Name.IsNullOrEmpty())
+            {
+                <input type="button" class="mybutton" id="delete1" onclick="deleteOrg(this);" value="&nbsp;删&nbsp;&nbsp;除&nbsp;" />
+            }
+            @if (Model.Name.IsNullOrEmpty())
+            {
+                <input type="button" class="mybutton" onclick="window.location='@Html.Raw(ViewBag.returnUrl)';" value="&nbsp;返&nbsp;&nbsp;回&nbsp;" />
+            }
+            </div>
+    </form>
+
+    <script type="text/javascript">
+         $(function () {
+             $(":radio[name='Type'][value='" + @Model.Type + "']").prop("checked", "checked");
+             $(":radio[name='Status'][value='" + @Model.Status + "']").prop("checked", "checked");
+
+
+             if ($("[name='parentId']").val() == "00000000-0000-0000-0000-000000000000")
+             {
+                 $("#organize1").css("display", "none")
+                 $("#move1").css("display", "none")
+                 $("#sort2").css("display", "none")
+                 $("#delete1").css("display", "none")
+             }
+             else {
+                 $("#organize1").removeAttr("display")
+                 $("#move1").removeAttr("display")
+                 $("#sort2").removeAttr("display")
+                 $("#delete1").removeAttr("display")
+             }
+    });
+
+        function saveOrg(but) {
+            var f = document.forms[0];
+            if (validate.validateForm(f)) {
+                $(but).prop("disabled", true);
+                var o = RoadUI.Core.serializeForm($(f));
+                $.ajax({
+                    url: "Save"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                        }
+                        $(but).prop("disabled", false);
+                        parent.frames[0].reLoad('@ViewBag.refreshId');
+                        window.location.href = window.location.href;
+                    }
+                });
+            }
+        }
+        function deleteOrg(but) {
+            if (!confirm('您真的要删除该机构及其下级机构和人员吗?')) {
+                return;
+            }
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "Delete"+"@Html.Raw(ViewBag.queryString)", data: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() }, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    if (text.indexOf("成功") >= 0) {
+                        parent.frames[0].reLoad('@ViewBag.refreshId');
+                        window.location = "Empty";
+                    }
+                }
+            });
+        }
+        function deptmove3(but) {
+            var toOrgId = $.trim($("#deptmove").val());
+            if (toOrgId == "") {
+                alert("请选择要移动到的机构!");
+                return false;
+            }
+            else if (toOrgId == '@ViewBag.orgId') {
+                alert("不能将机构移动到自己!");
+                return false;
+            }
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "DeptMove"+"@Html.Raw(ViewBag.queryString)", data: { "toOrgId": toOrgId, "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() }, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    parent.frames[0].reLoad('@ViewBag.refreshId');
+                    parent.frames[0].reLoad(toOrgId);
+                }
+            });
+        }
+        function deptmove2() {
+            $('#deptmove_tr').toggle();
+        }
+
+        function sort1() {
+            window.location = 'Sort'+"@Html.Raw(ViewBag.queryString)";
+        }
+
+        function setMenu() {
+            var url = "SetMenu" + "@Html.Raw(ViewBag.queryString)&prevurl=" +"@Html.Raw(ViewBag.returnUrl)";
+            window.location = url;
+            return false;
+        }
+    </script>

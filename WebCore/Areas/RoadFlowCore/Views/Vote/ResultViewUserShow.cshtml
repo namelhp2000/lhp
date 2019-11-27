@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "ResultViewUserShow";
+}
+@model List<RoadFlow.Model.VoteItem>
+@using RoadFlow.Utility
+<form method="post" id="form1">
+    <div style="font-size:16px; font-weight:bold; width:98%; margin:5px auto; text-align:center;">@Html.Raw(ViewBag.vote.Topic)</div>
+    <div style="width:98%; margin:0 auto; text-align:center; color:#666;">
+        <label>发起人：@(new RoadFlow.Business.User().GetName(ViewBag.vote.CreateUserId))</label>
+        <label style="margin-left:8px;">发起时间：@ViewBag.vote.CreateTime</label>
+        <label style="margin-left:8px;">结束时间：@ViewBag.EndTime</label>
+        @if (ViewBag.Note == 1)
+        {
+            <label style="margin-left:8px;">说明：@Html.Raw(ViewBag.vote.Note)</label>
+        }
+    </div>
+    <div style="width:98%; margin:0 auto;">
+        @if (Model.Count > 0)
+        {
+            var i = 1;
+            @foreach (var model1 in Model.OrderBy(s => s.Sort).ToList<RoadFlow.Model.VoteItem>())
+            {
+                <input type="hidden" name="VoteItemId" value="@model1.Id" />
+                <div style="font-weight:bold;">@i . @model1.ItemTitle</div>
+
+                @foreach (var item in ((List<RoadFlow.Model.VoteItemOption>)ViewBag.voteItemOptions).Where(s => s.ItemId == model1.Id).OrderBy(x => x.Sort).ToList<RoadFlow.Model.VoteItemOption>())
+                {
+
+                    <div style="margin:3px 0 3px 15px;">
+                        @if (model1.SelectModel == 0)
+                        {
+                            <label style="vertical-align:middle;">@Html.Raw(item.OptionTitle)</label><label style="vertical-align:middle;"></label>
+                        }
+                        else if (model1.SelectModel == 1)
+                        {
+                            @if (((List<RoadFlow.Model.VoteResult>)ViewBag.voteResults).Where(s => s.OptionId == item.Id).ToList<RoadFlow.Model.VoteResult>().Count() > 0)
+                            {
+                                <i class='fa fa-dot-circle-o' style='vertical-align:middle; font-size:14px; margin-right:3px'></i>
+                            }
+                            else
+                            {
+                                <i class='fa fa-circle-o' style='vertical-align:middle; color:#666; font-size:14px; margin-right:3px'></i>
+                            }
+                            <label style="vertical-align:middle;">@Html.Raw(item.OptionTitle)</label><label style="vertical-align:middle;"></label>
+                        }
+                        else if (model1.SelectModel == 2)
+                        {
+                            @if (((List<RoadFlow.Model.VoteResult>)ViewBag.voteResults).Where(s => s.OptionId == item.Id).ToList<RoadFlow.Model.VoteResult>().Count() > 0)
+                            {
+                                <i class='fa fa-check-square' style='vertical-align:middle; font-size:14px; margin-right:3px'></i>
+                            }
+                            else
+                            {
+                                <i class='fa fa-square-o' style='vertical-align:middle; color:#666; font-size:14px; margin-right:3px'></i>
+                            }
+                            <label style="vertical-align:middle;">@Html.Raw(item.OptionTitle)</label><label style="vertical-align:middle;"></label>
+                        }
+
+                    </div>
+
+                    <div id="users_@item.Id" style="padding-left:11px; margin:5px;">
+                        @foreach (var vateresult in ((List<RoadFlow.Model.VoteResult>)ViewBag.voteResults).Where(s => s.OptionId == item.Id).ToList<RoadFlow.Model.VoteResult>())
+                        {
+                            @vateresult.OptionOther
+                        }
+                    </div>
+
+
+                }
+
+                i++;
+                <div style="border-top:1px dashed #e8e8e8; height:1px; margin:5px auto 10px auto;"></div>
+            }
+
+        }
+
+    </div>
+</form>
+
+

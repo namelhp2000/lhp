@@ -1,0 +1,75 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new RoadFlow.Business.FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new RoadFlow.Business.Form().GetFormData("dba78397-b5df-4145-87af-cb8b5d0655d7", "RF_SystemField", "Id", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new RoadFlow.Business.Form().GetDefaultValuesJSON("[]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "RF_SystemField", "@display", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="dba78397-b5df-4145-87af-cb8b5d0655d7"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="RF_SystemField"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="Id"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value="SystemTable"/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 系统表设置编辑</h2>
+
+<table border="1" cellpadding="1" cellspacing="1" height="166" style="width: 675px;" width="617">
+	<tbody>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">系统表名：</span></td>
+			<td colspan="3" rowspan="1" style="width: 579px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-SYSTEMTABLE" style="width: 95%; text-align: left;" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-SYSTEMTABLE"></td>
+		</tr>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">表名序号：</span></td>
+			<td style="width: 188px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-TABLEID" style="" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-TABLEID"></td>
+			<td style="width: 95px; text-align: right;"><span style="font-size:16px;">列名：</span></td>
+			<td style="width: 271px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-FIELDNAME" style="" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDNAME"></td>
+		</tr>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">列说明：</span></td>
+			<td colspan="3" rowspan="1" style="width: 579px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-FIELDDESCRIBE" style="width: 95%; text-align: left;" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDDESCRIBE"></td>
+		</tr>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">数据类型：</span></td>
+			<td style="width: 188px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-FIELDTYPE" style="" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDTYPE"></td>
+			<td style="width: 95px; text-align: right;"><span style="font-size:16px;">小数位数：</span></td>
+			<td style="width: 271px;"><input data-isflow="1" data-type="text" data-valuetype="int" id="RF_SYSTEMFIELD-FIELDDECIMALDIGITS" style="" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDDECIMALDIGITS"></td>
+		</tr>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">长度：</span></td>
+			<td style="width: 188px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-FIELDLENGTH" style="" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDLENGTH"></td>
+			<td style="width: 95px; text-align: right;"><span style="font-size:16px;">标识：</span></td>
+			<td style="width: 271px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-FIELDIDENTITY" style="" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDIDENTITY"></td>
+		</tr>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">主键：</span></td>
+			<td style="width: 188px;">@Html.Raw(new RoadFlow.Business.Form().GetRadioOrCheckboxHtml(0, "", "635f2fa9-dda7-4ce9-877d-3b47dbb91bac", "value", "", "", "checkbox", "RF_SYSTEMFIELD-FIELDPRIMARYKEY", "data-isflow=\"1\" data-type=\"checkbox\""))</td>
+			<td style="width: 95px; text-align: right;"><span style="font-size:16px;">允许空</span></td>
+			<td style="width: 271px;">@Html.Raw(new RoadFlow.Business.Form().GetRadioOrCheckboxHtml(0, "", "fbd50b1c-1133-4a11-8184-d91bf6137d6a", "value", "", "", "checkbox", "RF_SYSTEMFIELD-FIELDALLOWEMPTY", "data-isflow=\"1\" data-type=\"checkbox\""))</td>
+		</tr>
+		<tr>
+			<td style="width: 81px; text-align: right;"><span style="font-size:16px;">默认值：</span></td>
+			<td colspan="3" rowspan="1" style="width: 188px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_SYSTEMFIELD-FIELDDEFAULTVALUE" style="width: 95%; text-align: left;" type="text" value="" class="mytext" name="RF_SYSTEMFIELD-FIELDDEFAULTVALUE"></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>

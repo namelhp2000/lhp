@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <table cellpadding="0" cellspacing="1" border="0" width="99%" align="center">
+            <tr>
+                <td align="left" height="35">
+                    名称：<input type="text" class="mytext" style="width:260px;" id="flow_name" value="" name="flow_name" />
+                    <input type="button" class="mybutton" onclick="query()" value=" 查 询 " />
+                    <input type="button" class="mybutton" onclick="newflow();" value="新建流程" />
+                    <input type="button" class="mybutton" onclick="delflow(this);" value="删除所选" />
+                    <input type="button" class="mybutton" onclick="exportFlow();" value="导出流程" />
+                    <input type="button" class="mybutton" onclick="importFlow();" value="导入流程" />
+                </td>
+            </tr>
+        </table>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var typeid = '@ViewBag.typeId';
+        var currentPage, currentNumber;
+        var colNames = ['流程名称', '创建时间', '创建人', '状态', '备注', '操作'];
+        var colModel = [
+            { name: 'Name', index: 'Name', width: 310 },
+            { name: 'CreateDate', index: 'CreateDate', width: 110 },
+            { name: 'CreateUser', index: 'CreateUser', width: 80 },
+            { name: 'Status', index: 'Status', width: 50 },
+            { name: 'Note', index: 'Note', sortable: false },
+            { name: 'Opation', index: '', sortable: false, width: 70 }
+        ];
+        if ('@RoadFlow.Utility.Config.EngineCenter_IsUse' === 'True') {
+            colNames = ['流程名称', '创建时间', '创建人', '状态', '所属系统', '备注', '操作'];
+            colModel = [
+                { name: 'Name', index: 'Name', width: 310 },
+                { name: 'CreateDate', index: 'CreateDate', width: 110 },
+                { name: 'CreateUser', index: 'CreateUser', width: 80 },
+                { name: 'Status', index: 'Status', width: 50 },
+                { name: 'SystemId', index: 'SystemId', width: 80 },
+                { name: 'Note', index: 'Note', sortable: false },
+                { name: 'Opation', index: '', sortable: false, width: 70 }
+            ];
+        }
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Query",
+                postData: { appid: appid, typeid: typeid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: colNames,
+                colModel: colModel,
+                colModel: colModel,
+                sortname: "CreateDate",
+                sortorder: "asc",
+                height: '100%',
+                width: $(window).width(),
+                multiselect: true,
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    currentPage = records.pagesize;
+                    currentNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+          
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                flow_name: $("#flow_name").val(), appid: appid, typeid: typeid, pagesize: size, pagenumber: number
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function openflow(id, flowName) {
+            top.openApp("/RoadFlowCore/FlowDesigner/Index1?flowid=" + id + "&@Html.Raw(ViewBag.query)", 0, "编辑" + flowName + "流程", id);
+        }
+        function newflow() {
+            top.openApp("/RoadFlowCore/FlowDesigner/Index1?isnewflow=1&@Html.Raw(ViewBag.query)", 0, "新建流程", RoadUI.Core.newid(false));
+        }
+        function delflow(but) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的流程!");
+                return false;
+            }
+            if (!confirm('您真的要删除流程吗?')) {
+                return false;
+            }
+            var url = "UnInstall?appid=" + appid;
+            $.ajax({
+                url: url, async: false, cache: false,
+                data: { flowid: rowIds.join(','), status: 3, "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                type: "post", success: function (txt) {
+                    if ("1" == txt) {
+                        alert("删除成功!");
+                        query(currentPage, currentNumber);
+                    }
+                }
+            });
+        }
+        function exportFlow(flowID) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要导出的流程!");
+                return false;
+            }
+            var url = "Export?flowid=" + rowIds.join(',') + "&@Html.Raw(ViewBag.query)";
+            window.location = url;
+        }
+        function importFlow() {
+            var url = "Import?@Html.Raw(ViewBag.query)";
+            new RoadUI.Window().open({ title: "导入流程", width: 400, height: 200, url: url, opener: window, openerid: iframeid, resize: false });
+        }
+    </script>
+

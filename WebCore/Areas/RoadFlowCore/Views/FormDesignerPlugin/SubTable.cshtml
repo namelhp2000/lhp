@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "SubTable";
+}
+<table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable" style="margin-top:6px;">
+    <tr>
+        <th style="width:118px;">从表：</th>
+        <td style="width:25%;">
+            <select class="myselect2" id="secondtable" style="width:195px" onchange="table_change(this)"></select>
+            <input type="hidden" id="secondtabledbconn" value="" />
+        </td>
+        <th style="width:80px;">从表主键：</th>
+        <td style="width:25%;"><select class="myselect2" id="secondtableprimarykey" style="width:195px"></select></td>
+        <th style="width:80px;">主表字段：</th>
+        <td style="width:25%;"><select class="myselect2" id="primarytablefiled" style="width:195px"></select></td>
+    </tr>
+    <tr>
+        <th>关联字段：</th>
+        <td><select class="myselect2" id="secondtablerelationfield" style="width:195px"></select></td>
+        <th>编辑方式：</th>
+        <td>
+            <input type="radio" value="0" onclick="setEdit(0);" checked="checked" id="secondtableeditmodel_0" name="editmodel" style="vertical-align:middle;" /><label for="secondtableeditmodel_0" style="vertical-align:middle;">常规</label>
+            <input type="radio" value="1" onclick="setEdit(1);" id="secondtableeditmodel_1" name="editmodel" style="vertical-align:middle;" /><label for="secondtableeditmodel_1" style="vertical-align:middle;">弹出</label>
+        </td>
+        <th>宽度：</th>
+        <td><input type="text" class="mytext" style="width:80px;" id="tablewidth" /> <input type="checkbox" id="showindex" name="showindex" value="1" style="vertical-align:middle;" /><label for="showindex" style="vertical-align:middle;">显示序号</label></td>
+    </tr>
+    <tr>
+        <th><span id="editmodeltitle" style="display:none;">编辑表单：</span></th>
+        <td colspan="3">
+            <div id="editmodeldiv" style="display:none;">
+                <select class="myselect" style="width:110px;" onchange="form_types_change(this.value);" id="form_types">
+                    <option value=""></option>
+                   @Html.Raw(ViewBag.formTypes)
+                </select>
+                <select class="myselect" style="width:160px;" id="editform"></select>
+                &nbsp;宽度：<input style="width:50px;" type="text" class="mytext" id="editmodel_width" />
+                &nbsp;高度：<input style="width:50px;" type="text" class="mytext" id="editmodel_height" />
+            </div>
+        </td>
+        <th>排序：</th>
+        <td><input style="width:98%;" type="text" class="mytext" id="sortstring" /></td>
+    </tr>
+</table>
+<div style="width:100%; margin:5px auto 0 auto; height: 335px; overflow:auto;">
+    <table cellpadding="0" cellspacing="1" border="0" width="100%" class="listtable" id="listtable">
+        <thead>
+            <tr>
+                <th style="width:18%;"><input type="checkbox" style="vertical-align:middle;" onclick="checkall(this);" />显示列</th>
+                <th style="width:10%;">显示名称</th>
+                <th style="width:10%;">对齐方式</th>
+                <th style="width:5%;">宽度</th>
+                <th style="width:25%;">编辑模式</th>
+                <th style="width:35%;">显示模式</th>
+                <th style="width:5%;">合计</th>
+                <th style="width:8%;">显示顺序</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    var initJSON1 = null;
+    function init(initJSON) {
+        if (null != initJSON) {
+            var editmodel = initJSON.editmodel;
+            $("input[name='editmodel'][value='" + editmodel + "']").prop("checked", true).click();
+            $("#form_types").val(initJSON.editformtype).change();
+            $("#editform").val(initJSON.editform);
+            $("#editmodel_width").val(initJSON.displaymodewidth);
+            $("#editmodel_height").val(initJSON.displaymodeheight);
+        }
+    }
+    function table_change(obj) {
+        if (!obj) return;
+        var conn = $("#secondtabledbconn").val();
+        var table = $(obj).val();
+        var opts = parent.getFields(conn, table, "");
+        $("#secondtableprimarykey").html('<option></option>' + opts);
+        $("#secondtablerelationfield").html('<option></option>' + opts);
+        addTableFields(opts, table, initJSON1);
+    }
+    function form_types_change(value)
+    {
+        $.ajax({
+            url: "../Applibrary/GetOptionsByAppType?appid=@ViewBag.appid",
+            type: "post",
+            data: { "type": value, "value": "" },
+            async: false,
+            type: "post",
+            success: function (txt)
+            {
+                $("#editform").html('<option value=""></option>' + txt);
+            }
+        });
+    }
+    function addTableFields(opts, table, initJSON) {
+        if(null == initJSON1){
+            initJSON1 = initJSON;
+        }
+        var $tbody = $("#listtable tbody");
+        var $thead = $("#listtable thead");
+        $tbody.html('');
+        $(opts).each(function (index) {
+            var filed = $(this).val();
+            var filedNoNote = $(this).text();
+            if (filed.length == 0) {
+                return false;
+            }
+            var isshow = false;
+            var issum = false;
+            var showname = "";
+            var showtype = "";
+            var index = "";
+            var editmode = {};
+            var displaymode = "";
+            var displaymodeformat = "";
+            var displaymodesql = "";
+            var align = "";
+            var width = "";
+            if (initJSON && initJSON.colnums) {
+                for (var i = 0; i < initJSON.colnums.length; i++) {
+                    if (initJSON.colnums[i].name == (table + "-" + filed).toUpperCase()) {
+                        var colnumjson = initJSON.colnums[i];
+                        isshow = "1" == colnumjson.isshow;
+                        issum = "1" == colnumjson.issum;
+                        showname = colnumjson.showname;
+                        editmode = colnumjson.editmode;
+                        displaymode = colnumjson.displaymode;
+                        displaymodeformat = colnumjson.displaymodeformat;
+                        displaymodesql = colnumjson.displaymodesql;
+                        index = colnumjson.index || "";
+                        align = colnumjson.align || "";
+                        width = colnumjson.width || "";
+                        if (editmode && editmode.title) {
+                            showtype = editmode.title;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            var tr = '<tr>';
+            tr += '<td style="background-color:#ffffff; height:28px; word-break:normal; white-space:normal;"><input type="checkbox" name="field" value="' + filed + '" id="field_' + filed + '" ' + (isshow ? 'checked="checked"' : '') + ' style="vertical-align:middle;" /><label style="vertical-align:middle;" for="field_' + filed + '">' + filedNoNote + '</label></td>';
+            tr += '<td style="background-color:#ffffff;"><input type="text" class="mytext" name="name_' + filed + '" value="" />' + '</td>';
+            tr += '<td style="background-color:#ffffff;"><select class="myselect" style="width:70px;" id="field_align_' + filed + '">' + getAlignOptions(align) + '</select></td>'
+            tr += '<td style="background-color:#ffffff;"><input type="text" class="mytext" style="width:40px;" id="field_width_' + filed + '" value="' + width + '" />' + '</td>';
+            tr += '<td style="background-color:#ffffff;"><input type="hidden" value="" id="set_' + filed + '_hidden"/><input type="text" class="mytext" readonly="readonly" style="width:100px;mraing-right:0;border-right:none 0;" name="set_' + filed + '" id="set_' + filed + '" value="' + showtype + '"/><input type="button" class="mybutton" style="margin:0;" value="设置" onclick="filedEditSet(\'' + filed + '\');"/>' + '</td>';
+            tr += '<td style="background-color:#ffffff;"><select class="myselect" style="width:130px;" onchange="setDisplayModel(this);" id="field_display_' + filed + '">' + getDisplayModelOptions(displaymode) + '</select></td>';
+            tr += '<td style="background-color:#ffffff;"><input type="checkbox" name="field_count" value="' + filed + '" id="field_count_' + index + '" ' + (issum ? 'checked="checked"' : '') + ' style="vertical-align:middle;" /></td>';
+            tr += '<td style="background-color:#ffffff;"><input type="text" class="mytext" id="field_index_' + filed + '" style="width:40px;" value="' + index + '"/></td>';
+            tr += '</tr>';
+            var $tr = $(tr);
+            if (showname) {
+                $("input[name='name_" + filed + "']", $tr).val(showname);
+            }
+            if (editmode) {
+                $("input[id='set_" + filed + "_hidden']", $tr).val(JSON.stringify(editmode));
+            }
+
+            $tbody.append($tr);
+            var $sel = $("#field_display_" + filed, $tr);
+            $sel.val(displaymode);
+            setDisplayModel($sel.get(0), displaymodeformat, displaymodesql);
+            new RoadUI.Text().init($(".mytext"), $tr);
+            new RoadUI.Button().init($(".mybutton"), $tr);
+            new RoadUI.Select().init($(".myselect"), $tr);
+            var editmodeval = $(":checked[name='editmodel']").val();
+            if ("1" == editmodeval) {
+                $("td:eq(4)", $("tr", $tbody)).hide();
+                $("th:eq(4)", $("tr", $thead)).hide();
+                $("td:eq(5)", $("tr", $tbody)).show();
+                $("th:eq(5)", $("tr", $thead)).show();
+            }
+            else {
+                $("td:eq(5)", $("tr", $tbody)).hide();
+                $("th:eq(5)", $("tr", $thead)).hide();
+                $("td:eq(4)", $("tr", $tbody)).show();
+                $("th:eq(4)", $("tr", $thead)).show();
+            }
+
+        });
+    }
+    function getAlignOptions(align)
+    {
+        var options = '<option value="0"' + ("0" == align ? 'selected="selected"' : '') + '>左对齐</option>';
+        options += '<option value="1"' + ("1" == align ? 'selected="selected"' : '') + '>居中</option>';
+        options += '<option value="2"' + ("2" == align ? 'selected="selected"' : '') + '>右对齐</option>';
+        return options;
+    }
+    function getDisplayModelOptions(model) {
+        var optionsArray = new Array();
+        optionsArray.push({ "value": "normal", "title": "常规" });
+        optionsArray.push({ "value": "dict_id_title", "title": "数据字典ID显示为标题" });
+        optionsArray.push({ "value": "dict_code_title", "title": "数据字典代码显示为标题" });
+        optionsArray.push({ "value": "dict_value_title", "title": "数据字典值显示为标题" });
+        optionsArray.push({ "value": "dict_note_title", "title": "数据字典备注显示为标题" });
+        optionsArray.push({ "value": "dict_other_title", "title": "数据字典其它显示为标题" });
+        optionsArray.push({ "value": "organize_id_name", "title": "组织机构ID显示为名称" });
+        optionsArray.push({ "value": "files_link", "title": "附件显示为连接" });
+        optionsArray.push({ "value": "files_img", "title": "附件显示为图片" });
+        optionsArray.push({ "value": "datetime_format", "title": "日期时间显示为指定格式" });
+        optionsArray.push({ "value": "number_format", "title": "数字显示为指定格式" });
+        optionsArray.push({ "value": "custom", "title": "自定义" });
+        var options = "";
+        for (var i = 0; i < optionsArray.length; i++) {
+            options += '<option value="' + optionsArray[i].value + '"' + (optionsArray[i].value == model ? ' selected="selected"' : '') + '>' + optionsArray[i].title + '</option>';
+        }
+        return options;
+    }
+    function filedEditSet(field) {
+        var optnerId = $("div[name='rf_subtable_attr'] iframe", parent.document).eq(0).attr("id");
+        new RoadUI.Window().open({
+            id: "from_set_" + field,
+            url: "../FormDesignerPlugin/SubtableSet?eid=set_" + field + "&dbconn=" + $("#secondtabledbconn").val() + "&secondtable=" + $("#secondtable").val() + "&field=" + field,
+            title: field + "-编辑模式设置", width: 800, height: 580, zindex:99999999, openerid:optnerId, opener:window.parent
+        });
+    }
+    function checkall(obj) {
+        $("input[name='field']").prop('checked', $(obj).prop('checked'));
+    }
+    function setEdit(model) {
+        var $tbody = $("#listtable tbody");
+        var $thead = $("#listtable thead");
+        if (model == 0) {
+            $("#editmodeltitle").hide();
+            $("#editmodeldiv").hide();
+
+            $("td:eq(5)", $("tr", $tbody)).hide();
+            $("th:eq(5)", $("tr", $thead)).hide();
+
+            $("td:eq(4)", $("tr", $tbody)).show();
+            $("th:eq(4)", $("tr", $thead)).show();
+        }
+        else if (model == 1) {
+            $("#editmodeltitle").show();
+            $("#editmodeldiv").show();
+
+            $("td:eq(4)", $("tr", $tbody)).hide();
+            $("th:eq(4)", $("tr", $thead)).hide();
+
+            $("td:eq(5)", $("tr", $tbody)).show();
+            $("th:eq(5)", $("tr", $thead)).show();
+        }
+    }
+    function setDisplayModel(selObj, format, sql) {
+        var model = selObj.value;
+        var $obj = $(selObj);
+        var id = $obj.attr("id");
+        switch (model) {
+            case "datetime_format":
+            case "number_format":
+            case "string_format":
+            case "dict_value_title":
+            case "dict_note_title":
+            case "dict_other_title":
+                $obj.next("span").remove();
+                $obj.after('<span style="margin-left:8px;">格式：<input style="width:130px;" type="text" id="' + id + '_format" value="' + (format || "") + '" class="mytext"/></span>');
+                new RoadUI.Text().init($("#" + id + "_format"));
+                break;
+            case "table_fieldvalue":
+                $obj.next("span").remove();
+                $obj.after('<span style="margin-left:8px;">查询：<input style="width:130px;" type="text" id="' + id + '_sql" value="' + (sql || "") + '" class="mytext"/></span>');
+                new RoadUI.Text().init($("#" + id + "_sql"));
+                break;
+            default:
+                $obj.next("span").remove();
+                break;
+        }
+    }
+</script>

@@ -1,0 +1,416 @@
+﻿@{
+    ViewBag.Title = "Run";
+}
+@model RoadFlow.Model.ProgramRun
+@using RoadFlow.Utility
+<script src="~/RoadFlowResources/JSmodel/print/jquery.jqprint-0.3.js"></script>
+<script src="~/RoadFlowResources/JSmodel/print/jquery-migrate-1.2.1.min.js"></script>
+<script src="~/RoadFlowResources/JSmodel/print/jQuery.print.js"></script>
+<link href="~/RoadFlowResources/JSmodel/print/roadflow-jqprint.css" rel="stylesheet" />
+
+<script src="https://cdn.bootcss.com/PrintArea/2.4.1/jquery.PrintArea.js"></script>
+<script src="https://cdn.bootcss.com/PrintArea/2.4.1/jquery.PrintArea.min.js"></script>
+<link href="https://cdn.bootcss.com/PrintArea/2.4.1/PrintArea.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/PrintArea/2.4.1/PrintArea.min.css" rel="stylesheet">
+
+@*<script src="~/RoadFlowResources/JSmodel/print/LodopFuncs.js"></script>*@
+
+
+<style type="text/css" media="print">
+    .Noprint {
+        display: none;
+    }
+</style>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <!--工具栏按钮-->
+
+    @{ if (ViewBag.isToolbar == "1")
+        {
+            <div class="toolbar Noprint" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto;">
+                @Html.Raw(Model.Button_Toolbar)
+            </div>
+            <div style="height: 35px;"></div>
+        }
+    }
+    <!--工具栏按钮-->
+    <!--查询-->
+    <div style="height:5px;"></div>
+    <div class="Noprint">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+                <td style="line-height:35px;">
+
+                    @{ if (ViewBag.isQuery == "1")
+                        {
+                            @Html.Raw(Model.QueryHtml)
+
+                            @Html.Raw(Model.Button_Normal)
+                        }
+                    }
+                </td>
+            </tr>
+        </table>
+        <div style="height: 10px;"></div>
+    </div>
+
+    <!--查询-->
+    <!--列表-->
+    <div id="printtable">
+        <table id="listtable"></table>
+    </div>
+    <div class="buttondiv  Noprint"></div>
+    <!--列表-->
+</form>
+<script type="text/javascript">
+        var curPageSize = "@ViewBag.pagesize";
+        var curPageNumber = "@ViewBag.pagenumber";
+        var isPager = "1" == "@Model.IsPager";//是否分页
+        var gridHeight = "100%";//grid高度
+        var girdInitLoad = true;//是否初次加载，用于判断二次加载不设置表头
+
+
+
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Run_Query?" + "@Html.Raw(ViewBag.query)",//提交处理数据的地址。
+                mtype: 'POST',//定义使用哪种方法发起请求，GET或者POST。
+                postData: { pagesize: curPageSize, pagenumber: curPageNumber || 1 },
+                datatype: "json",//这个参数用于设定将要得到的数据类型。我最常用的是“json”，其余的类型还包括：xml、xmlstring、local、javascript、function。
+                frozen: true,//冻结
+                colNames: @Html.Raw(Model.GridColNames) ,
+                colModel: @Html.Raw(Model.GridColModels) ,
+                height: gridHeight,//Grid的高度，可以接受数字、%值、auto，默认值为150。
+                multiselect: "0" != "@Model.SelectColumn", //是否添加选择列
+                multiboxonly: "1" == "@Model.SelectColumn", //只能选择一行，单选
+                gridComplete: hideSelectAll,//隐藏全选按钮
+                beforeSelectRow: "1" == "@Model.SelectColumn" ? beforeSelectRow : null,
+
+
+
+                rownumbers: "1"=="@Model.RowNumber",//序号列
+                width: $(window).width(), //Grid的宽度，如果未设置，则宽度应为所有列宽的之和；如果设置了宽度，则每列的宽度将会根据shrinkToFit选项的设置，进行设置。
+                sortname: "@Model.DefaultSort",//指定默认的排序列，可以是列名也可以是数字。此参数会在被传递到服务端。
+                sortorder: "@Model.SortWay",
+              //  rowNum: isPager ? curPageSize : -1, //分页设置
+
+
+                viewrecords: true,   //设置是否在PagerBar显示所有记录的总数。
+
+
+                grouping: 1==@Model.IsGroup ,  // 是否分组,默认为false
+                groupingView:{
+                    groupField: @Html.Raw(ViewBag.GroupField), //需要分组的列
+
+                    groupSummary: @Html.Raw(ViewBag.GroupSummary),// [JSON.parse((groups1.split(',')[1]).split(':')[1])], //是否显示汇总 如果为true需要在colModel中进行配置 如： summaryType:'sum', summaryTpl:'<b>小计: {0}</b>''
+                    groupColumnShow:@Html.Raw(ViewBag.GroupColumnShow), //是否显示分组列
+                    groupText: @Html.Raw(ViewBag.GroupText), //在分组的头部显示的信息   {0} 代表对应的分组字段
+                    groupCollapse:@Html.Raw(ViewBag.GroupCollapse), //该属性表示在加载数据的时候是否只显示分组信息，false表示既显示分组信息也显示每个分组里面的详细信息，true则只显示分组信息
+
+                   // //针对多分组的数据
+                   groupDataSorted: @Html.Raw(ViewBag.GroupDataSorted),//分组中的数据是否排序
+                   groupOrder: @Html.Raw(ViewBag.GroupOrder), //分组后组的排列顺序
+
+                   showSummaryOnHide:@Html.Raw(ViewBag.ShowSummaryOnHide)//是否在分组底部显示汇总信息并且当收起表格时是否隐藏下面的分组
+
+                },
+
+
+
+                //统计
+                footerrow: 1==@Model.IsFooterrow &&  1==@Model.IsGroup ,
+                userDataOnFooter:1==@Model.IsFooterrow && 1==@Model.IsGroup ,
+
+
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+
+                    if (isPager) {
+                        $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    }
+
+
+                    //标题居中设置行高
+                    $(this).closest("div.ui-jqgrid-view")
+                        .children("div.ui-jqgrid-titlebar")
+                        .css("text-align", "center")
+                        .css("height", "25px")
+                        .css("font-size", "22px")
+                        // .css("color","#F00")
+                        .children("span.ui-jqgrid-title")
+                        .css("float", "none");
+
+
+                    //如果是弹出选择，初始化已选择项
+                    var values = "";
+                    if (values.length > 0) {
+                        var valueArray = values.split(',');
+                        for (i = 0; i < valueArray.length; i++) {
+                            $("#listtable").jqGrid('setSelection', valueArray[i]);
+                        }
+                    };
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                },
+                onSortCol: function () {
+                    girdInitLoad = false;
+                },
+                gridComplete: function () {
+                    //如果有合并表头
+                    if (girdInitLoad) {
+                        @Html.Raw(Model.GroupHeaders)
+                    }
+                }
+            });
+
+
+            //锁定行
+            $("#listtable").jqGrid('setFrozenColumns');
+
+        });
+
+
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        //查询
+        function query(size, number) {
+            girdInitLoad = false;
+            data =@Html.Raw(Model.QueryData);
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        //只能选择一行
+        function beforeSelectRow() {
+            $("#listtable").jqGrid('resetSelection');
+            return (true);
+        }
+        //隐藏全选按钮
+        function hideSelectAll() {
+            if ("1" != "@Model.SelectColumn") {
+                return;
+            }
+            $("#cb_listtable").hide();
+            return (true);
+        }
+        //得到选择行的ID
+        function getSelectIds() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            return rowIds;
+        }
+        //新增数据
+        function add() {
+            edit();
+        }
+        //新增编辑数据
+        function edit(id, display) {
+            var edit_url = "@Html.Raw(ViewBag.edit_url)";
+            var edit_model = "@ViewBag.edit_model";
+            var edit_width = "@ViewBag.edit_width";
+            var edit_height = "@ViewBag.edit_height";
+            var edit_title = "@ViewBag.edit_title";
+            var tabId = "@ViewBag.tabid";
+            var backUrl = encodeURIComponent("@Html.Raw(ViewBag.backUrl)&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber);
+            if (edit_url.indexOf('?') > 0) {
+                edit_url += "&display=" + (display || "0") + "&instanceid=" + (id || "") + "&@Html.Raw(ViewBag.query)";
+            } else {
+                edit_url += "?display=" + (display || "0") + "instanceid=" + (id || "") + "&@Html.Raw(ViewBag.query)";
+            }
+            if ("0" == edit_model) {//当前窗口
+                window.location = edit_url + "&returnurl=" + backUrl;
+            } else {//弹出层
+                if (!edit_width || "0" == edit_width) {
+                    edit_width = 800;
+                }
+                if (!edit_height || "0" == edit_height) {
+                    edit_height = 500;
+                }
+                openModel = edit_model;
+                if (edit_model == "2") {
+                    openModel = 3;
+                }
+                top.openApp(edit_url + "&isrefresparent=1", openModel, edit_title, "@ViewBag.tabid", edit_width, edit_height, true, "@ViewBag.tabid", window);
+                //new RoadUI.Window().open({url:edit_url, showico:false, width:edit_width, height:edit_height, openerid:tabId});
+            }
+            return true;
+        }
+        //删除数据
+        function del(id, a) {
+            if (!confirm('您真的要删除吗?')) {
+                return false;
+            }
+            if (a) {
+                $(a).removeAttr("onclick", "");
+            }
+            $.ajax({
+                url: "Run_Delete?@Html.Raw(ViewBag.query)",
+                data: { "delid": id || "", "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                cache: false, type: "POST", dataType: "json",
+                success: function (json) {
+                    var msg = json.msg;
+                    var success = json.success;
+                    alert(msg + "!");
+                    if (1 == success) {
+                        query(curPageSize, curPageNumber);
+                    }
+                    //$(but).prop("disabled", false);
+                }
+            });
+        }
+
+        //批量删除数据
+        function batchdel(id, a) {
+            if (!confirm('您真的要删除吗?')) {
+                return false;
+            }
+            var str1 = id.toString();
+            var strs = str1.split(",");
+            for (var i = 0; i < strs.length; i++) {
+                this.del1(strs[i], a);
+            }
+        }
+
+
+
+         function del1(id, a) {
+            if (a) {
+                $(a).removeAttr("onclick", "");
+            }
+            $.ajax({
+                url: "Run_Delete?@Html.Raw(ViewBag.query)",
+                data: { "delid": id || "", "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                cache: false, type: "POST", dataType: "json",
+                success: function (json) {
+                    var msg = json.msg;
+                    var success = json.success;
+                    alert(msg + "!");
+                    if (1 == success) {
+                        query(curPageSize, curPageNumber);
+                    }
+                    //$(but).prop("disabled", false);
+                }
+            });
+        }
+
+   //使用浏览器自带的打印
+    function printwindow1()
+    {
+        //设置类为：class="Noprint"，打印不显示
+        //样式：.Noprint { display: none } 
+      //  window.print();  
+         $("#listtable").addClass("tableprint");
+         var LODOP; //声明为全局变量 
+        LODOP=getLodop();  
+		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+		LODOP.SET_PRINT_STYLE("FontSize",18);
+		LODOP.SET_PRINT_STYLE("Bold",1);
+		LODOP.ADD_PRINT_TEXT(50,231,260,39,"打印页面部分内容");
+		LODOP.ADD_PRINT_HTM(88,200,350,600,document.getElementById("printtable").innerHTML);
+        LODOP.PRINT();	//打印预览
+    }
+
+    function printwindow()
+    {
+          $("#listtable").addClass("tableprint");
+         var LODOP; //声明为全局变量 
+        LODOP=getLodop();  
+		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+		LODOP.SET_PRINT_STYLE("FontSize",18);
+		LODOP.SET_PRINT_STYLE("Bold",1);
+		LODOP.ADD_PRINT_TEXT(50,231,260,39,"打印页面部分内容");
+		LODOP.ADD_PRINT_HTM(88,200,350,600,document.getElementById("printtable").innerHTML);
+        LODOP.PREVIEW();	//打印预览
+        
+       //$("#listtable").printArea();
+         $("#listtable").removeClass("tableprint");
+
+       // $("#listtable").addClass("tableprint");
+       //$("#listtable").printArea();
+       //  $("#listtable").removeClass("tableprint");
+    }
+     function printwindow5()
+    {
+        $("#listtable").addClass("tableprint");
+       $("#listtable").print({
+        	globalStyles: true,
+        	mediaPrint: false,
+        	stylesheet: null,
+        	noPrintSelector: ".no-print",
+        	iframe: true,
+        	append: null,
+        	prepend: null,
+        	manuallyCopyFormValues: true,
+        	deferred: $.Deferred(),
+        	timeout: 750,
+        	title: null,
+        	doctype: '<!doctype html>'
+	});
+         $("#listtable").removeClass("tableprint");
+    }
+
+
+
+
+    function printwindow2() {
+        $("#listtable").addClass("tableprint");
+        $("#listtable").jqprint({
+            debug: false,
+            importCSS: true,
+            printContainer: true,
+            operaSupport: false
+        }
+        );
+         $("#listtable").removeClass("tableprint");
+    }
+
+
+        //导出EXCEL
+        function exportExcel() {
+            var url = "Run_Export?@Html.Raw(ViewBag.query)";
+            window.location = url;
+        }
+        //确定选择(程序为弹出选择时)
+        function confirmSelect() {
+            var value =[];
+            var title = [];
+            var eid = "@ViewBag.eid";
+            var values = "@Html.Raw(ViewBag.values)";
+            var pkfield = "@Html.Raw(ViewBag.pkfield)";
+            var titlefield = "@ViewBag.titlefield";
+            var win = new RoadUI.Window();
+            var ele = win.getOpenerElement(eid);
+            var ele1 = win.getOpenerElement(eid + "_text");
+            var idsArray = getSelectIds();
+            for (i = 0; i < idsArray.length; i++) {
+                var rowData = $("#listtable").jqGrid('getRowData', idsArray[i]);
+                value.push(idsArray[i]);
+                title.push(rowData[titlefield])
+            }
+            if (ele && ele.size() > 0) {
+                ele.val(value.join(','));
+            }
+            if (ele1 && ele1.size() > 0) {
+                ele1.val(title.join(','));
+                if (ele1.attr("onchange")) {
+                    try {
+                        ele1.change();
+                    } catch (e) {
+                    }
+                }
+            }
+            new RoadUI.Window().close();
+        }
+
+        //自定义的脚本
+        @Html.Raw(Model.ClientScript)
+
+</script>
+

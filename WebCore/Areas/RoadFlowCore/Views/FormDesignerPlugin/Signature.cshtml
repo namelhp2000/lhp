@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Signature";
+}
+<table cellpadding="0" cellspacing="1" border="0" width="98%" class="formtable" style="margin-top:10px;">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:290px"></select></td>
+    </tr>
+    <tr>
+        <th>是否需要密码:</th>
+        <td>
+            <input type="radio" value="1" name="ispassword" id="ispassword1" style="vertical-align:middle;" /><label for="ispassword1" style="vertical-align:middle;">是</label>
+            <input type="radio" value="0" name="ispassword" id="ispassword0" style="vertical-align:middle;" /><label for="ispassword0" style="vertical-align:middle;">否</label>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

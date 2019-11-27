@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Text";
+}
+
+<div id="text_attr">
+    <table cellpadding="0" cellspacing="1" border="0" width="100%" class="formtable">
+        <tr>
+            <th style="width:80px;">绑定字段：</th>
+            <td>
+                <select class="myselect2" id="bindfiled" style="width:290px"></select>
+            </td>
+        </tr>
+        <tr>
+            <th>默认值：</th>
+            <td>
+                <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+                <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:80px; margin-right:6px;"></textarea></div>
+            </td>
+        </tr>
+        <tr>
+            <th>宽度：</th>
+            <td>
+                <input type="text" id="width" class="mytext" style="width:150px" />
+                &nbsp;&nbsp;对齐方式：<select class="myselect" id="align" style="width:100px;"><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select>
+                &nbsp;&nbsp;<input type="checkbox" value="1" id="isreadonly" name="isreadonly" style="vertical-align:middle;" /><label style="vertical-align:middle;margin-right:2px;" for="isreadonly">是否只读</label>
+            </td>
+        </tr>
+        <tr>
+            <th>最大字符数：</th>
+            <td>
+                <input type="text" id="maxlength" class="mytext" style="width:150px" />
+                &nbsp;&nbsp;背景文字：<input type="text" id="placeholdertext" class="mytext" style="width:240px" />
+            </td>
+        </tr>
+        <tr>
+            <th>输入类型：</th>
+            <td>
+                <input type="radio" value="text" id="inputtype_0" name="inputtype" style="vertical-align:middle" /><label style="vertical-align:middle;margin-right:2px;" for="inputtype_0">明文</label>
+                <input type="radio" value="password" id="inputtype_1" name="inputtype" style="vertical-align:middle" /><label style="vertical-align:middle;margin-right:2px;" for="inputtype_1">密码</label>
+            </td>
+        </tr>
+        <tr>
+            <th>值类型：</th>
+            <td>
+                <select class="myselect" id="valuetype"></select>
+                &nbsp;&nbsp;格式：<input type="text" class="mytext" id="format" />
+            </td>
+        </tr>
+        @if (RoadFlow.Utility.Config.IsRemarks=="1")
+        {
+            <tr>
+                <th > 说明：</th>
+                <td>
+                    1、自定义默认值：MVC写法为：{Method<命名空间.类名.方法名>}：将执行一个方法的返回值来替换。<br />
+                   2、默认值绑定字段：{<字段名>}
+                   3、格式：显示时的格式，如金额可以是：##.##
+               </td>
+            </tr>
+        }
+
+    </table>
+</div>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script> 

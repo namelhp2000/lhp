@@ -1,0 +1,12 @@
+﻿<script type="text/javascript">
+    if ( '@ViewBag.errmsg'== '') {
+        alert("导入成功");
+        new RoadUI.Window().close();  
+    }
+    else {
+        alert(@ViewBag.errmsg);
+        window.history.go(-1);
+    };
+     
+</script>
+

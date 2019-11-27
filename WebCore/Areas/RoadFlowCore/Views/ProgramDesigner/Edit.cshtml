@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    var Set_Attrs = "Set_Attr" + Html.Raw(ViewBag.queryString);
+   
+
+}
+
+    <form id="form1" method="post">
+        <div class="toolbar" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto;">
+            <a href="#" onclick="return1(); return false;"><label><i class="fa fa-arrow-left"></i>&nbsp;返回</label></a>
+            <label class="toolbarsplit">&nbsp;</label>
+            <a href="javascript:;" onclick="publish(this); return false;"><label><i class="fa fa-code"></i>&nbsp;发布</label></a>
+            <label class="toolbarsplit">&nbsp;</label>
+            <a href="javascript:;" onclick="openurl('Set_Attr'); return false;"><label><i class="fa fa-cog"></i>&nbsp;属性</label></a>
+            <a href="javascript:;" onclick="openurl('Set_ListField'); return false;"><label><i class="fa fa-navicon"></i>&nbsp;列表</label></a>
+            <a href="javascript:;" onclick="openurl('Set_ListGroup'); return false;"><label><i class="fa fa-stumbleupon"></i>&nbsp;分组</label></a>
+            <a href="javascript:;" onclick="openurl('Set_Query'); return false;"><label><i class="fa fa-search"></i>&nbsp;查询</label></a>
+            <a href="javascript:;" onclick="openurl('Set_Button'); return false;"><label><i class="fa fa-square"></i>&nbsp;按钮</label></a>
+            <a href="javascript:;" onclick="openurl('Set_Validate'); return false;"><label><i class="fa fa-check-square"></i>&nbsp;验证</label></a>
+            <a href="javascript:;" onclick="openurl('Set_Export'); return false;"><label><i class="fa fa-download"></i>&nbsp;导出</label></a>
+        </div>
+        <div style="height:36px;"></div>
+        <div style="width:100%; overflow:auto; vertical-align:top;">
+            <iframe id="iframe_base" border="0" src="@Set_Attrs" style="height:500px; width:100%; border:none;margin:0; padding:0;"></iframe>
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            var height = $(window).height() - 40;
+            $("#iframe_base").height(height);
+        });
+        function return1() {
+            window.location = "List"+"@Html.Raw(ViewBag.queryString)";
+        }
+        function openurl(url) {
+            $("#iframe_base").attr("src", url + "@Html.Raw(ViewBag.queryString)");
+        }
+        function publish(a) {
+            click = RoadUI.Core.disableda(a);
+            $.ajax({
+                url: "Publish"+"@Html.Raw(ViewBag.queryString)", async: false, cache: false, type: "POST", success: function (txt) {
+                    alert(txt);
+                    RoadUI.Core.enableda(a, click);
+                }
+            });
+        }
+    </script>
+

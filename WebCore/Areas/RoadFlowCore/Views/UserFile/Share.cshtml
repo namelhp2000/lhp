@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Share";
+}
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <table class="formtable" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:10px;">
+            <tr>
+                <td style="padding-left:25px;">选择要分享的人员：</td>
+            </tr>
+            <tr>
+                <td style="padding-left:25px; padding-top:10px;">
+                    <input type="text" validate="empty" style="width:240px;" opener="parent" class="mymember" id="ShareUser" name="ShareUser" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-left:25px; padding-top:8px;">有效期：</td>
+            </tr>
+            <tr>
+                <td style="padding-left:25px; padding-top:10px;">
+                    <input type="text" opener="parent" style="width:180px;" class="mycalendar" istime="1" id="ExpireDate" name="ExpireDate" />
+                    <input type="checkbox" style="vertical-align:middle;" value="1" id="NoExpireDate" name="NoExpireDate" /><label style="vertical-align:middle;" for="NoExpireDate">长期有效</label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; padding-top:10px;">
+                    <input type="button" class="mybutton" value="确定分享" onclick="save(this);" />
+                    <input type="button" class="mybutton" value="关闭窗口" onclick="new RoadUI.Window().close();" />
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="sharedir" value="@ViewBag.sharedir" />
+    </form>
+    <script type="text/javascript">
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                if ($("#ExpireDate").val().length == 0 && !$("#NoExpireDate").prop("checked")) {
+                    alert("请设置有效期!");
+                    return;
+                }
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "ShareSave"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert('1' == text ? "分享成功!" : text);
+                        }
+                        $(but).prop("disabled", false);
+                        if ('1' == text) {
+                            parent.location = parent.location;
+                            new RoadUI.Window().close();
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+

@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "DataTable";
+}
+<table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+    <tr>
+        <th style="width:80px;">样式：</th>
+        <td>
+            宽度：<input type="text" id="width1" class="mytext" style="width:100px" />
+            &nbsp;&nbsp;&nbsp;&nbsp;高度：<input type="text" id="height1" class="mytext" style="width:100px" />
+        </td>
+    </tr>
+
+    <tr>
+        <th>数据来源：</th>
+        <td>
+            <input type="radio" value="0" id="datasource_0" name="datasource" style="vertical-align:middle;" /><label for="datasource_0" style="vertical-align:middle;">SQL</label>
+            <input type="radio" value="1" id="datasource_1" name="datasource" style="vertical-align:middle;" /><label for="datasource_1" style="vertical-align:middle;">URL</label>
+            <input type="radio" value="2" id="datasource_2" name="datasource" style="vertical-align:middle;" /><label for="datasource_2" style="vertical-align:middle;">方法</label>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div id="datasource_0_div">
+                <div style="margin:3px 0;">SQL/URL/方法：</div>
+                <div><textarea style="width:99%; height:180px; font-family:Verdana;" class="mytextarea" id="datasourcetext"></textarea></div>
+            </div>
+        </td>
+    </tr>
+    @if (RoadFlow.Utility.Config.IsRemarks == "1")
+    {
+        <tr>
+            <th>说明：</th>
+            <td>
+                1、sql中可以用通配符来限制条件，比如：select * from rf_user where id='{JArray<RF_TEST-F1>}'，
+                {JArray<RF_TEST-F1>} 这个通配符就是取当前表单数据中的F1字段的值。
+            </td>
+        </tr>
+    }
+</table>
+<script type="text/javascript">
+
+</script>

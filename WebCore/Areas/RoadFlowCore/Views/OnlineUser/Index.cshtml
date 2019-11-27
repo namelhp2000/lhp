@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "Index";
+
+}
+
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+        <table cellpadding="0" cellspacing="1" border="0" width="100%">
+            <tr>
+
+                <td>
+                    姓名：<input type="text" class="mytext" style="width:190px;" id="Name" name="Name" value="" />
+                    <input type="button" name="Search" onclick="return loadData(this);" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                    <input type="button" onclick="clearUser(this);" value="将所选用户强制离线" class="mybutton" />
+                </td>
+
+            </tr>
+
+        </table>
+    </div>
+    <table id="listtable"></table>
+    <script type="text/javascript">
+            var appid = '@ViewBag.appId';
+            var iframeid = '@ViewBag.tabId';
+            var dialog = top.mainDialog || new RoadUI.Window();
+            var rows = @Html.Raw(ViewBag.json);
+           $(function ()
+        {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['姓名', '所在组织', '登录时间', '操作时间', '操作地址', 'IP','登录城市', '客户端信息'],
+                colModel: [
+                    { name: 'Name', index: 'Name', width:50 },
+                    { name: 'Organize', index: 'Organize' },
+                    { name: 'LoginTime', index: 'LastTime', width:80 },
+                    { name: 'LastTime', index: 'LastTime', width:80 },
+                    { name: 'LastUrl', index: 'LastUrl', },
+                    { name: 'IP', index: 'IP', width: 40 },
+                    { name: 'City', index: 'City', width: 60},
+                    { name: 'Agent', index: 'Agent' },
+                ],
+                multiselect: true,
+                height: $(window).height() - 80,
+                rowNum: rows.length,
+                width: $(window).width()
+              
+
+            });
+               loadData(undefined);
+               //鼠标移动背景颜色变化
+               $("#listtable tr").mouseenter(function () {
+                   $(this).css("background", "lightblue");
+               });
+               $("#listtable tr").mouseleave(function () {
+                   $(this).css("background", "white");
+               });
+        });
+
+
+
+        $(window).resize(function ()
+        {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function loadData(but)
+        {
+            var name = $.trim($("#Name").val()).toLowerCase();
+            if(name.length==0 && but != undefined)
+            {
+                window.location = window.location;
+                return;
+            }
+            $("#listtable").jqGrid('clearGridData');
+            for (var i = 0; i < rows.length; i++)
+            {
+                if (name.length == 0 || rows[i].Name.toLowerCase().indexOf(name) >= 0)
+                {
+                    $("#listtable").jqGrid('addRowData', rows[i].id, rows[i]);
+                }
+            }
+        }
+        function clearUser(but)
+        {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if(rowIds.length==0)
+            {
+                alert("您没有选择要强制离线的用户!");
+                return;
+            }
+            var o = {"ids":rowIds.join(','), "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()};
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "Clear"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", cache:false, success: function (text)
+                {
+                    if (RoadUI.Core.checkLogin(text))
+                    {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    window.location = window.location;
+                }
+            });
+        }
+
+    </script>
+</form>
+
+

@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Print";
+    var src = ViewBag.formUrl;
+}
+
+    <script>
+    RoadUI.Core.showWait();
+    </script>
+    <style type="text/css" media="print">
+        .Noprint {
+            display: none;
+        }
+    </style>
+    <div class="toolbar Noprint" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto;">
+        <input type="checkbox" value="1" checked="checked" onclick="printComment(this.checked);" id="printcomments" /><label for="printcomments">打印处理意见</label>
+        <span class="toolbarsplit">&nbsp;</span>
+        <a href="javascript:void(0);" onclick="printwindow();" title="">
+            <i class='fa fa-print' style='font-size:14px;vertical-align:middle;margin-right:3px;'></i><label>打印</label>
+        </a>
+        <a href="javascript:void(0);" onclick="window.close();" title="">
+            <i class='fa fa-remove' style='font-size:14px;vertical-align:middle;margin-right:3px;'></i><label>关闭窗口</label>
+        </a>
+    </div>
+    <!--表单-->
+    <div id="rf_print_form_contents">
+        @{
+            var extName = System.IO.Path.GetExtension(src).ToLower();
+            if (extName.StartsWith(".cshtml"))
+            {
+                var ss = RoadFlow.Utility.StringExtensions.RenderPartialStringForm(src);
+                //await Html.RenderPartialAsync((string)ss);
+
+             
+                await Html.RenderPartialAsync((string)ss);
+            }
+            else
+            {
+
+                @Html.Raw(ViewBag.formHtml)
+            }
+        }
+
+        @*@if (ViewBag.isCustomeForm == "0")
+        {
+            <iframe src="@Html.Raw(ViewBag.formUrl)" onload="setIframeHeight();" id="customeformiframe" name="customeformiframe" frameborder="0" border="0" style="border:none 0;padding:0;width:100%;margin-top:45px;"></iframe>
+        }
+        else
+        {
+
+        }*@
+
+    </div>
+    <!--表单-->
+
+   
+
+
+    <!--意见-->
+    <div id="rf_print_form_comments" style="width:95%; margin:0 auto;">
+
+          @Html.Raw(ViewBag.comments)
+    </div>
+    <!--意见-->
+    <link href="/RoadFlowResources/scripts/flowRun/form_print.css" rel="stylesheet" />
+    <script type="text/javascript">
+    var isShowArchive = "1" == "@ViewBag.showarchive";//是否是查看归档
+    $(function () {
+        //如果是归档则加载归档时的数据
+        if (isShowArchive) {
+            formDataJSON = @Html.Raw(ViewBag.formData);
+        }
+    });
+    $(window).load(function ()
+    {
+        RoadUI.Core.closeWait();
+    });
+    function printwindow()
+    {
+        window.print();
+    }
+    function printComment(checked)
+    {
+        if (checked)
+        {
+            $("#rf_print_form_comments").show();
+        } else
+        {
+            $("#rf_print_form_comments").hide();
+        }
+    }
+    function setIframeHeight() {
+        try {
+            var iframe = document.getElementById("customeformiframe");
+            if (iframe.attachEvent) {
+                iframe.height = iframe.contentWindow.document.documentElement.scrollHeight + 2;
+                return;
+            } else {
+                iframe.height = iframe.contentDocument.body.scrollHeight + 2;
+                return;
+            }
+        } catch (e) {
+
+        }
+    }
+    </script>
+
+
+

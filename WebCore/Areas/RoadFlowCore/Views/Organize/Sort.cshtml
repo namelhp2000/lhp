@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Sort";
+}
+@model IEnumerable<RoadFlow.Model.Organize>
+<form method="post">
+    @Html.AntiForgeryToken()
+    <br />
+    <div style="width:82%; margin:0 auto; height:auto;" id="sortdiv">
+        @{
+            foreach (var organizes in Model)
+            {
+                <ul class="sortul">
+                    <input type="hidden" value="@organizes.Id  " name="sort" />
+                    @organizes.Name
+                </ul>
+            }
+        }
+    </div>
+    <div style="width:400px; text-align:center; margin:0 auto; margin-top:10px;">
+        <input type="button" onclick="saveSort(this);" class="mybutton" name="save" value="保存排序" />
+        <input type="button" class="mybutton" value="&nbsp;返&nbsp;&nbsp;回&nbsp;" onclick="re();" />
+    </div>
+</form>
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    $(function () {
+        new RoadUI.DragSort($("#sortdiv"));
+    });
+    function re() {
+        window.location = "body"+"@Html.Raw(ViewBag.queryString)";
+    }
+    function saveSort(but) {
+        var f = document.forms[0];
+        var o = RoadUI.Core.serializeForm($(f));
+        $.ajax({
+            url: "SaveSort"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                if (RoadUI.Core.checkLogin(text, false)) {
+                    alert(text);
+                }
+                $(but).prop("disabled", false);
+                parent.frames[0].reLoad('@ViewBag.refreshId');
+            }
+        });
+    }
+</script>
+

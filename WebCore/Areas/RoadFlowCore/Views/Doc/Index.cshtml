@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Index";
+
+    var trees = "Tree" + Html.Raw(ViewBag.queryString);
+    var lists = "List" + Html.Raw(ViewBag.queryString)+"&isnoread=1";
+}
+
+<style type="text/css">
+    body {
+        padding: 0;
+        overflow: hidden;
+    }
+</style>
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td style="width:210px; vertical-align:top; padding:5px 5px 0 5px;">
+            <iframe id="Iframe1" frameborder="0" scrolling="auto" src="@trees" style="width:100%;margin:0;padding:0;"></iframe>
+        </td>
+        <td class="organizesplit" style="padding:0;">
+            <iframe id="docListIframe" frameborder="0" scrolling="auto" src="@lists" style="width:100%;margin:0;padding:0;"></iframe>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    $(function () {
+        var height = $(window).height();
+        $('#Iframe1').attr('height', height);
+        $('#docListIframe').attr('height', height);
+    });
+</script>
+
+
+

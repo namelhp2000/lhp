@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+    <form method="post" id="form1">
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        流程：<select class="myselect2" style="width:210px;" id="FlowID" name="FlowID"><option value="">全部</option>@Html.Raw(ViewBag.flowOptions)</select>
+                        步骤：<input type="text" class="mytext" id="stepName" name="stepName" value="" style="width:150px" />
+                        任务标题：<input type="text" class="mytext" id="flowTitle" name="flowTitle" value="" style="width:150px" />
+                        日期：<input type="text" class="mycalendar" style="width:90px;" value="" name="Date1" id="Date1" />
+                        至 <input type="text" value="" style="width:90px;" class="mycalendar" name="Date2" id="Date2" />
+                        <input type="button" name="Search" onclick="query();" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var dialog = top.mainDialog || new RoadUI.Window();
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "query"+"@Html.Raw(ViewBag.queryString)",
+                postData: {},
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['标题', '流程', '步骤', '归档时间', '处理人', ''],
+                colModel: [
+                    { name: 'Title', index: 'Title', width: 400 },
+                    { name: 'FlowName', index: 'FlowID', align: "left", width: 110 },
+                    { name: 'StepName', index: 'StepID', align: "left", width: 110 },
+                    { name: 'WriteTime', index: 'WriteTime', align: "left", width: 110 },
+                    { name: 'UserName', index: 'UserName', align: "left", width: 60 },
+                    { name: 'Opation', index: 'Opation', align: "left", width: 60 }
+                ],
+                sortname: "WriteTime",
+                sortorder: "DESC",
+                height: '100%',
+                width: $(window).width(),
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+           
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                FlowID: $("#FlowID").val(),
+                stepName: $("#stepName").val(),
+                flowTitle: $("#flowTitle").val(),
+                Date1: $("#Date1").val(),
+                Date2: $("#Date2").val(),
+                appid: appid,
+                pagesize: size || curPageSize,
+                pagenumber: number || curPageNumber
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function show(id, flowId, stepId, taskId, groupId, instanceId) {
+            var url = '../FlowRun/Print?archiveid=' + id + '&flowid=' + flowId + "&stepid=" + stepId + "&taskid=" + taskId + "&groupid=" + groupId
+                + "&instanceid=" + instanceId + "&groupid=" + groupId + '&appid=' + appid + "&tabid="
+                + iframeid + '&display=1&showarchive=1';
+            RoadUI.Core.open(url, $(top).width() - 250, $(top).height() - 80, "查看归档内容");
+        }
+    </script>
+
+
+

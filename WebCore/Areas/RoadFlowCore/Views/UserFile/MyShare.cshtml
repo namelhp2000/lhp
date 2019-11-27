@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "MyShare";
+
+}
+
+    <form method="post" id="form1">
+        @Html.AntiForgeryToken()
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        文件/文件夹名称：<input type="text" class="mytext" id="FileName" name="FileName" value="" style="width:150px" />
+                        <input type="button" name="Search" onclick="query();" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                        <input type="button" onclick="delshare(this);" value="取消分享" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input type="hidden" name="checkbox_app" id="checkbox_app" value="" />
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+        var dialog = new RoadUI.Window();
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "QueryMyShare"+"@Html.Raw(ViewBag.queryString)",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['名称', '分享时间', '有效时间', '类型', '分享人员'],
+                colModel: [
+                    { name: 'FileName', index: 'FileName', width: 300 },
+                    { name: 'ShareDate', index: 'ShareDate', width: 100 },
+                    { name: 'ExpireDate', index: 'ExpireDate', width: 100 },
+                    { name: 'Type', index: '', sortable: false, width: 80 },
+                     { name: 'UserId', index: '', sortable: false, width: 80 }
+                ],
+                sortname: "ShareDate",
+                sortorder: "DESC",
+                height: '100%',
+                multiselect: true,
+                autowidth: true,
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+         
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                FileName: $("#FileName").val(),
+                pagesize: size || curPageSize, pagenumber: number || curPageNumber
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function delshare(but) {
+            rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要取消分享的文件夹或文件!");
+                return false;
+            }
+            if (!confirm("您真的要取消分享吗?")) {
+                return false;
+            }
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "DeleteShare"+"@Html.Raw(ViewBag.queryString)", cache: false, async: false, type: "post",
+                data: {
+                    "files": rowIds.join(','),
+                    "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                }, success: function (txt) {
+                    $(but).prop("disabled", false);
+                    if (txt == '1') {
+                        alert('取消成功!');
+                        query();
+                    } else {
+                        alert(txt);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(textStatus);
+                    $(but).prop("disabled", false);
+                }
+            });
+        }
+        function showDir(url, fileId) {
+            new RoadUI.Window().open({ url: url + "&fileid=" + fileId, width: 750, height: 480, opener: window, title: "查看文件夹" })
+            }
+
+     function ViewUser(fileId, userId) {
+        new RoadUI.Window().open({ url: "MyShareUser?fileid=" + fileId + "&userid=" + userId, width: 450, height: 400, opener: window, title: "查看分享的人员" })
+    }
+    </script>

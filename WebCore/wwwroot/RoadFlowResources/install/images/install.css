@@ -1,0 +1,278 @@
+﻿@charset "utf-8";
+/*==================通用样式===================*/
+* {margin: 0;padding: 0;word-wrap: break-word}
+input[type=text]::-ms-clear,input[type=text]::-ms-reveal {display: none}
+blockquote,body,code,dd,div,dl,dt,fieldset,figure,form,h1,h2,h3,h4,h5,h6,legend,li,ol,p,pre,td,th,ul {margin: 0;padding: 0}
+article,aside,dialog,figure,footer,header,menu,nav,section {display: block}
+body {color: #333;font-size:12px; letter-spacing:1px;box-sizing: border-box;}
+body,input,button,input,select,textarea {font-family:PingFangSC-Regular,sans-serif, Helvetica,"Hiragino Sans GB","Heiti SC","Microsoft Yahei","WenQuanYi Micro Hei";}
+li {list-style-type: none}
+img,ul {margin: 0;padding: 0}
+img {border: 0}
+a {color: #333;-webkit-transition: .3s;transition: .3s}
+a,a:hover {text-decoration: none}
+em {font-style: normal}
+del {margin: 0;padding: 0;border: 0;text-decoration: none;font-style: normal}
+::selection {background: #3eba84;color: #fff}
+::-moz-selection {background: #3eba84;color: #fff}
+button,input,optgroup,select,textarea {margin: 0;outline: 0}
+legend {padding: 0;border: 0}
+textarea {overflow: hidden;resize: none}
+input::-moz-placeholder,textarea::-moz-placeholder {color: #b1b1b1}
+input:-ms-input-placeholder,textarea:-ms-input-placeholder {color: #b1b1b1}
+input::-webkit-input-placeholder,textarea::-webkit-input-placeholder {color: #b1b1b1}
+input[type="checkbox"]{width:13px;height:13px; -webkit-appearance:none; cursor: pointer;background: url(checkicon.png) no-repeat center;vertical-align: middle;margin-right:5px;}
+input[type="radio"]{width:13px;height:13px; -webkit-appearance:none; cursor: pointer;background: url(radioicon.png) no-repeat center;vertical-align: middle;}
+input[type="checkbox"]:checked{background: url(checkedicon.png) no-repeat center;}
+input[type="radio"]:checked{background: url(radioedicon.png) no-repeat center;}
+.del {text-decoration: line-through}
+.page-width {margin: 0 auto;width: 1160px;}
+.floor {padding:0px 0px 40px;overflow: hidden;}
+
+.fl {float: left}
+.fr {float: right}
+
+.clearfix:after {clear: both;display: block;visibility: hidden;height: 0;content: ""}
+.blank10 {height: 10px}
+.blank20 {height: 20px}
+.blank25 {height: 25px}
+.blank30 {height: 30px}
+
+.fw-bold {font-weight: 700}
+.fw-normal {font-weight: 400}
+.fz-12 {font-size: 12px;}
+.fz-13 {font-size: 13px;}
+.fz-14 {font-size: 14px}
+.fz-16 {font-size: 1pc}
+.fz-18 {font-size: 18px}
+.fz-20 {font-size: 20px}
+.fz-22 {font-size: 22px}
+.fz-24 {font-size: 24px}
+.fz-26 {font-size: 26px}
+.fz-28 {font-size: 28px}
+.fz-30 {font-size: 30px}
+
+.lh-5 {line-height: 5px}
+.lh-10 {line-height: 10px}
+.lh-15 {line-height: 15px}
+.lh-20 {line-height: 20px}
+.lh-25 {line-height: 25px}
+.lh-30 {line-height: 30px}
+.lh-35 {line-height: 35px}
+.lh-40 {line-height: 40px}
+.lh-45 {line-height: 45px}
+.lh-50 {line-height: 50px}
+.lh-60 {line-height: 60px}
+
+.show {display: block!important}
+.hide {display: none!important}
+
+.p-absolute {position: absolute}
+.p-fixed {position: fixed}
+.p-relative {position: relative}
+.p-inherit {position: inherit}
+
+.o-hidden {overflow: hidden}
+.o-auto {overflow: auto}
+.o-inherit {overflow: inherit}
+
+.ellipsis{ overflow:hidden; white-space:nowrap;text-overflow: ellipsis;}
+
+.bg-white {background: #fff}
+.bg-gray {background: #f9f9f9}
+.bg-gray2 { background:#fbfaf9;}
+.bg-eee{ background:#eee;}
+.bg-blue{ background:url(bottomwave.png) no-repeat center bottom #3eacc4;}
+.bg-yellow{ background:#f8b551;}
+.bg-ygradualChange{background: -webkit-linear-gradient(left,#f8b551,#ffe9c7);background: -o-linear-gradient(right,#f8b551,#ffe9c7);background: -moz-linear-gradient(right,#f8b551,#ffe9c7);background: linear-gradient(to right,#f8b551,#ffe9c7);}
+.bg-bgradualChange{background: -webkit-linear-gradient(top,#35a7ba,#5ebde5);background: -o-linear-gradient(bottom,#35a7ba,#5ebde5);background: -moz-linear-gradient(bottom,#35a7ba,#5ebde5);background: linear-gradient(to bottom,#35a7ba,#5ebde5);}
+.bg-img{ background-image:url(bottomwave.png); background-repeat:no-repeat; background-position:center bottom; position:absolute; bottom:0; width:100%; left:0; z-index:-1; height:235px;}
+
+.c-yellow{ color:#ffd100;}
+.c-yellow2{ color:#f8b551;}
+.c-white{ color:#fff;}
+.c-747474{ color:#747474;}
+.c-474747{ color:#474747;}
+.c-666{ color:#666666;}
+.c-9d9d9d{ color:#9d9d9d;}
+.c-c2c2c2{ color:#c2c2c2;}
+.c-red{ color:#ff3600;}
+.c-afafaf{ color:#afafaf;}
+.c-595959{ color:#595959;}
+.c-858585{ color:#858585;}
+.c-7a7a7a{ color:#7a7a7a;}
+
+.t-r {text-align: right}
+.t-c {text-align: center}
+.t-l {text-align: left}
+
+.va-t{ vertical-align:top;}
+.va-m{ vertical-align:middle;}
+.va-b{ vertical-align:bottom;}
+
+.plr_5 {padding-right: 5px;padding-left: 5px}
+.plr_10 {padding-right: 10px;padding-left: 10px}
+.plr_15 {padding-right: 15px;padding-left: 15px}
+.plr_20 {padding-right: 20px;padding-left: 20px}
+.plr_25 {padding-right: 25px;padding-left: 25px}
+.plr_30 {padding-right: 30px;padding-left: 30px}
+.plr_35 {padding-right: 35px;padding-left: 35px}
+.plr_40 {padding-right: 40px;padding-left: 40px}
+
+.pd_10 {padding-bottom: 10px}
+.pd_20 {padding-bottom: 20px}
+.pd_25 {padding-bottom: 25px}
+.pd_30 {padding-bottom: 30px}
+.pd_40 {padding-bottom: 40px}
+.pd_70{padding-bottom:70px;}
+
+.pp_5 {padding-top: 5px}
+.pp_10 {padding-top: 10px}
+.pp_15 {padding-top: 15px}
+.pp_20 {padding-top: 20px}
+.pp_30 {padding-top: 30px}
+.pp_40 {padding-top: 40px}
+
+.pl_10 {padding-left: 10px}
+.pl_20 {padding-left: 20px}
+.pl_30 {padding-left: 30px}
+.pl_40 {padding-left: 40px}
+
+.pr_10 {padding-right: 10px}
+.pr_20 {padding-right: 20px}
+.pr_30 {padding-right: 30px}
+.pr_40 {padding-right: 40px}
+
+.mao {margin: 0 auto}
+.md_10 {margin-bottom: 10px}
+.md_20 {margin-bottom: 20px}
+.md_25 {margin-bottom: 25px}
+.md_30 {margin-bottom: 30px}
+.md_40 {margin-bottom: 40px}
+
+.mp_0 {margin-top: 0 !important;}
+.mp_5 {margin-top: 5px}
+.mp_10 {margin-top: 10px}
+.mp_15 {margin-top: 15px}
+.mp_20 {margin-top: 20px !important}
+.mt_20 {margin-top: 20px !important;}
+.mp_25 {margin-top: 25px}
+.mp_30 {margin-top: 30px}
+.mp_40 {margin-top: 40px}
+.mp_50 {margin-top: 50px}
+.mp_60 {margin-top: 60px}
+.mp_70 {margin-top: 70px}
+
+.ml_5 {margin-left: 5px}
+.ml_10 {margin-left: 10px}
+.ml_20 {margin-left: 20px}
+.ml_30 {margin-left: 30px}
+.ml_40 {margin-left: 40px}
+
+.mr_5 {margin-right: 5px}
+.mr_10 {margin-right: 10px}
+.mr_20 {margin-right: 20px}
+.mr_30 {margin-right: 30px}
+.mr_40 {margin-right: 40px}
+
+.ro_3 {border-radius: 3px}
+.ro_5 {border-radius: 5px}
+.ro_7 {border-radius: 7px}
+.ro_9 {border-radius: 9px}
+.ro_11 {border-radius: 11px}
+.ro_13 {border-radius: 13px}
+.ro_15 {border-radius: 15px}
+.ro_17 {border-radius: 17px}
+.ro_19 {border-radius: 19px}
+.ro_20 {border-radius: 20px}
+.rod {border-radius: 50%}
+
+.gray-borderColor{ border-color:#dcdcdc;}
+.gray2-borderColor{ border-color:#eeeeee;}
+.borderLeft{ border-left-style:solid;}
+.borderRight{ border-right-style:solid;}
+.borderTop{ border-top-style:solid;}
+.borderBottom{ border-bottom-style:solid;}
+.borderWidth{ border-width:thin;}
+.border{ border:1px solid #eee;}
+
+.w80{ width:80%;}
+.w220{ width:220px;}
+.w90{ width:90px;}
+.w1{ width:100%;}
+.w2{ width:50%;}
+.w3{ width:33.33%;}
+.w4{ width:25%;}
+
+.finish{right:0; left:auto !important;}
+
+/*===============头部样式===============*/
+.header{ height:60px;}
+
+/*===============步骤样式===============*/
+.circle{ width:30px; height:30px; position:relative; z-index:10;}
+.line{ height:5px; width:100%; left:50%;top:12px;}
+.line.on:after{ width:13px; height:9px; position:absolute; left:8px; content:'';top:-2px; border-radius:50%; background:#f8b551;}
+.stepBox li{ float:left; width:16.66%; position:relative;}
+.nextStepBtn{ display:inline-block; width:105px; height:35px; background:#f8b551; line-height:35px;border: none;}
+
+/*===============底部样式===============*/
+.footer{ width:100%; left:0; bottom:0;}
+
+/*==============第二步骤样式=============*/
+.fileItem{ width:100%; }
+.fileItem tr td{ padding:10px;}
+
+.Identification{ background:url(radioicon.png) center no-repeat;width: 13px; height: 13px;vertical-align: middle; margin-right:5px; display:inline-block;}
+.success{ background:url(radioedicon.png) center no-repeat;}
+
+.prevStep{ left:0;top:-2px;}
+.returnIcon{ display:inline-block; width:22px; height:22px; vertical-align:middle; background:url(returnIcon.png) no-repeat center;}
+.prevStep span{ vertical-align:middle;}
+
+/*================进度条===============*/
+.progressBarBg,.progressBar{ height:10px;}
+.progressData span{margin-left:-10px;}
+.progressData .finish{ margin-left:0;}
+#installing::after {
+  animation: txt 3s infinite;
+  content: "";
+}
+@keyframes txt {
+  0% {
+    content: ".";
+  }
+  20% {
+    content: "..";
+  }
+  40% {
+    content: "...";
+  }
+  60% {
+    content: "....";
+  }
+  80% {
+    content: ".....";
+  }
+  100% {
+    content: "......";
+  }
+}
+/*================应用===============*/
+.applicationBox{ margin-right:-80px;}
+.applicationBox li{ float:left; width:16.66%;}
+.applicationBox .application{ margin-right:80px;}
+.applicationBox li .p-relative{height: 90px;}
+.applicationBox .application img{ width:100%; height:100%;}
+.applicationBox .application input[type="checkbox"]{ right:0; top:0; margin-right:0;}
+
+.applicationTable tr td{ padding:15px 0;}
+
+/*================模板===============*/
+.templateBox{ margin-right:-38px;}
+.templateBox li{ float:left; width:25%;}
+.templateBox .template{ margin-right:38px;}
+.templateBox .template img{ width:100%; min-height:100%;}
+.templateBox .template label{ height:162px; overflow:hidden; cursor:pointer;}
+.templateBox .template input[type="radio"]{width:13px;height:13px; -webkit-appearance:none; cursor: pointer;background: url(checkicon.png) no-repeat center;vertical-align: middle;right:0; top:0; margin-right:0;}
+.templateBox .template input[type="radio"]:checked{background: url(checkedicon.png) no-repeat center;}

@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "FlowRedirect";
+}
+
+
+    <br /><br />
+    <div style="text-align:center;">
+        接收人：<input type="text" id="user" opener="parent" class="mymember" style="width:200px;" />
+    </div><br />
+    <div style="text-align:center;">
+        <input type="button" class="mybutton" value="&nbsp;确&nbsp;定&nbsp;" onclick="confirm1();" />
+        <input type="button" class="mybutton" value="&nbsp;取&nbsp;消&nbsp;" onclick="new RoadUI.Window().close();" />
+    </div>
+    <script type="text/javascript">
+    var frame = null;
+    var openerid = '@ViewBag.openerId';
+    $(function ()
+    {
+        var iframes = top.frames;
+        for (var i = 0; i < iframes.length; i++)
+        {
+            var fname = "";
+            try
+            {
+                fname = iframes[i].name;
+            }
+            catch (e)
+            {
+                fname = "";
+            }
+            if (fname == openerid + "_iframe")
+            {
+                frame = iframes[i];
+                break;
+            }
+        }
+        if (frame == null)
+        {
+            frame = parent;
+        }
+        if (frame == null) return;
+    });
+    function confirm1()
+    {
+        var opts = {};
+        opts.type = "redirect";
+        opts.steps = [];
+        var member = $("#user").val() || "";
+        if (member.length == 0)
+        {
+            alert("没有选择接收人员!");
+            isSubmit = false;
+            return false;
+        }
+        else
+        {
+            opts.steps.push({ id: "@ViewBag.stepId", member: member, completedtime: "" });
+        }
+        frame.formSubmit(opts);
+        new RoadUI.Window().close();
+    }
+    </script>
+

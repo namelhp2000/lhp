@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Organize";
+}
+<table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable">
+    <tr>
+        <th style="width:80px;">绑定字段：</th>
+        <td><select class="myselect2" id="bindfiled" style="width:270px"></select></td>
+    </tr>
+    <tr>
+        <th>默认值：</th>
+        <td>
+            <div style="margin-bottom: 6px;"><select class="myselect" id="defaultvalueselect" onchange="parent.insertElementText(document.getElementById('defaultvalue'), this.value);" style="width:290px"></select></div>
+            <div><textarea class="mytextarea" id="defaultvalue" style="width:98%; height:50px; margin-right:6px;"></textarea></div>
+        </td>
+    </tr>
+    <tr>
+        <th>宽度：</th>
+        <td><input type="text" id="width" class="mytext" style="width:270px" /></td>
+    </tr>
+    <tr>
+        <th>选择范围：</th>
+        <td>
+            <div>
+                <input type="radio" value="0" name="org_rang" id="org_rang_0" style="vertical-align: middle;" /><label for="org_rang_0" style="vertical-align: middle;">发起者部门</label>
+                <input type="radio" value="1" name="org_rang" id="org_rang_1" style="vertical-align: middle;" /><label for="org_rang_1" style="vertical-align: middle;">处理者部门</label>
+            </div>
+            <div style="padding-top:5px;"><input type="radio" name="org_rang" value="2" id="org_rang_2" style="vertical-align:middle;" /><label for="org_rang_2" style="vertical-align:middle;">自定义</label>：<input type="text" id="org_rang_2_value" class="mymember" opener="parent" style="width:150px;" /></div>
+        </td>
+    </tr>
+    <tr>
+        <th>选择类型：</th>
+        <td>
+            <input type="checkbox" value="1" id="org_type_unit" name="org_type_unit" style="vertical-align: middle;" /><label style="vertical-align: middle;" for="org_type_unit">单位</label>
+            <input type="checkbox" value="1" id="org_type_dept" name="org_type_dept" style="vertical-align: middle;" /><label style="vertical-align: middle;" for="org_type_dept">部门</label>
+            <input type="checkbox" value="1" id="org_type_station" name="org_type_station" style="vertical-align: middle;" /><label style="vertical-align: middle;" for="org_type_station">岗位</label>
+            <input type="checkbox" value="1" id="org_type_wrokgroup" name="org_type_wrokgroup" style="vertical-align: middle;" /><label style="vertical-align: middle;" for="org_type_wrokgroup">角色组</label>
+            <input type="checkbox" value="1" id="org_type_user" name="org_type_user" style="vertical-align: middle;" /><label style="vertical-align: middle;" for="org_type_user">人员</label>
+        </td>
+    </tr>
+    <tr>
+        <th>多选：</th>
+        <td><input type="checkbox" value="1" id="more" style="vertical-align:middle;" /><label for="more" style="vertical-align:middle;">是否可以多选</label></td>
+    </tr>
+    <tr>
+        <th>父窗口：</th>
+        <td><input type="text" id="opener" class="mytext" style="" /> <span style="color:#666;">打开弹窗的父窗口如:window,parent,top</span></td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function initSelect2() {
+        new RoadUI.Select().init2($("#bindfiled"));
+    }
+</script>

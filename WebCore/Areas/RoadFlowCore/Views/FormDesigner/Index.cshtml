@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var Trees = "Tree" + Html.Raw(ViewBag.queryString)+ "&iframeid=Iframe1";
+    var Lists = "List" + Html.Raw(ViewBag.queryString)+ "&iframeid=formDesinger_Iframe2";
+}
+
+<style type="text/css">
+    body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<table width="100%" cellspacing="1" cellpadding="0" border="0">
+    <tbody>
+        <tr>
+            <td style="width:200px; vertical-align:top; padding:5px 5px 0 5px;">
+                <iframe id="Iframe1" scrolling="auto" src="@Trees" style="width:100%;margin:0;padding:0;" height="567" frameborder="0"></iframe>
+            </td>
+            <td class="organizesplit" style="padding:0;">
+                <iframe id="formDesinger_Iframe2" scrolling="auto" src="@Lists" style="width:100%;margin:0;padding:0;" height="567" frameborder="0"></iframe>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(function () {
+        var height = $(window).height();
+        $('#Iframe1').attr('height', height - 13);
+        $('#formDesinger_Iframe2').attr('height', height - 13);
+    });
+</script>
+
+
+

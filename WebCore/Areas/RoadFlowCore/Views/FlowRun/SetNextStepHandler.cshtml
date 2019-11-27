@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "SetNextStepHandler";
+}
+
+    <form id="form1" method="post">
+       @Html.AntiForgeryToken()
+        @{ 
+            Dictionary<Guid, string> setHandles = (Dictionary<Guid, string>)ViewBag.nextStepsHandle;
+        }
+        <table cellpadding="0" cellspacing="1" border="0" width="95%" align="center" class="formtable" style="margin-top:6px;">
+            @foreach (RoadFlow.Model.FlowRunModel.Step step in (List<RoadFlow.Model.FlowRunModel.Step>)ViewBag.nextSteps)
+            {
+                string setValue = setHandles.ContainsKey(step.Id) ? setHandles[step.Id] : "";
+                <tr>
+                    <th style="width:80px;"> @step.Name</th>
+                    <td>
+                        <input type="hidden" name="steps" value="@step.Id" />
+                        <input type="text" class="mymember" id="handler_@step.Id" name="handler_@step.Id" value="@setValue" style="width:86%;" />
+                    </td>
+                </tr>
+            }
+        </table>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" value="&nbsp;确&nbsp;认&nbsp;" onclick="save(this);" />
+            <input type="button" class="mybutton" value="&nbsp;取&nbsp;消&nbsp;" onclick="new RoadUI.Window().close();" />
+        </div>
+    </form>
+    <script>
+        var frame = null;
+        var openerid ='@ViewBag.openerId';
+        $(function () {
+
+        });
+        function save(but) {
+            var appopenmodel = '0';
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveSetNextStepHandler"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                        }
+                        $(but).prop("disabled", false);
+                        if (text.indexOf('成功')) {
+                            new RoadUI.Window().close();
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+

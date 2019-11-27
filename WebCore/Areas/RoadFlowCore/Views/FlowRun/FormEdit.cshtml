@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "FormEdit";
+    var src = ViewBag.formUrl;
+}
+
+    <script>
+    RoadUI.Core.showWait();
+    </script>
+    <style type="text/css">
+        body {
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <div>
+
+        <form id="mainform" name="mainform" action="FormEditSave?@Html.Raw(ViewBag.query)" method="post" target="submiter">
+            @Html.AntiForgeryToken()
+            <!--签批按钮-->
+            <div class="toolbar" style="margin:0 auto; border-top:none 0; position:fixed; top:0; left:0; right:0; z-index:999; width:100%;">
+                <div>
+
+                    @{
+                        foreach (var button in ViewBag.flowButtons)
+                        {
+
+                            var funName = string.Concat("fun_", button.Id.ToString("N"), "(this)");
+                            var funName1 = string.Concat("fun_", button.Id.ToString("N"), "(a)");
+                            <a href="javascript:void(0);" onclick="@funName;" title="@button.Note">
+                                <i class='fa @button.Ico' style='font-size:14px;margin-right:3px;'></i><label>@button.Title</label>
+                            </a>
+                            <script type="text/javascript">
+                                function @funName1 { @Html.Raw(button.Script) }
+                            </script>
+                        }
+                    }
+
+                </div>
+            </div>
+            <div style="height: 40px;"></div>
+            <!--签批按钮-->
+            <!--表单主体-->
+            <div style="overflow:auto;" id="form_body_div">
+                <iframe name="submiter" style="height:100px; display:none;"></iframe>
+                <!--表单-->
+
+                @{
+                    var extName = System.IO.Path.GetExtension(src).ToLower();
+                    if (extName.StartsWith(".cshtml"))
+                    {
+                        <input type="hidden" id="form_iscustomeform" name="form_iscustomeform" value="0" />
+                        var ss = RoadFlow.Utility.StringExtensions.RenderPartialStringForm(src);
+                        //await Html.RenderPartialAsync((string)ss);
+                        await Html.RenderPartialAsync((string)ss);
+                    }
+                    else
+                    {
+
+                        <input type="hidden" id="form_iscustomeform" name="form_iscustomeform" value="1" />
+                        <input type="hidden" name="customformtitle" id="customformtitle" value="" />
+                        <iframe src="@src" onload="setIframeHeight();" id="customeformiframe" name="customeformiframe" frameborder="0" border="0" style="border:none 0;padding:0;width:100%;margin-top:10px;"></iframe>
+                        //await Html.RenderPartialAsync((string)ss1);
+                        //System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                        //sb.Append(System.IO.File.ReadAllText(WebCore.Current.ContentRootPath + src));
+                        //Html.Raw(sb.ToString().RemovePageTag());
+                        // await Html.RenderPartialAsync((string)ss);
+                    }
+                }
+
+
+               
+               
+                <!--表单-->
+            </div>
+            <!--表单主体-->
+            <br /><br /><br />
+        </form>
+    </div>
+    <script type="text/javascript">
+    var isDebug = '' === '1';
+    var isSign = '0' !== '';
+    var signType = '';
+    var iframeid = '@ViewBag.tabId';
+    var isShow = "1" === "@ViewBag.display";//是否是查看模式
+    var appid = '@ViewBag.appId';
+    var query = '@Html.Raw(ViewBag.query)';
+    var isSystemDetermine = '0' === '';//当前步骤的后续流转类型是否是系统判断
+    var instanceid = '@ViewBag.instanceId';
+    var isCustomeForm = '1' === '@ViewBag.isCustomeForm';
+    $(window).load(function ()
+    {
+        if (!isCustomeForm) {
+            $("#form_body_div").height($(window).height() - 45);
+        }
+        //关闭弹出的正在加载层
+        RoadUI.Core.closeWait();
+    });
+    function setIframeHeight() {
+        try {
+            var iframe = document.getElementById("customeformiframe");
+            if (iframe.attachEvent) {
+                iframe.height = iframe.contentWindow.document.documentElement.scrollHeight + 2;
+                return;
+            } else {
+                iframe.height = iframe.contentDocument.body.scrollHeight + 2;
+                return;
+            }
+        } catch (e) {
+
+        }
+    }
+    </script>
+    <script type="text/javascript" src="/RoadFlowResources/scripts/flowRun/common.js"></script>
+
+

@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "ResultViewUser";
+}
+@model List<RoadFlow.Model.VotePartakeUser>
+@using RoadFlow.Utility
+<form method="post" id="form1">
+    @Html.AntiForgeryToken()
+    <div class="toolbar" id="toolbardiv" style="margin:0 auto; border-top:none 0; position:fixed; top:0; left:0; right:0; z-index:999; width:100%;">
+        <div style="padding-left:6px;">
+            <input type="button" class="mybutton" value="按选题查看" onclick="window.location='ResultView?@Html.Raw(ViewBag.query)';" />
+            <input type="button" class="mybutton" value="按人员查看" onclick="window.location='ResultViewUser?@Html.Raw(ViewBag.query)';" style="margin-left:6px;" />
+            <input type="button" class="mybutton" value="关闭窗口" onclick="top.mainTab.closeTab();" style="margin-left:6px;" />
+            <span class="toolbarsplit">&nbsp;</span>
+            <span>姓名：<input type="text" class="mytext" id="userNmae" value="" /></span>
+            <span>所在组织：<input type="text" class="mytext" id="userOrganize" value="" /></span>
+            <input type="button" class="mybutton" value="查询" onclick="query();" />
+        </div>
+    </div>
+    <div style="height:36px;"></div>
+    <div style="font-size:16px; font-weight:bold; width:98%; margin:3px auto; text-align:center;">@Html.Raw(ViewBag.vote.Topic)</div>
+    <div style="width:98%; margin:0 auto 10px auto; text-align:center; color:#666;">
+        <label>发起人：@(new RoadFlow.Business.User().GetName(ViewBag.vote.CreateUserId))</label>
+        <label style="margin-left:8px;">发起时间：@ViewBag.vote.CreateTime</label>
+        <label style="margin-left:8px;">结束时间：@ViewBag.EndTime</label>
+        @if (ViewBag.Note == 1)
+        {
+            <label style="margin-left:8px;">说明：@Html.Raw(ViewBag.vote.Note)</label>
+        }
+    </div>
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+<script>
+    var curPageSize;
+    var curPageNumber;
+    $(function () {
+        $("#listtable").jqGrid({
+            url: "QueryResultUser?@Html.Raw(ViewBag.query)",
+            postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['姓名', '所在组织', '状态', '提交时间', '查看'],
+            colModel: [
+                { name: 'UserName', index: 'UserName', width: 100 },
+                { name: 'UserOrganize', index: 'UserOrganize', align: "left", width: 400 },
+                { name: 'Status', index: 'Status', align: "left", width: 80 },
+                { name: 'SubmitTime', index: 'SubmitTime', align: "left", width: 80 },
+                { name: 'Opation', index: '', sortable: false, title: false, align: "left", width: 60 }
+            ],
+            sortname: "SubmitTime",
+            sortorder: "DESC",
+            height: '100%',
+            multiselect: false,
+            width: $(window).width(),
+            loadComplete: function () {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                curPageSize = records.pagesize;
+                curPageNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+            }
+        });
+    });
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number) {
+        var data = {
+            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+            userNmae: $("#userNmae").val(), userOrganize: $("#userOrganize").val(),
+            pagesize: size || curPageSize, pagenumber: number || curPageNumber
+        };
+        $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+    function view(voteId, userId, userName) {
+        var url = '/RoadFlowCore/Vote/ResultViewUserShow?userid=' + userId + "&voteid=" + voteId + '&@Html.Raw(ViewBag.query)&pagesize=' + curPageSize + "&pagenumber=" + curPageNumber;
+        top.openApp(url, 0, '查看' + userName + '的问卷结果', userId);
+    }
+</script>
+

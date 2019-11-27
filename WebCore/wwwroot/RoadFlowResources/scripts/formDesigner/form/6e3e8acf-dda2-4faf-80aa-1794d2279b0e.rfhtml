@@ -1,0 +1,172 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new Form().GetFormData("dba78397-b5df-4145-87af-cb8b5d0655d7", "RF_Test", "Id", instanceId, stepId, flowId, "[{'id':'RF_TEST-F11','type':'datetime','format':'yyyy-MM-dd'}]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new Form().GetDefaultValuesJSON("[{'id':'RF_TEST-F1','value':'{<UserName>}-的控制测试流程'},{'id':'RF_TEST-F2','value':'{Method<RoadFlow.Mvc.Common.Test.GetString>}'},{'id':'RF_TEST-F7','value':'{<UserWorkGroupId>}'},{'id':'RF_TEST-F10','value':'{<InitiatorDeptName>}'},{'id':'RF_TEST-F12','value':'{<UserDeptLeaderId>}'}]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "RF_Test", "@(display.IsNullOrWhiteSpace() ? ViewData["display"].ToString() : display)", defaultValuesJSON);
+	});
+	function fun_event_D38E0C1D2FC5107B9D22D0B704D02148(srcElement){
+		alert('a');
+	}
+	function fun_event_4A7C6DA5DA50E4A78CFD05E6DEF43508(srcElement){
+		alert('a');
+	}
+	function fun_event_3802CECF7C91E6C1A70DB2CD262397EA(srcElement){
+		alert($(srcElement).prev().val());
+	}
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="dba78397-b5df-4145-87af-cb8b5d0655d7"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="RF_Test"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="Id"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value="f1"/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[{'id':'RF_TEST-F11','type':'datetime','format':'yyyy-MM-dd'}]</textarea>
+<textarea style="display:none;" name="form_dbtabletitleexpression" id="form_dbtabletitleexpression">测试-{f1}={ID}</textarea>
+<p style="text-align: center;"><span style="font-size: 20px;"><strong>控件测试</strong></span></p>
+
+<table align="center" border="1" cellpadding="1" cellspacing="1" style="width: 95%;">
+	<tbody>
+		<tr>
+			<td style="width: 133px;">文本框：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="text" id="RF_TEST-F1" name="RF_TEST-F1" style="width: 70%;" type="text" value="" class="mytext" validate="empty"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">文本域：</td>
+			<td style="width: 1404px;"><textarea data-isflow="1" data-type="textarea" id="RF_TEST-F2" name="RF_TEST-F2" style="width: 70%; height: 50px;" placeholder="和" class="mytextarea" validate="empty"></textarea></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">下拉选择：</td>
+			<td style="width: 1404px;"><select data-hasempty="1" data-isflow="1" data-linkage_field="RF_TEST-F4" data-type="select2" id="RF_TEST-F3" name="RF_TEST-F3" style="width: 120px;" class="myselect" onchange="formLoad.loadChildOptions(this, 'RF_TEST-F4', 'dict', 'dba78397-b5df-4145-87af-cb8b5d0655d7', '', 'id', 'ed21bf40-6a85-45d5-aa6e-13ec81d66e88', '1', false, false);"><option value=""> </option>@Html.Raw(new Dictionary().GetOptionsByID("ed21bf40-6a85-45d5-aa6e-13ec81d66e88".ToGuid(), Dictionary.ValueField.Id, "", false))</select>&nbsp; &nbsp; &nbsp;<select data-hasempty="1" data-isflow="1" data-linkage_field="" data-type="select2" id="RF_TEST-F4" name="RF_TEST-F4" style="width: 160px;" class="myselect2"></select>&nbsp; &nbsp; &nbsp;<select data-hasempty="1" data-isflow="1" data-linkage_field="" data-type="select2" id="RF_TEST-F25" style="width: 200px;" class="myselect" name="RF_TEST-F25">@Html.Raw(new Form().GetOptionsBySQL("dba78397-b5df-4145-87af-cb8b5d0655d7", "select id,name from rf_user where id='{<UserId>}'", ""))</select>&nbsp; &nbsp; &nbsp;&nbsp;<input data-isflow="1" data-type="text" id="RF_TEST-F26" style="" type="text" value="" class="mytext" validate="decimal" name="RF_TEST-F26"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">单选按钮：</td>
+			<td style="width: 1404px;">@Html.Raw(new Form().GetRadioOrCheckboxHtml(0, "dba78397-b5df-4145-87af-cb8b5d0655d7", "ec3e6dd4-dfd6-4116-80c1-fb659289615f", "value", "", "", "radio", "RF_TEST-F5", "data-isflow=\"1\" data-type=\"radio\""))</td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">复选按钮：</td>
+			<td style="width: 1404px;">@Html.Raw(new Form().GetRadioOrCheckboxHtml(0, "dba78397-b5df-4145-87af-cb8b5d0655d7", "ec3e6dd4-dfd6-4116-80c1-fb659289615f", "id", "", "", "checkbox", "RF_TEST-F6", "data-isflow=\"1\" data-type=\"checkbox\""))</td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">隐藏域：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="hidden" id="RF_TEST-F7" name="RF_TEST-F7" type="hidden" value=""></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">HTML编辑器：</td>
+			<td style="width: 1404px;"><textarea data-isflow="1" data-type="html" id="RF_TEST-F9" name="RF_TEST-F9" style="width: 80%; height: 180px; color: rgb(153, 153, 153);" rows="1" cols="1"></textarea><script src="~/RoadFlowResources/scripts/ckeditor/ckeditor.js"></script><script>CKEDITOR.replace("RF_TEST-F9",{height:180,toolbarGroups:formLoad.ckeditor_toolbarMobileGroups,filebrowserImageUploadUrl:"/RoadFlowCore/Controls/SaveCKEditorFiles"});</script></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">按钮：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="button" id="RF_TEST-F19" name="RF_TEST-F19" type="button" value="test" onclick="fun_event_4A7C6DA5DA50E4A78CFD05E6DEF43508(this);" class="mybutton"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">LABEL标签：</td>
+			<td style="width: 1404px;"><input type="hidden" id="RF_TEST-F10_hidden" name="RF_TEST-F10" value=""/><label data-isflow="1" data-type="label" data-bindfiled="RF_TEST-F10" id="RF_TEST-F10" style=""></label></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">附件：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="files" id="RF_TEST-F14" name="RF_TEST-F14" type="text" value="" class="myfile"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">附件显示为图片：</td>
+			<td style="width: 1404px;"><input data-fileshow="1" data-fileshowheight="" data-fileshowwidth="" data-isflow="1" data-type="files" id="RF_TEST-F18" name="RF_TEST-F18" type="text" value="" class="myfile" filetype="png,jpg,gif"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">日期时间：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="datetime" id="RF_TEST-F11" name="RF_TEST-F11" style="" type="text" value="" class="mycalendar" dayafter="1" istime="1" format="yyyy-MM-dd"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">组织架构：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="organize" id="RF_TEST-F12" name="RF_TEST-F12" type="text" value="" class="mymember" rootid="027f63ff-b161-43cb-890c-58bdce01ce27" ischangetype="0" unit="0" dept="0" station="0" group="0" user="1" more="0"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">数据字典：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="lrselect" id="RF_TEST-F13" name="RF_TEST-F13" type="text" value="" class="mydict" ismore="1" isroot="0" isparent="0" rootid="7f7aba94-8e5d-46e4-a0d2-2d8508b7e96e" ischild="1"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">流水号：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-type="serialnumber" id="RF_TEST-F15" name="RF_TEST-F15" style="width: 200px;" type="text" value="" placeholder="自动生成流水号" class="mytext" readonly=""><textarea style="width:0;height:0;display:none;" name="rf_serialnumber_config_RF_TEST-F15">{"maxfiled":"f16","length":"5","formatstring":"ROAD-{Date<yyyyMMdd>}-{SerialNumber}","sqlwhere":"year%28f24%29%3Dyear%28getdate%28%29%29"}</textarea><input type="hidden" value="RF_TEST-F15" name="rf_serialnumber"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">子表：</td>
+			<td style="width: 1404px;"><table data-isflowsubtable="1" width="95%" id="SUBTABLE_RF_TESTSUB-ID-ID-TESTID">
+	<thead>
+		<tr>
+			<th>序号</th>
+			<th>f1</th>
+			<th>f2</th>
+			<th>f3</th>
+			<th>f4</th>
+			<th width="120px" style="text-align:left;">
+				<input type="hidden" name="SUBTABLE_id" value="RF_TESTSUB-ID-ID-TESTID"/>
+				<input type="hidden" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_secondtable" value="RF_TestSub"/>
+				<input type="hidden" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_primarytablefiled" value="Id"/>
+				<input type="hidden" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_secondtableprimarykey" value="Id"/>
+				<input type="hidden" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_secondtablerelationfield" value="TestId"/>
+				<input type="button" value="添加" class="mybutton" onclick="formLoad.subtableAddRow('SUBTABLE_RF_TESTSUB-ID-ID-TESTID', $('#SUBTABLE_RF_TESTSUB-ID-ID-TESTID tbody tr:first'), true);"/>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+		int subtableIndex_RF_TestSub_Id_Id_TestId = 1;
+		System.Data.DataTable subtableMapList_RF_TestSub_Id_Id_TestId = new DbConnection().GetDataTable(new DbConnection().Get("dba78397-b5df-4145-87af-cb8b5d0655d7".ToGuid()), "RF_TestSub", "TestId", instanceId, "");
+		if(null == subtableMapList_RF_TestSub_Id_Id_TestId || subtableMapList_RF_TestSub_Id_Id_TestId.Rows.Count == 0)
+		{
+			subtableMapList_RF_TestSub_Id_Id_TestId = new System.Data.DataTable();
+			subtableMapList_RF_TestSub_Id_Id_TestId.Rows.Add(subtableMapList_RF_TestSub_Id_Id_TestId.NewRow());
+		}
+		foreach(System.Data.DataRow dr in subtableMapList_RF_TestSub_Id_Id_TestId.Rows)
+		{
+			Object rowIndexObj = subtableMapList_RF_TestSub_Id_Id_TestId.Columns.Contains("Id") ? dr["Id"] : null;
+			string rowIndexStr = null == rowIndexObj ? Guid.NewGuid().ToString() : rowIndexObj.ToString();
+			string value_f1 = subtableMapList_RF_TestSub_Id_Id_TestId.Columns.Contains("f1") ? dr["f1"].ToString() : string.Empty;
+			string value_f2 = subtableMapList_RF_TestSub_Id_Id_TestId.Columns.Contains("f2") ? dr["f2"].ToString() : string.Empty;
+			string value_f3 = subtableMapList_RF_TestSub_Id_Id_TestId.Columns.Contains("f3") ? dr["f3"].ToString() : string.Empty;
+			string value_f4 = subtableMapList_RF_TestSub_Id_Id_TestId.Columns.Contains("f4") ? dr["f4"].ToString() : string.Empty;
+		<tr>
+			<td data-tdindex="1" style="text-align:center;">@(subtableIndex_RF_TestSub_Id_Id_TestId++)</td>
+			<td style="text-align:left;"><input type="text" value="@value_f1" validate="int" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_TestSub" data-field="f1" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f1_@(rowIndexStr)" id="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f1_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;"><input type="text" value="@value_f2" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_TestSub" data-field="f2" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f2_@(rowIndexStr)" id="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f2_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;"><input type="text" value="@value_f3" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_TestSub" data-field="f3" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f3_@(rowIndexStr)" id="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f3_@(rowIndexStr)" class="mytext"/></td>
+			<td style="text-align:left;"><input type="text" value="@value_f4" data-isflow="1" data-issubtable="1" data-type="text" data-table="RF_TestSub" data-field="f4" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f4_@(rowIndexStr)" id="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_f4_@(rowIndexStr)" class="mytext"/></td>
+			<td><input type="hidden" name="SUBTABLE_RF_TESTSUB-ID-ID-TESTID_rowindex" value="@rowIndexStr"/><input type="button" value="插入" class="mybutton" onclick="formLoad.subtableAddRow('SUBTABLE_RF_TESTSUB-ID-ID-TESTID',$(this).parent().parent(), false);" style="margin-right:3px;"/><input type="button" class="mybutton" value="删除" onclick="formLoad.subtableDelRow($(this).parent().parent());"/></td>
+		</tr>
+		}
+		}
+	</tbody>
+</table>
+</td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">弹出选择：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-opener="" data-type="selectdiv" id="RF_TEST-F22" type="text" value="" class="myselectdiv" name="RF_TEST-F22" showtitle="选择test" appid="04c019f9-e6ff-47be-bf14-de3459e33306" titlefield="f1" pkfield="Id" width="800" height="600" paramsname="test" paramsvalue="$(%22#RF_TEST-F1%22).val()" opener="" onchange="fun_event_3802CECF7C91E6C1A70DB2CD262397EA(this);" style="width: 200px;"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">签章：</td>
+			<td style="width: 1404px;"><input data-isflow="1" data-ispassword="1" data-type="signature" id="RF_TEST-F23_text" type="button" value="签章" class="mybutton" data-id="RF_TEST-F23" name="RF_TEST-F23_text" data-src="@Url.Content("~" + new User().GetSignSrc())" onclick="signature('RF_TEST-F23_text', false);"><input type="hidden" value="" id="RF_TEST-F23" name="RF_TEST-F23"></td>
+		</tr>
+		<tr>
+			<td style="width: 133px;">数据表格：</td>
+			<td style="width: 1404px;">@Html.Raw(new Form().GetDataTableHtml("99%", "", "0", "select top 10 name 姓名,account 帐号, sex 性别,status 状态,mobile 手机,tel 办公电话,fax 传真,email 邮箱 from rf_user where 'u_' + cast(id as varchar(36)) ='{JArray<RF_TEST-F12>}'", "dba78397-b5df-4145-87af-cb8b5d0655d7", formData))</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>

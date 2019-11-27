@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "TemplateIndex";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+        <table cellpadding="0" cellspacing="1" border="0" width="100%">
+            <tr>
+                <td>
+                    @*修改查询条件*@
+                    表名：<input type="text" class="mytext" id="SystemTable" name="SystemTable" value="" style="width:150px" />
+                    列名：<input type="text" class="mytext" id="FieldName" name="FieldName" value="" style="width:150px" />
+                    列说明：<input type="text" class="mytext" id="FieldDescribe" name="FieldDescribe" value="" style="width:150px" />
+
+
+                    <input type="button" onclick="query();" name="Search" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                    <input type="button" value="确定保存" class="mybutton" onclick="saves(this);" />
+                    @*<input type="button" onclick="exportExcel(this);" value="&nbsp;&nbsp导&nbsp;出&nbsp;&nbsp" class="mybutton" />*@
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+<script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var dialog = top.mainDialog || new RoadUI.Window();
+      var rows = @Html.Raw(ViewBag.list)
+      
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Query?@Html.Raw(ViewBag.query)",  
+                postData: { appid: appid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['系统表名', '表名序号', '列名', '列说明', '数据类型', '小数位数', '长度', '标识', '主键', '允许空','默认值', '编辑'],/* 修改列名称*/
+                colModel: [
+                    { name: 'SystemTable', index: 'SystemTable' },
+                    { name: 'TableId', index: 'TableId' },
+                    { name: 'FieldName', index: 'FieldName' },
+                    { name: 'FieldDescribe', index: 'FieldDescribe', width: 110 },
+                    { name: 'FieldType', index: 'FieldType', width: 110 },
+                    { name: 'FieldDecimalDigits', index: 'FieldDecimalDigits', width: 110 },
+                    { name: 'FieldLength', index: 'FieldLength', width: 110 },
+                    { name: 'FieldIdentity', index: 'FieldIdentity', width: 110 },
+                    { name: 'FieldPrimaryKey', index: 'FieldPrimaryKey', width: 110 },
+                    { name: 'FieldAllowEmpty', index: 'FieldAllowEmpty', width: 110 },
+                    { name: 'FieldDefaultValue', index: 'FieldDefaultValue', width: 110 },
+                    { name: 'Opation', index: '', sortable: false, width: 100 }
+                ], /*修改列参数*/
+                sortname: "SystemTable",  /* 修改排序名称*/
+                sortorder: "asc",
+                height: '100%',
+                autowidth: true,
+                rowNum: -1 ,
+                width: $(window).width(),
+                rownumbers: true,
+               
+                multiselect: true,
+                loadComplete: function () {
+                   
+                    //后台返回前端对应的值
+                   
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+    });
+
+
+        function query() {
+            var data = {
+                SystemTable: $("#SystemTable").val(), FieldName: $("#FieldName").val(), FieldDescribe: $("#FieldDescribe").val(), /*修改查询条件*/
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+       
+        function checkAll(checked) {
+            $("input[name='checkbox_app']").prop("checked", checked);
+    }
+
+        
+      
+
+      //保存方法
+    function saves(but) {
+                $.ajax({
+                    url: "Save" + "@Html.Raw(ViewBag.queryString)",
+              
+                    type: "post",
+                    success: function (text) {
+                        alert(text);
+                    }
+                });
+            }
+        
+
+
+
+      
+            //导出EXCEL
+        @*function exportExcel() {
+            var url = "exportExcel?@Html.Raw(ViewBag.query)";
+            window.location = url;
+        }*@
+    
+
+
+  
+
+
+
+</script>
+

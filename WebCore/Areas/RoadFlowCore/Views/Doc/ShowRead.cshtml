@@ -1,0 +1,56 @@
+﻿@{ 
+    ViewBag.Title = "ShowRead";
+}
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+    <script type="text/javascript">
+    var curPageSize;
+    var curPageNumber;
+    $(function () {
+        $("#listtable").jqGrid({
+            url: "QueryRead"+"@Html.Raw(ViewBag.queryString)",
+            postData: { pagesize: 12, pagenumber: curPageNumber},
+            mtype: 'POST',
+            datatype: "json",
+            colNames: ['接收人', '所在组织', '是否阅读', '阅读时间'],
+            colModel: [
+                { name: 'UserId', index: 'UserId', width: 50 },
+                { name: 'Organize', index: '', width: 250 },
+                { name: 'IsRead', index: 'IsRead', width: 30 },
+                { name: 'ReadTime', index: 'ReadTime', width: 90 },
+            ],
+            sortname: "UserId",
+            sortorder: "asc",
+            height: '100%',
+            width: $(window).width(),
+            multiselect: false,
+            onSelectRow: function () {
+
+            },
+            loadComplete: function () {
+                var gridObj = $("#listtable");
+                var records = gridObj.getGridParam("userData");
+                curPageSize = records.pagesize;
+                curPageNumber = records.pagenumber;
+                $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+            }
+        });
+        //鼠标移动背景颜色变化
+        $("#listtable tr").mouseenter(function () {
+            $(this).css("background", "lightblue");
+        });
+        $("#listtable tr").mouseleave(function () {
+            $(this).css("background", "white");
+        });
+    });
+    $(window).resize(function () {
+        $("#listtable").setGridWidth($(window).width());
+    });
+    function query(size, number) {
+        var data = {
+            pagesize: 12, pagenumber: number || curPageNumber
+        };
+        $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+    }
+    </script>
+

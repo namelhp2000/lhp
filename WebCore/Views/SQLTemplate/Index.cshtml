@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "TemplateIndex";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+        <table cellpadding="0" cellspacing="1" border="0" width="100%">
+            <tr>
+                <td>
+                   @*需要修改查询列表*@
+                    员工工号：<input type="text" class="mytext" id="s_ic_no" name="s_ic_no" value="" style="width:150px" />
+                    员工名称：<input type="text" class="mytext" id="s_name" name="s_name" value="" style="width:150px" />
+
+                    <input type="button" onclick="query(null, 1);" name="Search" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                    @*<input type="button" onclick="add(); return false;" value="添加" class="mybutton" />*@
+                   
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+<script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var dialog = top.mainDialog || new RoadUI.Window();
+     
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Query?@Html.Raw(ViewBag.query)",  
+                postData: { appid: appid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['工号', '名字', '性别',  '录入时间', '科室', '编号', '编辑'],/* 修改列名称*/
+                colModel: [
+                    { name: 's_ic_no', index: 's_ic_no' },
+                    { name: 's_name', index: 's_name' },
+                    { name: 's_sex', index: 's_sex' },
+                    { name: 'd_input_time', index: 'd_input_time', width: 110 },
+                    { name: 's_office', index: 's_office', width: 110 },
+                    { name: 's_glide', index: 's_glide', width: 110 },
+                    { name: 'Opation', index: '', sortable: false, width: 100 }
+                ], /*修改列参数*/
+                sortname: "s_ic_no",  /* 修改排序名称*/
+                sortorder: "desc",
+                height: '100%',
+                width: $(window).width(),
+                multiselect: true,
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    //后台返回前端对应的值
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+    });
+
+        function query(size, number) {
+            var data = {
+                s_ic_no: $("#s_ic_no").val(), s_name: $("#s_name").val(), /*修改查询条件*/
+                pagesize: size, pagenumber: number
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function add(id) {
+            dialog.open({
+                id: "window_" + appid.replaceAll('-', ''),
+                title: "添加",
+                width: 700,
+                height: 420,
+                url: 'Edit?entrustid=' + ( id || "") + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber + '&@Html.Raw(ViewBag.query)',/*修改Url*/
+                opener: window,
+                openerid: iframeid
+            });
+        }
+
+        function checkAll(checked) {
+            $("input[name='checkbox_app']").prop("checked", checked);
+    }
+
+        
+      
+
+
+</script>
+

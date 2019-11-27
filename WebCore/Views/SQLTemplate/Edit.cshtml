@@ -1,0 +1,431 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+@*需添加的位置是datable*@
+@model System.Data.DataTable
+<form id="form1" method="post">
+    <br />
+    @*修改table表的数据列表*@
+    <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+        @*
+        name:名称
+        id ：Id
+        value：赋予的值
+        validate：验证值 validate="empty" 不为空,validate="int" 整数 validate="editor" 超级文本 validate="ajax" 交互方式
+         errmsg：errmsg="标题不能为空!"
+        validate_url="CheckCode?id=@Model.Id" 验证地址
+        需要替换对应值*@
+        @if (Model.Rows.Count > 0)
+        {
+            foreach (System.Data.DataRow dr in Model.Rows)
+            {
+                /*
+                 * 组织机构调用前端模板 class="mymember"
+                 * 0是不允许，1是允许
+                   isdept： dept="0"是否选择部门
+                   isunit：unit="0" 是否选择单位
+                   isstation：station="0" 是否选择岗位
+                   isgroup：group="0"  是否选择角色组
+                   isuser：user="1" 是否选择人员
+                   ismore：more="0"   是否只能选择一项
+                   isall:all="0" 是否全部
+                   role：role  角色
+                   new  RoadFlow.Business.Organize().GetNames(&("#UserId").val()) 把组织字符串显示名称
+                */
+                <tr>
+                    <th style="width: 80px;">使用人：</th>
+                    <td>
+                        <input type="text" name="UserId" id="UserId" isChangeType="0" unit="0" dept="0" station="0" group="0" user="1" class="mymember" value="" style="width:60%" />
+                    </td>
+                </tr>
+
+                /*文本模板   class="mytext"
+                    readonly="readonly" 只读属性设置
+                    validate="int",validate="empty"
+                    errmsg="标题不能为空!"
+
+
+                 */
+                <tr>
+                    <th style="width: 80px;">标题：</th>
+                    <td>
+                        <input type="text" name="Title" id="Title" class="mytext" value="@dr["f1"]" validate="empty" errmsg="标题不能为空!" style="width: 75%" />
+                    </td>
+                </tr>
+
+                //文本区域并转换为ckeditor的方法  class="mytextarea"
+                <tr>
+                    <th>内容：</th>
+                    <td><textarea class="mytextarea" name="Contents" id="Contents" model="html" validate="editor" errmsg="内容不能为空!" style="width: 75%;height:80px;">@Html.Raw(dr["f2"])</textarea></td>
+                </tr>
+                //普通超级文本 ， placeholder该属性添加说明
+                <tr>
+                    <th>说明：</th>
+                    <td>
+                        <textarea class="mytextarea" placeholder="方法返回非1的字符串会弹出返回"  name="Note" id="Note" style="width:90%; height:90px;"></textarea>
+
+                        <textarea id="event_SubmitBefore" placeholder="方法返回非1的字符串会弹出返回的提示信息，并且流程不能提交!" class="mytextarea" style="width:95%;height:40px;"></textarea>
+                    </td>
+                </tr>
+
+
+                //时间模板 class="mycalendar" 0不允许 1允许
+                //istime="0"   是否显示时间
+                <tr>
+                    <th>开始时间：</th>
+                    <td><input type="text" name="StartTime" id="StartTime" class="mycalendar" istime="1" validate="empty" value=" " /></td>
+                </tr>
+
+                //下拉框选择框模板 class="myselect2"下来框检索功能
+                <tr>
+                    <th>委托流程：</th>
+                    <td><select class="myselect2" id="flowId" name="flowId" style="width:210px;"><option value=""></option>@Html.Raw(ViewBag.flowOptions)</select> *为空表示全部流程</td>
+                </tr>
+                // class="myselect" 下拉框显示本身的值
+                <tr>
+                    <th>委托流程：</th>
+                    <td>
+                        <select class="myselect" style="width:75%;" id="base_OpinionDisplay">
+                            <option value="1">显示</option>
+                            <option value="0">不显示</option>
+                        </select>
+                    </td>
+                </tr>
+
+                //隐藏值的模板 type="hidden"
+                <tr>
+                    <th style="width: 100px;">上级栏目：</th>
+                    <td>
+                        <input type="hidden" name="Id" value=" ">
+                        <input type="hidden" name="ParentId" value=" " />
+                        @ViewBag.parentName
+                    </td>
+                </tr>
+
+
+                //附件模板   把值传递到后端，然后使用该方法传递到前端 RoadFlow.Utility.StringExtensions.ToFilesShowString 方法，把附件显示出来
+                <tr>
+                    <th style="width: 80px;">附件：</th>
+                    <td><input type="text" id="Files" name="Files" value="" class="myfile" style="width: 85%" /></td>
+                </tr>
+
+
+                //图标模板 class="myico"
+                <tr>
+                    <th>图标：</th>
+                    <td>
+                        <input type="text" name="Ico" id="Ico" class="myico" value="" style="width: 200px" />
+                        &nbsp;&nbsp;颜色：<input type="text" id="base_color" name="base_color" value="" class="mytext" style="width:150px" />
+
+                    </td>
+                </tr>
+
+                //div标签tab模板   <div id="tabdiv">
+                <div id="tabdiv">
+                    <div id="div_base" title="基本信息">
+                        <div style="height:8px;"></div>
+                        <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+                            <tr>
+                                <th style="width:100px;">基本信息</th>
+                                <td><textarea class="mytextarea" name="Note" id="Note" style="width:90%; height:90px;">我是基本信息</textarea></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="div_data" title="数据连接">
+                        <div style="height:8px;"></div>
+                        <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+                            <tr>
+                                <th style="width:100px;">数据连接</th>
+                                <td> <textarea class="mytextarea" name="Note" id="Note" style="width:90%; height:90px;">我是数据连接</textarea></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="div_title" title="标识字段">
+                        <div style="height:8px;"></div>
+                        <table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+                            <tr>
+                                <th style="width:100px;">标识字段</th>
+                                <td><textarea class="mytextarea" name="Note" id="Note" style="width:90%; height:90px;">我是标识字段</textarea></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+
+                //复选框模板 type="checkbox" checked="checked"
+                <tr>
+                    <th style="width:100px;">复选框</th>
+                    <td><input type="checkbox" value="1" name="behavior_autoconfirm" id="behavior_autoconfirm" style="vertical-align:middle;" /></td>
+                </tr>
+
+                //单选框模板  type="radio"
+                <tr>
+                    <td style="width: 133px;">单选按钮：</td>
+                    <td style="width: 1404px;">
+                        <input type="radio" style="vertical-align:middle;" value="0" name="RF_TEST-F5" id="RF_TEST-F5_0" data-isflow="1" data-type="radio" /><label style="vertical-align:middle;" for="RF_TEST-F5_0">标签方式</label>
+                        <input type="radio" style="vertical-align:middle;" value="1" name="RF_TEST-F5" id="RF_TEST-F5_1" data-isflow="1" data-type="radio" /><label style="vertical-align:middle;" for="RF_TEST-F5_1">弹出层</label>
+                        <input type="radio" style="vertical-align:middle;" value="2" name="RF_TEST-F5" id="RF_TEST-F5_2" data-isflow="1" data-type="radio" /><label style="vertical-align:middle;" for="RF_TEST-F5_2">弹出层(模态)</label>
+                        <input type="radio" style="vertical-align:middle;" value="3" name="RF_TEST-F5" id="RF_TEST-F5_3" data-isflow="1" data-type="radio" /><label style="vertical-align:middle;" for="RF_TEST-F5_3">弹出窗口</label>
+                        <input type="radio" style="vertical-align:middle;" value="4" name="RF_TEST-F5" id="RF_TEST-F5_4" data-isflow="1" data-type="radio" /><label style="vertical-align:middle;" for="RF_TEST-F5_4">弹出窗口(模态)</label>
+                        <input type="radio" style="vertical-align:middle;" value="5" name="RF_TEST-F5" id="RF_TEST-F5_5" data-isflow="1" data-type="radio" /><label style="vertical-align:middle;" for="RF_TEST-F5_5">新窗口</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 133px;">分组设置：</td>
+                    <td style="width: 1404px;">
+                        是否分组：<select class="myselect" name="IsGroup" id="IsGroup" onclick="showvaliddate();">
+                        <option name="IsGroup" value="0">否</option>
+                        <option name="IsGroup" value="1">是</option>
+                        </select>
+                        <span id="grouparea" style="display:none">
+
+                            有效期：从<input name="TimeLimitBegin" type="text" id="TimeLimitBegin" class="textbox" style="width:120px;" />
+                            至
+                            <input name="TimeLimitEnd" type="text" id="TimeLimitEnd" class="textbox" style="width:120px;" />
+                        </span>
+                    </td>
+                </tr>
+               
+
+
+
+            <tr>
+                <th>性别：</th>
+                <td>
+                    <input type = "radio" validate="radio" value="0" name="Sex" id="Sex_0" style="vertical-align:middle;" /><label for="Sex_0" style="vertical-align:middle;">男</label>
+                    <input type = "radio" validate="radio" value="1" name="Sex" id="Sex_1" style="vertical-align:middle;" /><label for="Sex_1" style="vertical-align:middle;">女</label>
+                </td>
+            </tr>
+
+
+            /* 数据字典模板
+             * 1是允许，0是不允许
+             ismore="1" 是否可以多选
+             isroot ="0"   是否可以选择根节点
+             isparent="0" 是否可以选择有子节点的节点
+             rootid="7f7aba94-8e5d-46e4-a0d2-2d8508b7e96e"    表： RF_Dictionary  设置Id=rootid
+             ischild="1"  是否加载所有下级节点
+
+              */
+            <tr>
+                <td style = "width: 133px;" > 数据字典：</td>
+                <td style = "width: 1404px;" >< input data-type="lrselect" id="RF_TEST-F13" name="RF_TEST-F13" type="text" value="" class="mydict" ismore="1" isroot="0" isparent="0" rootid="7f7aba94-8e5d-46e4-a0d2-2d8508b7e96e" ischild="1"></td>
+            </tr>
+        }
+}
+    else
+    {
+        //同上面的方式
+
+    }
+
+    </table>
+
+    @*按钮模板 type="button" class="mybutton"    *@
+    <div class="buttondiv">
+        <input type="button" class="mybutton" value="保存" onclick="save(this);" />
+        <input type="button" class="mybutton" value="退回" onclick="parent.flowBack(true);" />
+        <input type="button" class="mybutton" value="发送" onclick="parent.flowSend(true);" />
+        <input type="button" class="mybutton" value="各种取值" onclick=" valuesall();" />
+    </div>
+    @Html.AntiForgeryToken()
+</form>
+@*颜色设置需要引用*@
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/jquery.bigcolorpicker.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/jquery.bigcolorpicker.js"></script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shCore.js"></script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shBrushJScript.js"></script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/bigcolorpicker/js/syntaxHighlighter/shBrushJava.js"></script>
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shCore.css" rel="stylesheet" type="text/css" />
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+<link href="/RoadFlowResources/scripts/bigcolorpicker/css/syntaxHighlighter/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+
+
+@*使用ckeditor需要添加*@
+<script src="/RoadFlowResources/scripts/ckeditor/ckeditor.js"></script>
+<script src="/RoadFlowResources/scripts/flowRun/form.js"></script>
+
+<script>
+
+
+
+
+    $(function () {
+        //使用ckeditor需要添加
+        var editor = CKEDITOR.replace("Contents", {
+            height: 200,
+            toolbarGroups: formLoad.ckeditor_toolbarFullGroups,
+            filebrowserImageUploadUrl: '/RoadFlowCore/Controls/SaveCKEditorFiles'
+        });
+
+           //radio设置值的方式 Status设置的值
+        $(":radio[name='Status'][value='" + Status + "']").prop("checked", "checked");
+
+
+        //checkbox设置值的方法
+        $(":checkbox[name='behavior_autoconfirm'][value='" + Status + "']").prop("checked", "checked");
+
+
+
+        //option设置值的方式 SelectColumn设置的值
+         $("[name='SelectColumn'][value='"+SelectColumn + "']").prop("selected", "selected");
+
+        //设置颜色的方法
+        $("#base_color").bigColorpicker();
+
+        //textarea name 设置值
+        
+        $('textarea[name="keywords1"]').val('可适当');
+        //textarea name 设置取值
+         var ss=  $('textarea[name="keywords1"]').val();
+       
+        //分组显示隐藏
+        showvaliddate();
+
+
+        //Tab设置的方法
+        new RoadUI.Tab({ id: "tabdiv", replace: true, contextmenu: false, dblclickclose: false });
+
+        //iframe 元素会创建包含另外一个文档的内联框架（即行内框架） 对进行嵌套关联的方式
+        var openerid = "12221";
+        var iframes = top.frames;
+        for (var i = 0; i < iframes.length; i++) {
+            var fname = "";
+            try {
+                fname = iframes[i].name;
+            }
+            catch (e) {
+                fname = "";
+            }
+            if (fname == openerid + "_iframe") {
+                frame = iframes[i];
+                break;
+            }
+        }
+        if (frame == null) {
+            frame = top.roadflowCurrentWindow;
+        }
+        if (frame == null) {
+            alert("未找到父窗口,设置将不可用!");
+            return;
+        };
+
+        //初始化行为里面字段值选择项以及字段状态列表
+    });
+
+
+   
+          //拆分与循环
+    //function buyGroupId() {
+    //    var BuyDepartIds = "1,2,2";
+    //    var buyId = BuyDepartIds.split(",")
+
+    //    $.each(buyId, function (i, n) {
+         
+    //        $(":checkbox[name='buyGroupIds'][value='" + n + "']").prop("checked", "checked");
+       
+    //    });
+      
+       
+    //     }
+    
+
+
+
+    function valuesall() {
+        //字典取值方法
+        alert($("#RF_TEST-F13").val())
+        //组织人员取值方法
+        alert($("#UserId").val())
+
+        //超级文本取值方法
+        var contents = CKEDITOR.instances.Contents.getData();
+
+        alert(contents)
+        //option取值方法
+        alert($("#base_OpinionDisplay").val());
+        //隐藏Id取值方法
+        alert($('input[name="Id"]').val());
+
+        //颜色与图标的取值方法
+        alert($("#Ico").val());
+        alert($("#base_color").val());
+
+        //tab对应的取值方法
+        alert($("#div_title #Note").val());
+
+        //checkbox对应的取值方法
+        alert($('input[name="Sex"]:checked').val());
+
+        //radio设置值的方式 Status设置的值
+        $("input[name='Sex']:checked").val();
+    }
+
+
+    function showvaliddate() {
+        var checkrad = $("#IsGroup").val();
+        if (checkrad == "1") {
+            $("#grouparea").show();
+        } else {
+            $("#grouparea").hide();
+        }
+    }
+
+
+  
+
+    //返回到列表中
+    function save(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            //获取form对应的值
+            var o = RoadUI.Core.serializeForm($(f));
+            //设置超级文本的取值方法
+            var contents = CKEDITOR.instances.Contents.getData();
+            o.Contents = contents;
+            //开启disable，才能取值
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "Save"+"@Html.Raw(ViewBag.queryString)",
+                data: o, type: "post", dataType: "json", success: function (json) {
+                    //登陆验证
+                   if (RoadUI.Core.checkLogin(text, false)) {
+                            alert(text);
+                    }
+                      //关闭disable 不能取值
+                    $(but).prop("disabled", false);
+                      //加载返回到列表中
+                    win.reloadOpener(undefined, undefined, "query('@ViewBag.pageSize','@ViewBag.pageNumber')");
+                    //关闭显示框
+                        win.close();
+                }
+            });
+        }
+    }
+
+    //返回编辑的界面
+     function save1(but) {
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            var contents = CKEDITOR.instances.Contents.getData();
+            o.Contents = contents;
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SaveCustomForm"+"@Html.Raw(ViewBag.queryString)",
+                data: o, type: "post", dataType: "json", success: function (json) {
+                    //返回提示纤细
+                    alert(json.message);
+                    $(but).prop("disabled", false);
+                    //成功就返回编辑界面
+                    if (json.success == 1) {
+                        window.location = 'Customform1?@Html.Raw(ViewBag.query)&instanceid=' + json.instanceid; /*修改Url连接*/
+                    }
+                }
+            });
+        }
+    }
+
+
+</script>

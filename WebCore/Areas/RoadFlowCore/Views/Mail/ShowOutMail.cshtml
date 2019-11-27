@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "ShowOutMail";
+}
+@using RoadFlow.Utility
+@model RoadFlow.Model.MailOutBox
+<form method="post">
+    @Html.AntiForgeryToken()
+    <style type="text/css" media="print">
+        .Noprint {
+            display: none;
+        }
+    </style>
+    <div class="toolbar Noprint" style="margin-top:0; border-top:none 0; position:fixed; top:0; left:0; right:0; margin-left:auto; z-index:999; width:100%; margin-right:auto;">
+        <a href="javascript:void(0);" onclick="backTo();" title="">
+            <i class='fa fa-reply' style='font-size:14px;margin-right:3px;'></i><label>返回</label>
+        </a>
+        <a href="javascript:void(0);" onclick="printwindow();" title="">
+            <i class='fa fa-print' style='font-size:14px;margin-right:3px;'></i><label>打印</label>
+        </a>
+        <span class="toolbarsplit">&nbsp;</span>
+        <a href="javascript:void(0);" onclick="redirectMail('againedit');" title="">
+            <i class='fa fa-pencil-square' style='font-size:14px;margin-right:3px;'></i><label>再次编辑</label>
+        </a>
+        <span class="toolbarsplit">&nbsp;</span>
+        <a href="javascript:void(0);" onclick="withdraw();" title="">
+            <i class='fa fa-reply-all' style='font-size:14px;margin-right:3px;'></i><label>撤回</label>
+        </a>
+        <a href="javascript:void(0);" onclick="del();" title="">
+            <i class='fa fa-remove' style='font-size:14px;margin-right:3px;'></i><label>删除</label>
+        </a>
+    </div>
+    <div style="margin-top:45px;">
+        <table cellpadding="0" cellspacing="0" border="0" width="98%;" class="formtable">
+            <tr>
+                <td style="height:28px; font-weight:bold; font-size:16px; ">
+                    @Html.Raw(Model.Subject)
+                </td>
+            </tr>
+            <tr>
+                <td style="height:28px; color:#666;">
+                    <div>
+                        发件人： @{
+                            var ss1 = new RoadFlow.Business.User().GetOrganizeMainShowHtml(Model.UserId, false);
+                            var ss2 = new RoadFlow.Business.User().GetName(Model.UserId);
+                            var ss3 = ss2 + " (" + ss1 + ")";
+                            @ss3
+                        }
+                    </div>
+                    <div style="margin:5px 0;">时&nbsp;&nbsp;&nbsp;间：@Model.SendDateTime.</div>
+                    <div style="margin:5px 0;">
+                        收件人：@{
+                            var ss5 = new RoadFlow.Business.Organize().GetNames(Model.ReceiveUsers);
+                            @ss5
+                        }
+                    </div>
+                    <div style="margin:5px 0;">
+                        抄&nbsp;&nbsp;&nbsp;送：@{
+                            var ss4 = RoadFlow.Utility.StringExtensions.IsNullOrEmpty(Model.CarbonCopy) ? "" : new RoadFlow.Business.Organize().GetNames(Model.CarbonCopy);
+                            @ss4
+                        }
+                    </div>
+                    <div style="margin:5px 0;">
+                        密&nbsp;&nbsp;&nbsp;送：@{
+                            var ss6 = RoadFlow.Utility.StringExtensions.IsNullOrEmpty(Model.SecretCopy) ? "" : new RoadFlow.Business.Organize().GetNames(Model.SecretCopy);
+                            @ss6
+                        }
+                    </div>
+
+                  </td>
+            </tr>
+            <tr>
+                <td style="border-bottom:1px solid #ccc;"></td>
+            </tr>
+            <tr>
+                <td style="padding:8px 10px;text-align:left; line-height:21px;">
+                   @Html.Raw(ViewBag.contents)
+                </td>
+            </tr>
+
+            @if (!StringExtensions.IsNullOrEmpty(ViewBag.files))
+            {
+                <tr>
+                    <td style="height:28px;padding:8px 10px;">
+                        附件：<span style="margin-right:4px;">@Html.Raw(ViewBag.files)</span>
+                    </td>
+                </tr>
+            }
+        </table>
+        <br />
+    </div>
+</form>
+<script type="text/javascript">
+    var mailId = "@ViewBag.mailid";
+    var refreshTabId = "@ViewBag.refreshtabid";
+    function printwindow() {
+        window.print();
+    }
+    function redirectMail(opation) {
+        top.openApp("/RoadFlowCore/Mail/SendMail?@Html.Raw(ViewBag.query)&mailid=" + mailId + "&opation=" + opation, 0, "编辑邮件", "tab_mailredirect_" + mailId);
+    }
+    function backTo() {
+        window.location = 'OutBox?@Html.Raw(ViewBag.query1)';
+    }
+    function withdraw() {
+        if (!confirm('您真的要撤回该邮件吗?')) {
+            return false;
+        }
+        $.ajax({
+            url: "WithdrawOutMail?" + "@Html.Raw(ViewBag.query)",
+            data: { "id": mailId, "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+            type: "post",
+            success: function (txt) {
+                alert(txt);
+                if (txt.indexOf('成功') >= 0) {
+                    window.location = 'OutBox?@Html.Raw(ViewBag.query1)';
+                }
+            }
+        });
+        return true;
+    }
+    function del() {
+        if (!confirm('您真的要删除该邮件吗?')) {
+            return false;
+        }
+        $.ajax({
+            url: "DeleteOutMail?" + "@Html.Raw(ViewBag.query)",
+            data: { "ids": mailId, "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+            type: "post",
+            success: function (txt) {
+                alert(txt);
+                if (txt.indexOf('成功') >= 0) {
+                    window.location = 'OutBox?@Html.Raw(ViewBag.query1)';
+                }
+            }
+        });
+        return true;
+    }
+</script>
+

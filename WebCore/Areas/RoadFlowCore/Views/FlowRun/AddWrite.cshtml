@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "AddWrite";
+}
+
+
+    <form id="form1" method="post">
+       @Html.AntiForgeryToken()
+        <table cellpadding="0" cellspacing="1" border="0" width="95%" align="center" class="formtable" style="margin-top:6px;">
+            <tr>
+                <th style="width:80px;">加签类型：</th>
+                <td>
+                    <input type="radio" id="addtype_1" name="addtype" value="1" validate="radio" style="vertical-align:middle;" /><label for="addtype_1" style="vertical-align:middle;">前加签</label>
+                    <input type="radio" id="addtype_2" name="addtype" value="2" validate="radio" style="vertical-align:middle;" /><label for="addtype_2" style="vertical-align:middle;">后加签</label>
+                    <input type="radio" id="addtype_3" name="addtype" value="3" validate="radio" style="vertical-align:middle;" /><label for="addtype_3" style="vertical-align:middle;">并签</label>
+                </td>
+            </tr>
+            <tr>
+                <th>审批方式：</th>
+                <td style="line-height:23px;">
+                    <input type="radio" id="writetype_1" name="writetype" value="1" validate="radio" style="vertical-align:middle;" /><label for="writetype_1" style="vertical-align:middle;">所有加签人同意才通过</label><br />
+                    <input type="radio" id="writetype_2" name="writetype" value="2" validate="radio" style="vertical-align:middle;" /><label for="writetype_2" style="vertical-align:middle;">一个加签人同意即通过</label><br />
+                    <input type="radio" id="writetype_3" name="writetype" value="3" validate="radio" style="vertical-align:middle;" /><label for="writetype_3" style="vertical-align:middle;">按选择加签人顺序审批</label>
+                    <span class="validate"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>接收人：</th>
+                <td>
+                    <input type="text" class="mymember" id="writeuser" opener="parent" name="writeuser" validate="empty" style="width:60%;" />
+                </td>
+            </tr>
+        </table>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" value="&nbsp;确&nbsp;认&nbsp;" onclick="save(this);" />
+            <input type="button" class="mybutton" value="&nbsp;取&nbsp;消&nbsp;" onclick="new RoadUI.Window().close();" />
+        </div>
+    </form>
+    <script>
+    //var comments = $("#comment", parent.document).val();//处理意见
+    //var issign = $("#issign", parent.document).val();
+    var frame = null;
+    var openerid = '@ViewBag.openerId';
+    $(function () {
+        var iframes = top.frames;
+        for (var i = 0; i < iframes.length; i++) {
+            var fname = "";
+            try {
+                fname = iframes[i].name;
+            }
+            catch (e) {
+                fname = "";
+            }
+            if (fname == openerid + "_iframe") {
+                frame = iframes[i];
+                break;
+            }
+        }
+        if (frame == null) {
+            frame = parent;
+        }
+        if (frame == null) {
+            alert("未找到父窗口!");
+            return;
+        }
+    });
+    function save(but) {
+        var appopenmodel = '0';
+        var f = document.forms[0];
+        if (new RoadUI.Validate().validateForm(f)) {
+            var o = RoadUI.Core.serializeForm($(f));
+            var opts = {};
+            opts.type = "addwrite";
+            opts.steps = [];
+            opts.addwrite = { addtype: $(":checked[name='addtype']").val(), member: $("#writeuser").val(), writetype: $(":checked[name='writetype']").val() };
+            frame.formSubmit(opts);
+            new RoadUI.Window().close();
+            return;
+
+            //o.comments = comments || "";
+            //o.issign = issign;
+        }
+    }
+    </script>
+
+

@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Sort";
+}
+@model IEnumerable<RoadFlow.Model.Menu>
+
+    <form method="post">
+        <br />
+       @Html.AntiForgeryToken()
+        <div style="padding-left:7px; width:80%; margin:0 auto; height:auto;" id="sortdiv">
+            @{
+                foreach (var menus in Model)
+                {
+                    <ul class="sortul">
+                        <input type="hidden" value="@menus.Id" name="sort" />
+                        @menus.Title
+                    </ul>
+                }
+            }
+        </div>
+        <div class="buttondiv">
+            <input type="button" class="mybutton" value="保存排序" onclick="saveSort(this)" />
+            <input type="button" class="mybutton" value="返回" onclick="re();" />
+        </div>
+    </form>
+    <script type="text/javascript">
+        var win = new RoadUI.Window();
+        $(function () {
+            new RoadUI.DragSort($("#sortdiv"));
+        });
+        function re() {
+            window.location = "Body" + "@Html.Raw(ViewBag.queryString)" ;
+        }
+        function saveSort(but) {
+            var f = document.forms[0];
+            var o = RoadUI.Core.serializeForm($(f));
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "SaveSort"+"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                    if (RoadUI.Core.checkLogin(text, false)) {
+                        alert(text);
+                    }
+                    $(but).prop("disabled", false);
+                    parent.frames[0].reLoad('@ViewBag.parentId');
+                }
+            });
+        }
+    </script>

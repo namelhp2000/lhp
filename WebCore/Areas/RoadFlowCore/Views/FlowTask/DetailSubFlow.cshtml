@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "DetailSubFlow";
+}
+
+    <table id="listtable"></table>
+    <script type="text/javascript">
+        var rows = @Html.Raw(ViewBag.json);
+        var ismobile = "1" === "@ViewBag.ismobile";
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['流程名称', '步骤名称', '发送人', '接收时间', '处理人', '完成时间', '状态', ''],
+                colModel: [
+                    { name: 'FlowName', index: 'FlowName' },
+                    { name: 'StepName', index: 'StepName' },
+                    { name: 'SenderName', index: 'SenderName', align: "left" },
+                    { name: 'SenderTime', index: 'SenderTime', width: 200, align: "left" },
+                    { name: 'ReceiveName', index: 'ReceiveName', align: "left" },
+                    { name: 'CompletedTime1', index: 'CompletedTime1', width: 200, align: "left" },
+                    { name: 'StatusTitle', index: 'StatusTitle', align: "left" },
+                    { name: 'Show', index: 'Show', align: "left" }
+                ],
+                //rownumbers: true,//显示序号列
+                height: ismobile ? 320 : 440,
+                rowNum: rows.length,
+                width: ismobile ? 800 : $(window).width(),
+                data: rows
+            });
+        });
+        function detail(flowId, groupId) {
+            new RoadUI.Window().open({
+                title: '查看处理过程',
+                url: '/RoadFlowCore/FlowTask/Detail?flowid=' + flowId + '&groupid=' + groupId, width: 1000, height: 550, opener: parent
+            });
+        }
+    </script>
+

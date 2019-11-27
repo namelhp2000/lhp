@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "ImportSave";
+
+}
+
+    <script type="text/javascript">
+        var errmsg = "@Html.Raw(ViewBag.errmsg)";
+        if (errmsg.length > 0) {
+            alert(errmsg);
+            window.location = "Import"+"@Html.Raw(ViewBag.queryString)";
+        } else {
+            alert("导入成功!");
+            new RoadUI.Window().close();
+        }
+    </script>
+

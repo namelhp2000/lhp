@@ -1,0 +1,59 @@
+﻿@using RoadFlow.Utility
+@{
+    ViewBag.Title = "Index";
+}
+
+<script src="~/RoadFlowResources/KS/scripts/ueditor/ueditor.config.js"></script>
+<script src="~/RoadFlowResources/KS/scripts/ueditor/ueditor.all.js"></script>
+<script src="~/RoadFlowResources/KS/scripts/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+
+
+
+<table cellpadding="0" cellspacing="1" border="0" width="99%" class="formtable">
+    <tr>
+        <th style="width:100px;">复选框</th>
+        <td>
+            <input type="checkbox" value="1" name="behavior_autoconfirm" id="behavior_autoconfirm" style="vertical-align:middle;" />
+            <input type="checkbox" value="0" id="behavior_autoconfirm1" style="vertical-align:middle;" />
+        </td>
+    </tr>
+    <tr>
+        <th>性别：</th>
+        <td>
+            <input type="radio" validate="radio" value="0" name="Sex" id="Sex_0" style="vertical-align:middle;" /><label for="Sex_0" style="vertical-align:middle;">男</label>
+            <input type="radio" validate="radio" value="1" name="Sex" id="Sex_1" style="vertical-align:middle;" /><label for="Sex_1" style="vertical-align:middle;">女</label>
+            <span class="validate"></span>
+        </td>
+    </tr>
+
+    <tr>
+        <td align="right" class="lefttd" height="30"> <strong>题目内容：</strong></td>
+        <td class="righttd">
+            <textarea name="TxtTmnr" rows="2" cols="20" id="TxtTmnr" style="height: 120px; width: 98%">
+</textarea>
+            <script>jQuery(document).ready(function () { editorTxtTmnr = UE.getEditor('TxtTmnr', { toolbars: [['fullscreen', 'source', '|', 'undo', 'redo', '|', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat']], wordCount: false, autoHeightEnabled: false, scaleEnabled: false, elementPathEnabled: false }); });</script>
+            <span class="tips">如选择题填写具体的选项,填空题在需要用户作答的地方放{#answer}标签,使用编辑器时按shift+Enter分段</span>
+        </td>
+    </tr>
+
+</table>
+<input type="text" name="idJsShow" id="idJsShow" class="mytext" style="width: 75%" />
+<div id="result" style="color:red"></div>
+
+<div class="buttondiv">
+    <input type="button" class="mybutton" value="保存" onclick="save();" />
+</div>
+
+<a href="~/RoadFlowResources/KS/ashx/UeditorController.ashx">~/RoadFlowResources/KS/ashx/UeditorController.ashx</a>
+
+<script>
+
+    function save() {
+        var ss = editorTxtTmnr.getContent();
+        var s1 = 0;
+    }
+   
+</script>
+
+

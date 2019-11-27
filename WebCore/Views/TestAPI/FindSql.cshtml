@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="querybar">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+                <td>
+                    卡号：<input type="text" class="mytext" id="IC" name="IC" value="" style="width:150px" />
+                    姓名：<input type="text" class="mytext" id="Name" name="Name" value="" style="width:80px" />
+                    就诊医生：<input type="text" class="mytext" id="Doction" name="Doction" value="" style="width:80px" />
+                    就诊日期：<input type="text" class="mycalendar" id="Date1" name="Date1" style="width:90px;" value="" /> 至 <input type="text" class="mycalendar" id="Date2" name="Date2" style="width:90px;" value="" />
+                    <input type="button" class="mybutton" onclick="query(null, 1);" value="&nbsp;查&nbsp;询&nbsp;" />
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="listtable"></table>
+    <div class="buttondiv"></div>
+</form>
+<script type="text/javascript">
+      var appid = '@ViewBag.appId';
+            var iframeid = '@ViewBag.tabId';
+            var dialog = top.mainDialog || new RoadUI.Window();
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "Query?@ViewBag.query",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['IC卡号','就诊日期' ,'姓名','性别','年龄','就诊医生', '出生日期', '居住地址', '操作'],
+                colModel: [
+                    { name: 's_ic_no', index: 's_ic_no' },
+                    { name: 'd_input_time', index: 'd_input_time' },
+                    { name: 's_name', index: 's_name', align: "left" },
+                    { name: 's_sex', index: 's_sex', align: "left" },
+                    { name: 'n_age', index: 'n_age', align: "left" },
+                    { name: 's_doctor_input', index: 's_doctor_input', align: "left" },
+                    { name: 'd_birthday', index: 'd_birthday', align: "left" },
+                    { name: 's_address_resident', index: 's_address_resident', align: "left" },
+                    { name: 'Opation', index: '', sortable: false, align: "left", width: 50 }
+                ],
+                sortname: "d_input_time",
+                sortorder: "desc",
+                height: '100%',
+                rownumbers:true,
+                width: $(window).width(),
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                KH: $("#IC").val(), XM: $("#Name").val(), YS: $("#Doction").val(), StartDate: $("#Date1").val(),
+                EndDate:$("#Date2").val(),
+                pagesize: size || curPageSize, pagenumber: number || curPageNumber
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+    @*function edit(id) {
+
+
+            window.location = 'Edit?id=' + (id || "") + "&@ViewBag.query";
+        }*@
+
+
+
+      function edit(id) {
+                dialog.open({
+                    id: "window_" + appid.replaceAll('-', ''),
+                    title: "查看信息",
+                    width: 700,
+                    height: 460,
+                    url:'Edit?id=' + (id || "") + "&@ViewBag.query",
+                    opener: window,
+                    openerid: iframeid
+                });
+            }
+</script>
+
+

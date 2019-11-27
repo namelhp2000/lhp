@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "Login";
+
+}
+
+<style>
+    body {
+        background: #f3f7f9;
+        overflow: hidden;
+    }
+</style>
+
+@*var returnCitySN = {"cip": "218.67.123.182", "cid": "350700", "cname": "福建省南平市"};
+    搜狐IP地址查询接口
+*@
+
+@if (ViewBag.IsLoginAddress == "1")
+{
+    <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+}
+
+
+<form id="form1" method="post">
+
+    <div id="bgdiv" class="loginbgdiv"></div>
+    <div id="logindiv" style="display:none; margin-top:8px;">
+        <input type="hidden" id="Force" name="Force" value="0" />
+        <table cellpadding="0" cellspacing="1" border="0" style="width:95%; margin:0 auto;">
+            <tr>
+                <td style="width:70px; height:45px; text-align:right;">帐号：</td>
+                <td><input type="text" class="mytext" id="Account" name="Account" value="" maxlength="50" style="width:170px;" /></td>
+            </tr>
+            <tr>
+                <td style="height:45px; text-align:right;">密码：</td>
+                <td><input type="password" class="mytext" id="Password" name="Password" maxlength="50" style="width:170px;" /></td>
+            </tr>
+            <tr id="novcode" style="display:none;">
+                <td style="height:45px; text-align:right;">验证码：</td>
+                <td>
+                    <input type="text" class="mytext" id="VCode" name="VCode" maxlength="4" style="width:80px;" />
+                    <img alt="" src="VCode?@DateTime.Now.Ticks" onclick="cngimg();" style="vertical-align:middle;" id="VcodeImg" />
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="button" id="loginbutton" value=" 登 录 " class="mybutton" style="width:100px;" onclick=" return checkForm(this)" /></td>
+            </tr>
+            @*<tr>
+                    <td>&nbsp;</td>
+                    <td style="text-align:left; vertical-align:bottom; height:23px;"><div style="color:blue; margin-right:10px;">用户名:roadflow 密码:111</div><a href="http://www.cqroad.cn" target="_blank"><div style="color:blue;">官网:cqroad.cn</div></a></td>
+                </tr>*@
+        </table>
+    </div>
+    @Html.AntiForgeryToken()
+
+</form>
+
+
+<script type="text/javascript">
+    var win = new RoadUI.Window();
+    var isVCode = "1" == "@ViewBag.isVcode";
+  
+    $(function () {
+
+        $(document.body).bind("keydown", KeyDown);
+        var left = $(window).width() / 2 - 150;
+        var top = $(window).height() / 2 - 125;
+        win.open({ elementid: "logindiv", width: 300, height: isVCode ? 250 : 210, top: top, left: left, showico: false, title: "用户登录", resize: false, ismodal: false, showclose: false });
+        if (isVCode) {
+            showVCode();
+        }
+
+    });
+
+    function KeyDown() {
+        var e = document.all ? window.event : arguments[0] ? arguments[0] : event;
+        if (e && e.keyCode == 13) {
+            e.returnValue = false;
+            e.cancel = true;
+            $("#loginbutton").click();
+        }
+    }
+
+    function showVCode() {
+        //win.resize(300, 250);
+        $("#novcode").show();
+    }
+
+    function cngimg() {
+        $('#VcodeImg').attr('src', 'VCode?' + new Date().getTime().toString());
+    }
+
+    function checkForm() {
+        var form1 = document.forms[0];
+        if ($.trim(form1.Account.value).length == 0) {
+            alert("帐号不能为空!");
+            form1.Account.focus();
+            return false;
+        }
+        if ($.trim(form1.Password.value).length == 0) {
+            alert("密码不能为空!");
+            form1.Password.focus();
+            return false;
+        }
+        if (isVCode && form1.VCode && $.trim(form1.VCode.value).length == 0) {
+            alert("验证码不能为空!");
+            form1.VCode.focus();
+            return false;
+        }
+        var $but = $("#loginbutton");
+        var token = $('input[name="__RequestVerificationToken"]', form1).val();
+        var data1 = { __RequestVerificationToken: token, Account: form1.Account.value, Password: form1.Password.value, VCode: form1.VCode.value, Force: form1.Force.value }
+        if (@ViewBag.IsLoginAddress == "1") {
+            var cip = returnCitySN["cip"];
+            var cname = returnCitySN["cname"];
+            data1.IP = cip;
+            data1.City= cname
+        }
+
+        $but.val("登录中...").prop("disabled", true);
+       
+        $.ajax({
+            url: "CheckLogin",
+            type: "POST",
+            dataType: "json",
+            async: true,
+            data:  data1,
+            success: function (json) {
+                switch (json.status) {
+                    case 0:
+                        alert(json.msg);
+                        win.resize(300, 250);
+                        showVCode();
+                        isVCode = true;
+                        cngimg();
+                        $but.val("登录").prop("disabled", false);
+                        break;
+                    case 1:
+                        window.location = "/";
+                        break;
+                    case 2:
+                        if (confirm(json.msg)) {
+                            $('#Force').val("1");
+                            checkForm();
+                        }
+                        else {
+                            $but.val("登录").prop("disabled", false);
+                        }
+                        break;
+                }
+            }
+        });
+    }
+
+</script>
+
+

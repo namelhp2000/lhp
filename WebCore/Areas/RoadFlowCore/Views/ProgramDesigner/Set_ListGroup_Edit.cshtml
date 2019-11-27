@@ -1,0 +1,189 @@
+﻿@{
+    ViewBag.Title = "Set_ListGroup_Edit";
+    var Set_ListGroups = "Set_ListGroup" + Html.Raw(ViewBag.queryString);
+}
+@model RoadFlow.Model.ProgramGroup
+
+    <form id="form1" method="post">
+        @Html.AntiForgeryToken()
+        <div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
+            <table cellpadding="0" cellspacing="1" border="0" width="95%" class="formtable" style="margin-top:10px;">
+                <tr>
+                    <th style="width: 80px;">分组字段：</th>
+                    <td>
+                        <select class="myselect2" style="width:350px;" maxheight="500" name="GroupField" id="GroupField">
+                            <option value=""></option>
+                            @Html.Raw(ViewBag.fieldOptions)
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">分组表头设置：</th>
+                    <td><textarea class="mytextarea" style="width:80%;height:60px;" name="GroupText" id="GroupText">@Html.Raw(Model.GroupText)</textarea></td>
+                </tr>
+
+
+                <tr>
+                    <th style="width: 80px;">是否汇总：</th>
+                    <td>
+                        <input type="radio" value="1" name="IsGroupSummary" id="IsGroupSummary_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupSummary_1">是</label>
+                        <input type="radio" value="0" name="IsGroupSummary" id="IsGroupSummary_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupSummary_0">否</label>
+                    </td>
+                </tr>
+
+
+
+                <tr>
+                    <th style="width: 80px;">是否显示分组列：</th>
+                    <td>
+                        <input type="radio" value="1" name="IsGroupColumnShow" id="IsGroupColumnShow_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupColumnShow_1">是</label>
+                        <input type="radio" value="0" name="IsGroupColumnShow" id="IsGroupColumnShow_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupColumnShow_0">否</label>
+                    </td>
+                </tr>
+
+
+
+
+                <tr>
+                    <th style="width: 80px;">是否折叠：</th>
+                    <td>
+                        <input type="radio" value="1" name="IsGroupCollapse" id="IsGroupCollapse_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupCollapse_1">是</label>
+                        <input type="radio" value="0" name="IsGroupCollapse" id="IsGroupCollapse_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupCollapse_0">否</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th style="width: 80px;">分组是否排序：</th>
+                    <td>
+                        <input type="radio" value="1" class="IsGroupDataSorted" name="IsGroupDataSorted" id="IsGroupDataSorted_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupDataSorted_1">是</label>
+                        <input type="radio" value="0" class="IsGroupDataSorted" name="IsGroupDataSorted" id="IsGroupDataSorted_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsGroupDataSorted_0">否</label>
+                    </td>
+                </tr>
+
+                <tr id="form_sort_span">
+                    <th style="width: 80px;">分组排序方式：</th>
+                    <td>
+                        <select class="myselect" name="GroupOrder">
+                            <option name="GroupOrder" value=""></option>
+                            <option name="GroupOrder" value="asc">升序排序</option>
+                            <option name="GroupOrder" value="desc">降序排列</option>
+                        </select>
+
+                    </td>
+                </tr>
+
+
+
+
+
+                <tr>
+                    <th style="width: 80px;">是否隐藏汇总：</th>
+                    <td>
+                        <input type="radio" value="1" name="IsShowSummaryOnHide" id="IsShowSummaryOnHide_1" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsShowSummaryOnHide_1">是</label>
+                        <input type="radio" value="0" name="IsShowSummaryOnHide" id="IsShowSummaryOnHide_0" style="vertical-align:middle" /><label style="vertical-align:middle" for="IsShowSummaryOnHide_0">否</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 80px;">显示顺序：</th>
+                    <td>
+                        <input type="text" class="mytext" name="sort" id="sort" value="@Model.Sort" />
+                    </td>
+                </tr>
+
+                @if (RoadFlow.Utility.Config.IsRemarks == "1")
+                {
+                    <tr>
+                        <th style="width: 80px;">说明：</th>
+                        <td>
+                            groupingView: {<br />
+                            groupField: ['s_operator'], //需要分组的列 <br />
+                            groupText: ['<b>姓名：{0}</b>'], //在分组的头部显示的信息   {0} 代表对应的分组字段 <br />
+                            groupSummary: [true], //是否显示汇总 如果为true需要在colModel中进行配置 如： summaryType:'sum', summaryTpl:'<b>小计: {0}</b>'' <br />
+                            groupColumnShow: [false], //是否显示分组列 <br />
+                            groupCollapse: false, //该属性表示在加载数据的时候是否只显示分组信息，false表示既显示分组信息也显示每个分组里面的详细信息，true则只显示分组信息<br />
+                            groupDataSorted: true,//分组中的数据是否排序<br />
+                            groupOrder: ['asc'], //分组后组的排列顺序 <br />
+                            showSummaryOnHide: true//是否在分组底部显示汇总信息并且当收起表格时是否隐藏下面的分组<br />
+                            }<br />
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="buttondiv">
+            <input type="button" value=" 保 存 " class="mybutton" onclick="save(this);" />
+            <input type="button" class="mybutton" onclick="window.location = '@Set_ListGroups';" value=" 返 回 " />
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(function () {
+
+            
+            $(":radio[name='IsGroupSummary'][value='" + @Model.IsGroupSummary + "']").prop("checked", "checked");
+            $(":radio[name='IsGroupColumnShow'][value='" + @Model.IsGroupColumnShow + "']").prop("checked", "checked");
+            $(":radio[name='IsGroupCollapse'][value='" + @Model.IsGroupCollapse + "']").prop("checked", "checked");
+
+
+          
+           
+            $("[name='GroupOrder'][value='@Model.GroupOrder']").prop("selected", "selected");
+
+            $(":radio[name='IsGroupDataSorted'][value='" + @Model.IsGroupDataSorted + "']").prop("checked", "checked");
+
+
+            $(":radio[name='IsShowSummaryOnHide'][value='" + @Model.IsShowSummaryOnHide + "']").prop("checked", "checked");
+
+
+
+            //是否显示分组排序方法
+             IsGroupDataSorted_change( $("input[name='IsGroupDataSorted']:checked").val());
+
+            //通过分组是否排序是否显示分组排序方法
+            $(".IsGroupDataSorted").change(
+                    function() {
+                    var $selectedvalue = $("input[name='IsGroupDataSorted']:checked").val();
+                    if ($selectedvalue == "1") {
+                          $("#form_sort_span").show();
+                    }
+                    else {
+                         $("#form_sort_span").hide();
+                    }
+              });
+
+
+           
+        });
+
+    function IsGroupDataSorted_change(value) {
+            if ("1" === value) {
+                $("#form_sort_span").show();
+            }
+            else {
+                $("#form_sort_span").hide();
+            }
+        }
+
+
+
+
+
+        function save(but) {
+            var f = document.forms[0];
+            if (new RoadUI.Validate().validateForm(f)) {
+                var o = RoadUI.Core.serializeForm($(f));
+                $(but).prop("disabled", true);
+                $.ajax({
+                    url: "SaveSet_ListGroup" +"@Html.Raw(ViewBag.queryString)", data: o, type: "post", success: function (text) {
+                        alert(text);
+                        $(but).prop("disabled", false);
+                        if (text.indexOf('成功!') >= 0) {
+                            window.location = "Set_ListGroup"+"@Html.Raw(ViewBag.queryString)";
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+

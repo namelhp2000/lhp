@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "_LayoutMobile";
+    ViewBag.Title = Model.Title;
+}
+@model RoadFlow.Model.Doc
+
+<body ontouchstart="">
+    <div class="doc_title">@Model.Title</div>
+    <div class="doc_subtitle">
+        <span style="margin-right:12px;">发布时间：@Model.WriteTime</span>
+        <span style="margin-right:12px;">发布人：@Model.WriteUserName</span>
+        <span>阅读次数：@Model.ReadCount</span>
+    </div>
+    <div style="border-bottom:1px solid #ccc;"></div>
+    <div class="doc_contents">
+        <p>@Html.Raw(Model.Contents)</p>
+
+    </div>
+
+
+    <script type="text/javascript">
+        $(function () {
+            FastClick.attach(document.body);
+        });
+    </script>
+
+
+</body>

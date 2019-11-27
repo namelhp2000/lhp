@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+    <form method="post">
+       @Html.AntiForgeryToken()
+        <div class="toolbar" style="margin-top:0; border-top:0;">
+            <a href="javascript:void(0);" onclick="edit();return false;"><i class="fa fa-plus-square"></i><label>添加意见</label></a>
+            <span class="toolbarsplit">&nbsp;</span>
+            <a href="javascript:void(0);" onclick="del();return false;"><i class="fa fa-minus-square"></i><label>删除所选</label></a>
+        </div>
+        <table id="listtable"></table>
+    </form>
+    <script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var dialog = top.mainDialog || new RoadUI.Window();
+        var rows = @Html.Raw(ViewBag.json);
+        var isOneSelf = "1" == "@ViewBag.isoneself";
+        $(function () {
+            $("#listtable").jqGrid({
+                datatype: "local",
+                colNames: ['意见内容', '使用成员', '添加方式', '排序', '编辑'],
+                colModel: [
+                    { name: 'Comments', index: 'Comments' },
+                    { name: 'UserId', index: 'UserId' },
+                    { name: 'AddType', index: 'AddType' },
+                    { name: 'Sort', index: 'Sort' },
+                    { name: 'Opation', index: 'Opation', width: 80 },
+                ],
+                multiselect: true,
+                height: 440,
+                width: $(window).width(),
+                data: rows
+            });
+            if (isOneSelf) {
+                $("#listtable").hideCol("UserId").hideCol("AddType").setGridWidth($(window).width());
+            };
+            //鼠标移动背景颜色变化
+            $("#listtable tr").mouseenter(function () {
+                $(this).css("background", "lightblue");
+            });
+            $("#listtable tr").mouseleave(function () {
+                $(this).css("background", "white");
+            });
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function edit(id) {
+            dialog.open({
+                id: "window_" + appid.replaceAll('-', ''),
+                title: "编辑意见",
+                width: 700,
+                height: 260,
+                url: 'Edit?commentid=' + (id || "") + "&tabid=" + iframeid + "&appid=" + appid + "&isoneself="+"@ViewBag.isoneself",
+                opener: window,
+                openerid: iframeid
+            });
+        }
+        function del() {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的意见!");
+                return false;
+            }
+            if (!confirm('您真的要删除所选意见吗?')) {
+                return false;
+            }
+            $.ajax({
+                url: "Delete?tabid=" + iframeid + "&appid=" + appid + "&isoneself="+"@ViewBag.isoneself",
+                type: "post",
+                data: {
+                    "ids": rowIds.join(','),
+                    "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val()
+                },
+                success: function (txt) {
+                    alert(txt);
+                    window.location = window.location;
+                }
+            });
+            return true;
+        }
+    </script>
+

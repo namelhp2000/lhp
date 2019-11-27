@@ -1,0 +1,61 @@
+﻿@using RoadFlow.Utility;
+@using RoadFlow.Business;
+@using Microsoft.AspNetCore.Http;
+@{
+	var Request = (HttpRequest)ViewData["request"];
+	string instanceId = Request.Querys("instanceid");
+	string taskId = Request.Querys("taskid");
+	string stepId = Request.Querys("stepid");
+	string flowId = Request.Querys("flowid");
+	string display = Request.Querys("display");
+	bool showArchive = "1".Equals(Request.Querys("showarchive"));
+	string fieldStatusJSON = string.Empty;
+	string formData = showArchive ? new FlowArchive().GetArchiveData(Request.Querys("archiveid").ToGuid()) : new Form().GetFormData("dba78397-b5df-4145-87af-cb8b5d0655d7", "RF_Test1Sub", "Id", instanceId, stepId, flowId, "[]", out fieldStatusJSON);
+}
+<script type="text/javascript" src="~/RoadFlowResources/scripts/flowRun/form.js"></script>
+<script type="text/javascript">
+	var formDataJSON = @Html.Raw(formData.IsNullOrWhiteSpace() ? "[]" : formData);
+	var fieldStatusJSON = @Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON);
+	var defaultValuesJSON = @Html.Raw(new Form().GetDefaultValuesJSON("[]", fieldStatusJSON));
+	$(window).load(function () {
+		formLoad.load(formDataJSON, fieldStatusJSON, "RF_Test1Sub", "@display", defaultValuesJSON);
+	});
+</script>
+<link href="~/RoadFlowResources/scripts/flowRun/common.css" rel="stylesheet" />
+<input type="hidden" name="form_dbconnid" id="form_dbconnid" value="dba78397-b5df-4145-87af-cb8b5d0655d7"/>
+<input type="hidden" name="form_dbtable" id="form_dbtable" value="RF_Test1Sub"/>
+<input type="hidden" name="form_dbtableprimarykey" id="form_dbtableprimarykey" value="Id"/>
+<input type="hidden" name="form_dbtabletitle" id="form_dbtabletitle" value="TestId"/>
+<input type="hidden" name="form_instanceid" id="form_instanceid" value="@instanceId"/>
+<textarea style="display:none;" name="form_fieldstatus" id="form_fieldstatus">@Html.Raw(fieldStatusJSON.IsNullOrWhiteSpace() ? "[]" : fieldStatusJSON)</textarea>
+<textarea style="display:none;" name="form_dataformatjson" id="form_dataformatjson">[]</textarea>
+<table align="center" border="1" cellpadding="1" cellspacing="1" style="width:95%;">
+	<tbody>
+		<tr>
+			<td style="width: 207px;">物资名称：</td>
+			<td style="width: 1416px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_TEST1SUB-F1" name="RF_TEST1SUB-F1" style="" type="text" value="" class="mytext"></td>
+		</tr>
+		<tr>
+			<td style="width: 207px;">物资型号：</td>
+			<td style="width: 1416px;"><input data-isflow="1" data-type="files" id="RF_TEST1SUB-F2" name="RF_TEST1SUB-F2" type="text" value="" class="myfile" filetype="png,jpg,gif" opener="parent"></td>
+		</tr>
+		<tr>
+			<td style="width: 207px;">物资单价:</td>
+			<td style="width: 1416px;"><input data-isflow="1" data-type="text" data-valuetype="decimal" id="RF_TEST1SUB-F3" name="RF_TEST1SUB-F3" style="" type="text" value="" class="mytext"></td>
+		</tr>
+		<tr>
+			<td style="width: 207px;">申请数量:</td>
+			<td style="width: 1416px;"><input data-isflow="1" data-type="text" data-valuetype="decimal" id="RF_TEST1SUB-F4" name="RF_TEST1SUB-F4" style="" type="text" value="" class="mytext"></td>
+		</tr>
+		<tr>
+			<td style="width: 207px;">申请金额:</td>
+			<td style="width: 1416px;"><input data-isflow="1" data-type="text" data-valuetype="decimal" id="RF_TEST1SUB-F5" name="RF_TEST1SUB-F5" style="" type="text" value="" class="mytext"></td>
+		</tr>
+		<tr>
+			<td style="width: 207px;">备注:</td>
+			<td style="width: 1416px;"><input data-isflow="1" data-type="text" data-valuetype="" id="RF_TEST1SUB-F6" name="RF_TEST1SUB-F6" style="width: 70%;" type="text" value="" class="mytext"></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>

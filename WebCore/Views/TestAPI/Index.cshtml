@@ -1,0 +1,97 @@
+﻿<table cellpadding="0" cellspacing="1" border="0" width="97%" class="formtable">
+    <tr>
+        <th>
+            请求方式：
+        </th>
+        <td>
+            <select class="myselect" style="width:75%;" id="PostType">
+                <option value="post">post</option>
+                <option value="put">put</option>
+                <option value="get">get</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <th>
+            Url：
+        </th>
+        <td>
+            <input type="text" name="s_name" id="s_name" class="mytext" validate="empty" style="width: 75%" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            请求参数：
+        </th>
+        <td>
+            <input type="text" name="datestr" id="datestr" class="mytext" validate="empty" style="width: 75%" />
+            @Html.Raw(ViewBag.Xmlstr)
+        </td>
+    </tr>
+    
+
+    <tr>
+
+        <td colspan="2" style="position:center">
+            <input type="button" value="确定保存" class="mybutton" onclick="saveApp(this);" />
+        </td>
+    </tr>
+</table>
+
+
+<script type="text/javascript">
+    function saveApp(but) {
+          var data = { 
+           systemcode: 'localhost', 
+           flowid: '3152F601-7CB2-46C9-A74B-9CF04EB5DDEC'
+        };
+        $.ajax({
+            url: '/RoadFlowCoreApi/Flow/GetFlowJson',
+            type: 'POST',
+            contentType: 'application/json',    
+            data: JSON.stringify(data),
+            success: function (text) {
+                 alert(text);
+             }
+         });
+
+ 
+
+}
+
+
+
+
+
+         //       var data = '<test><systemcode>localhost</systemcode><flowid>3152F601-7CB2-46C9-A74B-9CF04EB5DDEC</flowid></test>';//拼接字符串
+
+         //$.ajax({
+         //   /**/
+         //   url: $('#s_name').val(), type: "post",
+         //             data: data,
+         //   success: function (text) {
+         //       /**/
+         //       alert(text);
+         //   }
+         //});
+
+
+         //var data = 'systemcode=localhost&flowid=3152F601-7CB2-46C9-A74B-9CF04EB5DDEC';//拼接字符串
+
+         //$.ajax({
+         //   /**/
+         //   url: $('#s_name').val(), type: "post",
+         //             data: data,
+         //   success: function (text) {
+         //       /**/
+         //       alert(text);
+         //   }
+         //});
+
+
+
+
+  
+
+</script>

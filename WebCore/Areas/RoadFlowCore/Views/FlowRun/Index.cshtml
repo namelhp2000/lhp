@@ -1,0 +1,206 @@
+﻿@page
+
+@{
+    ViewBag.Title = "Index";
+    var src = ViewBag.formUrl;
+
+}
+@using RoadFlow.Utility;
+
+<script>
+    RoadUI.Core.showWait();
+</script>
+<style type="text/css">
+    body {
+        overflow: hidden;
+        background: #fff;
+    }
+</style>
+<div>
+    <form id="mainform" name="mainform" method="post" target="submiter">
+        <input type="hidden" name="instanceid" id="instanceid" value="" />
+        <!--保存处理参数JSON，提交到form-->
+        <input type="hidden" name="params" id="params" value="" />
+        <!--签批按钮-->
+        <div class="toolbar" id="toolbardiv" style="margin:0 auto; border-top:none 0; position:fixed; top:0; left:0; right:0; z-index:999; width:100%;">
+            <div>
+                @{
+                    foreach (var button in ViewBag.flowButtons)
+                    {
+
+                        var funName = string.Concat("fun_", button.Id.ToString("N"), "(this)");
+                        var funName1 = string.Concat("fun_", button.Id.ToString("N"), "(a)");
+                    <a href="javascript:void(0);" onclick="@funName;" title="@button.Note">
+                        <i class='fa @button.Ico' style='font-size:14px;margin-right:3px;'></i><label>@button.Title</label>
+                    </a>
+                    <script type="text/javascript">
+                                function @funName1 { @Html.Raw(button.Script) }
+                    </script>
+                    }
+                }
+
+            </div>
+        </div>
+        <!--签批按钮-->
+        <!--签批意见栏-->
+        @if (2 == ViewBag.signType)
+        {
+        <div class="toolbar" id="commentDiv" style="margin-top:0; position:fixed; top:35px; height:40px; left:0; right:0; z-index:999; width:100%;">
+            <div style="padding:3px 0 0 5px;">
+                意见：<select class="myselect" id="mycomment" style="margin-right:6px; width:100px;" onchange="$('#comment').val(this.value);">
+                    <option value=""></option>
+                    @Html.Raw(ViewBag.commentOptions)
+                </select>
+                <input type="text" class="mytext" id="comment" name="comment" value="" style="width:50%; margin-right:6px;" />
+                @if (ViewBag.attachment == 1)
+                    {
+                <input type="text" class="myfile" id="attachment" name="attachment" value="" style="width:120px;" />
+
+                    }
+
+                <input type="hidden" value="" id="issign" name="issign" />
+                <input type="button" class="mybutton" id="signbutton" onclick="sign();" value="&nbsp;&nbsp;签&nbsp;&nbsp;章&nbsp;&nbsp;" />
+                <img alt="" src="@Html.Raw(ViewBag.signSrc)" id="signimg" style="vertical-align:bottom; display:none; max-height:28px;" />
+            </div>
+        </div>
+        <div style="height: 43px;"></div>
+        }
+        else if (1 == ViewBag.signType)
+        {
+        <div class="toolbar" id="commentDiv" style="margin-top:0; position:fixed; top:35px; height:40px; left:0; right:0; z-index:999; width:100%;">
+            <div style="padding:3px 0 0 5px;">
+                意见：<select class="myselect" id="mycomment" style="margin-right:6px; width:100px;" onchange="$('#comment').val(this.value);">
+                    <option value=""></option>
+                    @Html.Raw(ViewBag.commentOptions)
+                </select>
+                <input type="text" class="mytext" id="comment" name="comment" value="" style="width:50%; margin-right:6px;" />
+                @if (ViewBag.attachment == 1)
+                    {
+                <input type="text" class="myfile" id="attachment" name="attachment" value="" style="width:120px;" />
+
+                    }
+            </div>
+        </div>
+        <div style="height: 43px;"></div>
+        }
+        <!--签批意见栏-->
+        <!--调试窗口-->
+        @if (1 == ViewBag.isDebug)
+        {
+        <iframe name="submiter" style="width:98%; height:200px; border:1px dashed #ccc; margin:5px auto 0 10px; overflow:auto;"></iframe>
+        }
+        else
+        {
+        <iframe name="submiter" style="height:1px; display:none;"></iframe>
+        }
+
+
+        <!--调试窗口-->
+        <!--表单主体-->
+
+
+
+
+        <div style="overflow:auto;" id="form_body_div">
+
+            @{
+                var extName = System.IO.Path.GetExtension(src).ToLower();
+                if (extName.StartsWith(".cshtml"))
+                {
+                <input type="hidden" id="form_iscustomeform" name="form_iscustomeform" value="0" />
+                    var ss = RoadFlow.Utility.StringExtensions.RenderPartialStringForm(src);
+                    //await Html.RenderPartialAsync((string)ss);
+                    await Html.RenderPartialAsync((string)ss);
+                    //  await Html.RenderPartialAsync("../FlowRun/Comments");
+                }
+                else
+                {
+
+                <input type="hidden" id="form_iscustomeform" name="form_iscustomeform" value="1" />
+                <input type="hidden" name="customformtitle" id="customformtitle" value="" />
+                <iframe src="@src" onload="setIframeHeight();" id="customeformiframe" name="customeformiframe" frameborder="0" border="0" style="border:none 0;padding:0;width:100%;margin-top:10px;"></iframe>
+                    //await Html.RenderPartialAsync((string)ss1);
+                    //System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    //sb.Append(System.IO.File.ReadAllText(WebCore.Current.ContentRootPath + src));
+                    //Html.Raw(sb.ToString().RemovePageTag());
+                    // await Html.RenderPartialAsync((string)ss);
+                }
+                //await Html.RenderPartialAsync("../FlowRun/Comments");
+
+            }
+
+
+
+            <!--如果是加签显示加签说明-->
+            <!--历史意见显示-->
+
+            <div id="form_commentlist_div" style="width:95%; margin:0 auto;">
+                @{
+                if (ViewBag.showComment == 1)
+                {
+                    await Html.RenderPartialAsync("../FlowRun/Comments");
+                }
+
+                }
+            </div>
+            <!--历史意见显示-->
+            <br />
+        </div>
+    </form>
+
+
+</div>
+<!--表单主体-->
+<!--归档内容-->
+<textarea id="form_body_div_textarea" name="form_body_div_textarea" style="display:none;"></textarea>
+<textarea id="form_commentlist_div_textarea" name="form_commentlist_div_textarea" style="display:none;"></textarea>
+<!--归档内容-->
+
+<script type="text/javascript">
+    var isDebug = '@ViewBag.isDebug' === '1' && "@ViewBag.display" !== '1';
+    var isSign = '0' !== '@ViewBag.signType';
+    var signType = '@ViewBag.signType';
+    var iframeid = '@ViewBag.tabId';
+    var isShow = "1" === "@ViewBag.display";//是否是查看模式
+    var appid = '@ViewBag.appId';
+    var query = '@Html.Raw(ViewBag.query)';
+    var isSystemDetermine = '0' === '@ViewBag.flowType';//当前步骤的后续流转类型是否是系统判断
+    var instanceid = '@ViewBag.instanceId';
+    var isCustomeForm = '1' === '@ViewBag.isCustomeForm';
+    var isMobile = "1" === "@ViewBag.ismobile";//是否是移动端
+
+    if ("1" === "@ViewBag.isArchives") {
+       // $("#form_body_div_textarea").val($("#form_body_div").html());
+    }
+
+    $(window).load(function () {
+        if ("1" === "@ViewBag.isArchives") {
+          $("#form_commentlist_div_textarea").val($("#form_commentlist_div").html());
+        }
+        //在工具栏下方插入一个等高的DIV，不然看不到部分表单内容
+        toolbarHeight = isMobile ? $("#mobiletoolbardiv").outerHeight(true) : $("#toolbardiv").outerHeight(true);
+        (isMobile ? $("#mobiletoolbardiv") : $("#toolbardiv")).after('<div style="height:' + (toolbarHeight || 0).toString() + 'px;"></div>');
+        bodyHeight = $(window).height() - toolbarHeight - $("#commentDiv").outerHeight(true) - (isDebug ? 200 : 0);
+        if (!isCustomeForm) {
+            $("#form_body_div").height(bodyHeight);
+        }
+        //关闭弹出的正在加载层
+        RoadUI.Core.closeWait();
+    });
+    function setIframeHeight() {
+        try {
+            var iframe = document.getElementById("customeformiframe");
+            if (iframe.attachEvent) {
+                iframe.height = iframe.contentWindow.document.documentElement.scrollHeight + 2;
+            } else {
+                iframe.height = iframe.contentDocument.body.scrollHeight + 2;
+            }
+        } catch (e) {
+
+        }
+        toolbarHeight = isMobile ? $("#mobiletoolbardiv").outerHeight(true) : $("#toolbardiv").outerHeight(true);
+        bodyHeight = $(window).height() - toolbarHeight - $("#commentDiv").outerHeight(true) - (isDebug ? 200 : 0);
+        $("#form_body_div").height(bodyHeight);
+    }
+</script>
+<script type="text/javascript" src="/RoadFlowResources/scripts/flowRun/common.js"></script>

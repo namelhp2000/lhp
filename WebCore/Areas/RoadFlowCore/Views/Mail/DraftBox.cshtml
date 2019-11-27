@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "DraftBox";
+}
+    <form method="post" id="form1">
+        @Html.AntiForgeryToken()
+        <div class="querybar">
+            <table cellpadding="0" cellspacing="1" border="0" width="100%">
+                <tr>
+                    <td>
+                        主题：<input type="text" class="mytext" id="Subject" name="Subject" value="" style="width:260px" />
+                        时间：<input type="text" class="mycalendar" style="width:90px;" id="Date1" name="Date1" /> 至 <input type="text" style="width:90px;" class="mycalendar" id="Date2" name="Date2" />
+                        <input type="button" name="Search" onclick="query();" value="&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;" class="mybutton" />
+                        <input type="button" onclick="del(this); return false;" value="删除草稿邮件" class="mybutton" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input type="hidden" name="checkbox_app" id="checkbox_app" value="" />
+        <table id="listtable"></table>
+        <div class="buttondiv"></div>
+    </form>
+    <script type="text/javascript">
+        var appid = '@ViewBag.appId';
+        var iframeid = '@ViewBag.tabId';
+        var dialog = new RoadUI.Window();
+        var curPageSize;
+        var curPageNumber;
+        $(function () {
+            $("#listtable").jqGrid({
+                url: "QueryDraftBox?@Html.Raw(ViewBag.query)",
+                postData: { "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(), "appid": appid },
+                mtype: 'POST',
+                datatype: "json",
+                colNames: ['主题', '时间'],
+                colModel: [
+                    { name: 'Subject', index: 'Subject', width: 300 },
+                    { name: 'SendDateTime', index: 'SendDateTime', align: "left", width: 80 }
+                ],
+                sortname: "SendDateTime",
+                sortorder: "desc",
+                height: '100%',
+                multiselect: true,
+                width: $(window).width(),
+                loadComplete: function () {
+                    var gridObj = $("#listtable");
+                    var records = gridObj.getGridParam("userData");
+                    curPageSize = records.pagesize;
+                    curPageNumber = records.pagenumber;
+                    $(".buttondiv").html(RoadUI.Core.getPager1(records.total, records.pagesize, records.pagenumber, "query"));
+                    //鼠标移动背景颜色变化
+                    $("#listtable tr").mouseenter(function () {
+                        $(this).css("background", "lightblue");
+                    });
+                    $("#listtable tr").mouseleave(function () {
+                        $(this).css("background", "white");
+                    });
+                }
+            });
+           
+        });
+        $(window).resize(function () {
+            $("#listtable").setGridWidth($(window).width());
+        });
+        function query(size, number) {
+            var data = {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                Subject: $("#Subject").val(), SendUser: $("#SendUser").val(), Date1: $("#Date1").val(), Date2: $("#Date2").val(),
+                pagesize: size, pagenumber: number
+            };
+            $("#listtable").setGridParam({ postData: data }).trigger("reloadGrid");
+        }
+        function detail(id) {
+            top.openApp("/RoadFlowCore/Mail/SendMail?@Html.Raw(ViewBag.query)&id=" + id + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber + "&refreshtabid=" + iframeid, 0, "编辑邮件", "tab_" + id);
+            //window.location = 'SendMail?appid=5B5EB79E-89B1-4239-9580-B7260D41EB53&rf_appopenmodel=0&id=' + id + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber;
+        }
+        function del(but) {
+            var rowIds = $("#listtable").jqGrid('getGridParam', 'selarrrow');
+            if (rowIds.length == 0) {
+                alert("您没有选择要删除的草稿邮件!");
+                return false;
+            }
+            if (!confirm('您真的要删除所选草稿邮件吗?')) {
+                return false;
+            }
+            $(but).prop("disabled", true);
+            $.ajax({
+                url: "DeleteDraftMail?" + "@Html.Raw(ViewBag.query)" + "&pagesize=" + curPageSize + "&pagenumber=" + curPageNumber,
+                data: { "ids": rowIds.join(","), "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val() },
+                type: "post",
+                success: function (txt) {
+                    alert(txt);
+                    $(but).prop("disabled", false);
+                    query(curPageSize, curPageNumber);
+                }
+            });
+            return true;
+        }
+    </script>
+
+

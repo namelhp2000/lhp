@@ -1,0 +1,40 @@
+﻿body, html { height: 100%; -webkit-tap-highlight-color: transparent; background:#fff; }
+a:link, a:visited, a:active { color: #000000; text-decoration: none; }
+a:hover { color: #117eef; text-decoration: none; cursor: pointer; }
+/*去除input默认样式*/
+input[type="submit"], input[type="reset"], input[type="button"], button { -webkit-appearance: none; border-radius: 0; -webkit-border-radius: 0; }
+input:focus, textarea:focus { outline: none; }
+input:focus { -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-user-modify: read-write-plaintext-only; }
+
+/*待办已办列表*/
+.weui-panel__hd i { font-size: 16px; color: #117eef; margin-right:6px; }
+.app_search { height: 40px; background: #f2f2f2; padding: 0 0 0 9px; position: fixed; top: 0; left: 0; right: 0; z-index: 999; }
+.app_search_input { -webkit-appearance: none; outline: none; border: none; border-radius: 5px; margin-top: 5px; vertical-align: middle; background: #fff; border: 1px solid #e2e1e1; height: 27px; padding: 0 0 0 5px; }
+.app_search_button { -webkit-appearance: none; outline: none; border: none; border-radius: 5px; margin-top: 5px; vertical-align: middle; cursor: pointer; border: 0px solid #e2e1e1; color: #000; border: 0px; padding: 0 15px; height: 28px; background: #c5c5c5; }
+.list_date { color: #999; font-size: 12px; margin:6px 0 2px 0; }
+
+/*发起流程列表*/
+.startflow_type { font-size: 12px; color: #999; padding: 5px 0 5px 3px; }
+.grid_icon { width: 53px; height: 40px; margin: 0 auto; border-radius: 10px; text-align:center; padding-top:8px; }
+.grid_icon i { font-size: 30px; }
+
+/*文档中心*/
+.weui-cells__title i { font-size: 16px; color: #117eef; margin-right: 6px; }
+.doc_title { text-align: center; font-size: 18px; }
+.doc_subtitle { height: 28px; color: #666; font-size: 12px; text-align: center; }
+.doc_contents { padding: 8px 10px; text-align: left; line-height: 26px; word-break: break-all; }
+.doc_file { height: 28px; padding: 8px 10px; }
+
+/*首页*/
+.index_top { height: 95px; background: #117eef; }
+.index_header{padding:10px 0 0 10px; float:left; }
+.index_info { padding: 17px 0 0 10px; float: left; }
+.index_info_name { font-size: 20px; color: #fff; font-weight: bold; }
+.index_info_dept { font-size: 14px; color: #fff; }
+.index_grid{padding:0; margin:15px 0 0 0; }
+.index_grid_div { padding: 0 15px 0 8px; text-align: center; width: 60px; float:left; margin-top:5px; }
+.index_grid_ico { width: 46px; height: 32px; border-radius: 10px; margin: 0 auto; padding-top: 10px; background: #117eef; color: #fff; }
+.index_grid_ico i{font-size:22px;}
+.index_grid_title { font-size: 12px; margin-top: 4px; }
+
+.index_wait {  margin: 15px 0 0 0;}

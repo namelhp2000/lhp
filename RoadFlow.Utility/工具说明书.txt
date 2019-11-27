@@ -1,0 +1,103 @@
+﻿1、添加Nuget  （文件夹）→ Nuget
+     Aspects     →  AspectCore.Abstractions
+  
+     Cache       →   Microsoft.Extensions.Caching.Memory       
+	                  StackExchange.Redis
+
+    Dependencys   →  Autofac
+					  AspectCore.Extensions.AspectScope
+					  AspectCore.Extensions.Autofac
+					  Microsoft.Extensions.DependencyInjection
+					  Autofac.Extensions.DependencyInjection
+
+
+	Exceptions    →  Microsoft.AspNetCore.Hosting
+					  Microsoft.Extensions.Logging
+
+
+    Extention     →  NodaTime
+					  System.Linq.Dynamic.Core
+					  Microsoft.EntityFrameworkCore
+					  Microsoft.EntityFrameworkCore.Relational
+
+
+	Reflections	   →	Microsoft.Extensions.PlatformAbstractions
+
+
+	Tools类 →Microsoft.AspNetCore.Mvc
+			 System.Drawing.Common
+
+	Helper  →  System.Text.Encoding.CodePages
+				Microsoft.Extensions.Configuration.Json
+				System.Text.Encodings.Web
+
+	Webs → IdentityModel
+
+	Maps→ AutoMapper
+
+	WindowInfo→System.DirectoryServices
+
+	
+  Microsoft.AspNetCore.Http.Features  应用 2.2
+  Microsoft.AspNetCore.Http.Extensions   应用 2.2
+  Microsoft.AspNetCore.Razor.Design
+
+2、添加dll  文件夹   →  dll
+   Tools类 →   System.Drawing.Common.dll
+   Helper  →		 NPOI.dll
+					 NPOI.OOXML.dll
+					 NPOI.OpenXml4Net.dll
+					 NPOI.OpenXmlFormats.dll
+
+					 Aspose.Cells.dll→AsposeOfficeHelper
+
+
+
+
+
+
+
+
+
+3、文件夹说明   
+
+Aspects→拦截器文件夹  AOP面向切面对象
+最常见的一些横切行为如下面这些：
+	日志记录，跟踪，优化和监控
+	事务的处理
+	持久化
+	性能的优化
+	资源池，如数据库连接池的管理
+	系统统一的认证、权限管理等
+	应用系统的异常捕捉及处理
+
+
+
+Cache→缓存文件夹
+Contexts→上下文
+Dependencys →依赖文件夹
+Datas→数据
+Domains→域
+EnumExtention→枚举扩展
+Events→事件扩展
+Exceptions →异常文件夹
+Expressions→表达式
+Extention →扩展方法文件夹
+Helper  →助手方法文件夹
+KSUtility →考试工具文件夹（后期优化到对应的文件夹）
+Locks→锁
+Logs→日志
+Maps→对象映射
+Model →实体文件夹
+Parameters→参数
+PinyinExtention → 拼音扩展文件夹
+Reflections→反射文件夹
+Sessions→会话
+Security→安全
+Signatures→签名
+Validations →验证
+Webs→万维网
+WindowInfo →系统信息
+4、扩展功能
+Alipay.AopSdk.F2FPay.AspnetCore 添加支付宝功能
+Alipay.AopSdk.AspnetCore
