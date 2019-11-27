@@ -15,6 +15,7 @@ namespace RoadFlow.Business
         public int Add(RoadFlow.Model.ProgramQuery programQuery)
         {
             return this.programQueryData.Add(programQuery);
+
         }
 
         public int Delete(RoadFlow.Model.ProgramQuery[] programQueries)
