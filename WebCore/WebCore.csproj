@@ -6,13 +6,15 @@
     <!--<PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>-->
-    <!---->
+    <!--
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    <PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>-->
     
     <!--API注明文档配置 -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>98a1a1cc-3e16-416d-a699-3ecbc7a4703f</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     
   </PropertyGroup>
 
@@ -21,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Analyzers" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="NLog" Version="4.6.7" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
     <PackageReference Include="NPOI" Version="2.4.1" />

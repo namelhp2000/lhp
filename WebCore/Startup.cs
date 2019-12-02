@@ -151,7 +151,7 @@ namespace WebCore
             services.AddHttpContextAccessor();
 
 
-            //// Register the Swagger generator, defining one or more Swagger documents
+            //Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(options =>
             {
                 //options.DescribeAllEnumsAsStrings();
