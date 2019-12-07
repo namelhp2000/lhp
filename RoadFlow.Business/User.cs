@@ -277,7 +277,7 @@ namespace RoadFlow.Business
             {
                 return headImg;
             }
-            return "/RoadFlowResources/Images/userHeads/default.jpg";
+            return "/RoadFlowResources/images/userHeads/default.jpg";
         }
 
         public string GetInitPassword(Guid id)

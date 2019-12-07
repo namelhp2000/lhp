@@ -209,39 +209,39 @@ namespace WebCore
                                                                           //导致单体文件失败
                                                                           //NLog.LogManager.Configuration.Variables["configDir"] = this.Configuration.GetSection("FilePath").Value.TrimEnd('/').TrimEnd('\\');
 
-          
+
 
 
             //#region 远程读取日志
 
-            //if (Config.IsLog)
-            //{
-            //    FileExtensionContentTypeProvider provider = new FileExtensionContentTypeProvider();
-            //    //  provider.Mappings[".log"] = "text/plain;charset=utf-8";
-            //    provider.Mappings[".log"] = "text/plain;charset=utf-8";
+            if (Config.IsLog)
+            {
+                FileExtensionContentTypeProvider provider = new FileExtensionContentTypeProvider();
+                //  provider.Mappings[".log"] = "text/plain;charset=utf-8";
+                provider.Mappings[".log"] = "text/plain;charset=utf-8";
 
 
 
-            //    string basePath = this.Configuration.GetSection("FilePath").Value.TrimEnd('/').TrimEnd('\\');// System.IO.Path.GetDirectoryName(typeof(Program).Assembly.Location);
-            //    if (!Directory.Exists(basePath + "/logs"))
-            //    {
-            //        Directory.CreateDirectory(basePath + "/logs");
-            //    }
-            //    app.UseStaticFiles(new StaticFileOptions()
-            //    {
-            //        FileProvider = new PhysicalFileProvider(System.IO.Path.Combine(basePath, "logs")),
-            //        ServeUnknownFileTypes = true,
-            //        RequestPath = new PathString("/logs"),
-            //        ContentTypeProvider = provider,
-            //        DefaultContentType = "application/x-msdownload", // 设置未识别的MIME类型一个默认z值
+                string basePath = this.Configuration.GetSection("FilePath").Value.TrimEnd('/').TrimEnd('\\');// System.IO.Path.GetDirectoryName(typeof(Program).Assembly.Location);
+                if (!Directory.Exists(basePath + "/logs"))
+                {
+                    Directory.CreateDirectory(basePath + "/logs");
+                }
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(System.IO.Path.Combine(basePath, "logs")),
+                    ServeUnknownFileTypes = true,
+                    RequestPath = new PathString("/logs"),
+                    ContentTypeProvider = provider,
+                    DefaultContentType = "application/x-msdownload", // 设置未识别的MIME类型一个默认z值
 
-            //    });
-            //    app.UseDirectoryBrowser(new DirectoryBrowserOptions()
-            //    {
-            //        FileProvider = new PhysicalFileProvider(System.IO.Path.Combine(basePath, "logs")),
-            //        RequestPath = new PathString("/logs"),
-            //    });
-            //}
+                });
+                app.UseDirectoryBrowser(new DirectoryBrowserOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(System.IO.Path.Combine(basePath, "logs")),
+                    RequestPath = new PathString("/logs"),
+                });
+            }
 
 
             //#endregion
